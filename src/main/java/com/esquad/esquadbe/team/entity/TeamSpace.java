@@ -1,9 +1,11 @@
 package com.esquad.esquadbe.team.entity;
 
+import com.esquad.esquadbe.global.entity.BasicEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -11,9 +13,10 @@ import java.util.ArrayList;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@SuperBuilder
 @Entity
 @Table(name = "TEAM_SPACE")
-public class TeamSpace {
+public class TeamSpace extends BasicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,23 +27,23 @@ public class TeamSpace {
 
     @OneToOne(optional = false)
     @JoinColumn(name = "MANAGER_ID", nullable = false)
-    private Users manager;
+    private User manager;
 
     @OneToOne
     @JoinColumn(name = "MEMBER_ID")
-    private Users member;
+    private User member;
 
     @OneToMany(mappedBy = "teamSpace")
     private List<StudyPage> pageList = new ArrayList<>();
 
     private String description;
 
-    public void setManager(Users user) {
+    public void setManager(User user) {
         this.manager = user;
         user.setTeamSpace(this);
     }
 
-    public void setMember(Users user) {
+    public void setMember(User user) {
         this.member = user;
         user.setTeamSpace(this);
     }
