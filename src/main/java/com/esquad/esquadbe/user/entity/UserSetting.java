@@ -16,9 +16,9 @@ public class UserSetting {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @OneToOne
-//    @JoinColumn(name = "USER_ID", nullable = false)
-//    private User user;
+   @OneToOne
+   @JoinColumn(name = "USER_ID", nullable = false)
+   private User user;
 
     @Column(name = "VOICE_FLAG", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean voiceFlag = false;

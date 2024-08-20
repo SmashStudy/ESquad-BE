@@ -35,7 +35,7 @@ public class StudyRemind extends BasicEntity {
     @Column(name = "TIME_AT")
     private LocalTime timeAt;
 
-    @Column(columnDefinition = "VARCHAR(100)")
+    @Column(length = 100)
     private String description;
 
     @Column(name = "REMIND_FLAG", columnDefinition = "BOOLEAN DEFAULT TRUE")

@@ -1,11 +1,11 @@
 package com.esquad.esquadbe.team.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
+import com.esquad.esquadbe.studypage.entity.StudyPage;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,25 +26,16 @@ public class TeamSpace extends BasicEntity {
     @Column(name = "TEAM_NAME", unique = true, length = 100, nullable = false)
     private String teamName;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "MANAGER_ID", nullable = false)
-    private User manager;
-
-    @OneToMany(optional = false, mappedBy = "teamSpace")
-    private List<User> memberList = new ArrayList<>();
+    // @OneToOne(optional = false)
+    // @JoinColumn(name = "MANAGER_ID", nullable = false)
+    // private User manager;
 
     @OneToMany(mappedBy = "teamSpace")
-    private List<StudyPage> pageList = new ArrayList<>();
+    private List<TeamSpaceUser> members = new ArrayList<>();
+
+    @OneToMany(mappedBy = "teamSpace")
+    private List<StudyPage> studyPages = new ArrayList<>();
 
     private String description;
 
-    public void setManager(User user) {
-        this.manager = user;
-        user.setTeamSpace(this);
-    }
-
-    public void setMemberList(User user) {
-        this.memberList.add(user);
-        user.setTeamSpace(this);
-    }
 }

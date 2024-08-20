@@ -15,7 +15,6 @@ public class Book extends BasicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="ID")
     private Long id;
 
     @Column(name = "TITLE", nullable = false, length = 150)
@@ -36,6 +35,6 @@ public class Book extends BasicEntity {
     @Column(name = "ISBN", nullable = false, length = 15)
     private String isbn;
 
-    @Column(name = "DESCRIPTIPN", columnDefinition = "TEXT")
+    @Column(name = "DESCRIPTION", columnDefinition = "TEXT")
     private String description;
 }

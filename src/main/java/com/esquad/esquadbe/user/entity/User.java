@@ -1,14 +1,16 @@
 package com.esquad.esquadbe.user.entity;
 
 import com.esquad.esquadbe.notification.entity.Notification;
-import com.esquad.esquadbe.team.entity.TeamSpace;
+import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
+import com.esquad.esquadbe.studypage.entity.StudyPageUser;
+import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +18,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "USERS")
-@Data
+@Getter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -50,41 +53,24 @@ public class User {
     private String address;
 
     @OneToMany(mappedBy = "user")
-    private List<Notification> notifications = new ArrayList<>();;
+    private List<Notification> notifications = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<BookQNAFile> bookQNAFiles = new ArrayList<>();;
+    // @OneToMany(mappedBy = "user")
+    // private List<StoredFile> storedFiles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<BookQNABoard> bookQNABoards = new ArrayList<>();
+    @OneToMany(mappedBy = "writer")
+    private List<BookQnaBoard> bookQnaBoards = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<StreamingSession> streamingSessions = new ArrayList<>();
+    // @OneToMany(mappedBy = "user")
+    // private List<StreamingSession> streamingSessions = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "USER_ID")
+    @OneToOne(mappedBy = "user")
     private UserSetting userSetting;
 
-    @OneToOne
-    @JoinColumn(name = "USER_ID")
-    private TeamSpace teamSpace;
+    @OneToMany(mappedBy = "member")
+    private List<TeamSpaceUser> teamSpaceUsers = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "user")
-    private Set<StudyPage> studyPages = new HashSet<>();
+    @OneToMany(mappedBy = "member")
+    private Set<StudyPageUser> studyPageUsers = new HashSet<>();
 
-    @Column(name = "CREATED_AT")
-    private LocalDateTime createdAt;
-
-    @Column(name = "MODIFIED_AT")
-    private LocalDateTime modifiedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.modifiedAt = LocalDateTime.now();
-    }
 }

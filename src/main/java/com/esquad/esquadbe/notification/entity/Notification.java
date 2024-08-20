@@ -1,6 +1,7 @@
 package com.esquad.esquadbe.notification.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
+import com.esquad.esquadbe.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -27,13 +28,13 @@ public class Notification extends BasicEntity {
     @JoinColumn(name = "DESTINATION_USER_ID")
     private User user;
 
-    @Column(name = "NOTI_TYPE")
+    @Column(name = "NOTI_TYPE", length = 20)
     private String notiType;
 
     @Column(name = "READ_FLAG", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean readFlag = false;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String message;
 
 }
