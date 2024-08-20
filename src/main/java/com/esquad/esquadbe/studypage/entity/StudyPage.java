@@ -2,6 +2,7 @@ package com.esquad.esquadbe.studypage.entity;
 
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
+import com.esquad.esquadbe.streaming.entity.StreamingSession;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import jakarta.persistence.*;
 import lombok.*;
@@ -31,11 +32,6 @@ public class StudyPage extends BasicEntity {
     @JoinColumn(name = "BOOK_ID", nullable = false)
     private Book book;
 
-    // @ManyToOne
-    // @JoinColumn(nullable = false)
-    // @Column(name = "OWNER")
-    // private User owner;
-
     @Column(name = "START_DATE")
     private LocalDate startDate;
 
@@ -47,4 +43,7 @@ public class StudyPage extends BasicEntity {
 
     @OneToMany(mappedBy = "studyPage")
     private List<StudyPageUser> studyPageUsers = new ArrayList<>();
+
+    @OneToOne(mappedBy = "channel")
+    private StreamingSession streamingSession;
 }

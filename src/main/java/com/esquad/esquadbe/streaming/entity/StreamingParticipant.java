@@ -1,5 +1,6 @@
 package com.esquad.esquadbe.streaming.entity;
 
+import com.esquad.esquadbe.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,9 +21,9 @@ public class StreamingParticipant {
     @JoinColumn(name = "SESSION_ID", nullable = false)
     private StreamingSession session;
 
-//    @ManyToOne
-//    @JoinColumn(name = "USER_ID", nullable = false)
-//    private User user;
+   @ManyToOne
+   @JoinColumn(name = "USER_ID", nullable = false)
+   private User user;
 
     @Column(name = "VOICE_PARTICIPATION_FLAG", columnDefinition = "TINYINT(1) DEFAULT 0")
     private Boolean voiceParticipationFlag = false;

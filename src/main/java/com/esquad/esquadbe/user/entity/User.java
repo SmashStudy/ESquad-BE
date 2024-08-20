@@ -3,6 +3,8 @@ package com.esquad.esquadbe.user.entity;
 import com.esquad.esquadbe.notification.entity.Notification;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.storage.entity.StoredFile;
+import com.esquad.esquadbe.streaming.entity.StreamingParticipant;
+import com.esquad.esquadbe.streaming.entity.StreamingSession;
 import com.esquad.esquadbe.studypage.entity.StudyPageUser;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import jakarta.persistence.*;
@@ -62,8 +64,11 @@ public class User {
     @OneToMany(mappedBy = "writer")
     private List<BookQnaBoard> bookQnaBoards = new ArrayList<>();
 
-    // @OneToMany(mappedBy = "user")
-    // private List<StreamingSession> streamingSessions = new ArrayList<>();
+    @OneToMany(mappedBy = "user")
+    private List<StreamingSession> streamingSessions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<StreamingParticipant> streamingParticipants = new ArrayList<>();
 
     @OneToOne(mappedBy = "user")
     private UserSetting userSetting;
