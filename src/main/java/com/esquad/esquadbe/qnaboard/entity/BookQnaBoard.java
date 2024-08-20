@@ -1,14 +1,14 @@
 package com.esquad.esquadbe.qnaboard.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
+import com.esquad.esquadbe.studypage.entity.Book;
+import com.esquad.esquadbe.studypage.entity.StudyPage;
 import com.esquad.esquadbe.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.awt.print.Book;
 
 
 @SuperBuilder
