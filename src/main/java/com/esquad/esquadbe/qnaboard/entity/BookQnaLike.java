@@ -1,20 +1,19 @@
 package com.esquad.esquadbe.qnaboard.entity;
 
 
-
+import com.esquad.esquadbe.global.entity.BasicEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity
-@Table(name = "book_qna_like")
-public class BookQnaLike {
+@Table(name = "BOOK_QNA_LIKE")
+public class BookQnaLike extends BasicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +28,5 @@ public class BookQnaLike {
     @JoinColumn(name = "BOARD_ID")
     private BookQnaBoard board;
 
-    @Column(name = "CREATED_AT")
-    private LocalDateTime createdAt;
 
 }

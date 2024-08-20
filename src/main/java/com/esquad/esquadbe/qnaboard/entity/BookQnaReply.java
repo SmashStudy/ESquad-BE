@@ -1,10 +1,11 @@
 package com.esquad.esquadbe.qnaboard.entity;
 
+import com.esquad.esquadbe.global.entity.BasicEntity;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "BOOK_QNA_REPLY")
-public class BookQnaReply extends  Timestamped{
+public class BookQnaReply extends BasicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

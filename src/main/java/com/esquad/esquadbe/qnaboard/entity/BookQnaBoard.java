@@ -1,21 +1,24 @@
 package com.esquad.esquadbe.qnaboard.entity;
 
+import com.esquad.esquadbe.global.entity.BasicEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 
 import java.awt.print.Book;
 import java.time.LocalDateTime;
 
 
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Entity
-@Table(name = "book_qna_board")
-public class BookQnaBoard {
+@Table(name = "BOOK_QNA_BOARD")
+public class BookQnaBoard extends BasicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,12 +42,6 @@ public class BookQnaBoard {
 
     @Column(name = "CONTENT", nullable = false, columnDefinition = "TEXT")
     private String content;
-
-    @Column(name = "CREATED_AT")
-    private LocalDateTime createdAt;
-
-    @Column(name = "MODIFIED_AT")
-    private LocalDateTime modifiedAt;
 
     @Column(name = "LIKES")
     private Integer likes;
