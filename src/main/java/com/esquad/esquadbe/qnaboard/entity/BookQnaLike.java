@@ -2,6 +2,7 @@ package com.esquad.esquadbe.qnaboard.entity;
 
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
+import com.esquad.esquadbe.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
