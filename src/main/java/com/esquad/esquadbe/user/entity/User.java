@@ -2,6 +2,7 @@ package com.esquad.esquadbe.user.entity;
 
 import com.esquad.esquadbe.notification.entity.Notification;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
+import com.esquad.esquadbe.storage.entity.StoredFile;
 import com.esquad.esquadbe.studypage.entity.StudyPageUser;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import jakarta.persistence.*;
@@ -55,8 +56,8 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications = new ArrayList<>();
 
-    // @OneToMany(mappedBy = "user")
-    // private List<StoredFile> storedFiles = new ArrayList<>();
+     @OneToMany(mappedBy = "user")
+     private List<StoredFile> storedFiles = new ArrayList<>();
 
     @OneToMany(mappedBy = "writer")
     private List<BookQnaBoard> bookQnaBoards = new ArrayList<>();
