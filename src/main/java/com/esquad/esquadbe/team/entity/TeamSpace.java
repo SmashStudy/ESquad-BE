@@ -2,15 +2,16 @@ package com.esquad.esquadbe.team.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
-@Data
+@Getter
+@ToString
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
@@ -22,16 +23,15 @@ public class TeamSpace extends BasicEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "TEAM_NAME", unique = true)
+    @Column(name = "TEAM_NAME", unique = true, length = 100, nullable = false)
     private String teamName;
 
     @OneToOne(optional = false)
     @JoinColumn(name = "MANAGER_ID", nullable = false)
     private User manager;
 
-    @OneToOne
-    @JoinColumn(name = "MEMBER_ID")
-    private User member;
+    @OneToMany(optional = false, mappedBy = "teamSpace")
+    private List<User> memberList = new ArrayList<>();
 
     @OneToMany(mappedBy = "teamSpace")
     private List<StudyPage> pageList = new ArrayList<>();
@@ -43,8 +43,8 @@ public class TeamSpace extends BasicEntity {
         user.setTeamSpace(this);
     }
 
-    public void setMember(User user) {
-        this.member = user;
+    public void setMemberList(User user) {
+        this.memberList.add(user);
         user.setTeamSpace(this);
     }
 }
