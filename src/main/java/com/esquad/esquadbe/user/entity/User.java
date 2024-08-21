@@ -1,0 +1,54 @@
+package com.esquad.esquadbe.user.entity;
+
+import com.esquad.esquadbe.global.entity.BasicEntity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDate;
+
+@Entity
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "USERS")
+public class User extends BasicEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "USER_ID", nullable = false, unique = true, length = 20)
+    @Pattern(regexp = "^[a-zA-Z]{8,12}$", message = "아이디는 영어만 포함한 8~12자여야 합니다.")
+    private String userId;
+
+    @Column(name = "NICKNAME", nullable = false, unique = true, length = 20)
+    @Size(min = 2, max = 20, message = "닉네임은 2~20자여야 합니다.")
+    private String nickname;
+
+    @Column(name = "PASSWORD", nullable = false, length = 60)
+    @Size(min = 8, max = 16, message = "비밀번호는 8~16자여야 합니다.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?=.*[!~&+@]).*$", message = "비밀번호는 대소문자와 특수문자(!~&+@)를 포함해야 합니다.")
+    private String password;
+
+    @Column(name = "USER_NAME", nullable = false, length = 12)
+    private String userName;
+
+    @Column(name = "EMAIL", nullable = false, length = 25)
+    private String email;
+
+    @Column(name = "PHONE_NO", nullable = false, length = 12)
+    private String phoneNo;
+
+    @Column(name = "BIRTH_DAY", nullable = false)
+    private LocalDate birthDay;
+
+    @Column(name = "ADDRESS", nullable = false, length = 255)
+    private String address;
+
+}
