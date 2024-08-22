@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface TeamService {
 
-    public Optional<TeamSpace> checkTeamName(String teamName);
+    public boolean checkTeamName(String teamName);
 }
