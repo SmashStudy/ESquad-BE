@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.dto;
+package com.esquad.esquadbe.qnaboard.dto;
 
 
 import com.esquad.esquadbe.studypage.entity.Book;

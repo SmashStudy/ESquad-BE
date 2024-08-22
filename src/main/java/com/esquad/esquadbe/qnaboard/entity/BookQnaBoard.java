@@ -25,7 +25,7 @@ public class BookQnaBoard extends BasicEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "WRITER_ID", nullable = false)
+    @JoinColumn(name = "WRITER_ID")
     private User writer;
 
     @ManyToOne

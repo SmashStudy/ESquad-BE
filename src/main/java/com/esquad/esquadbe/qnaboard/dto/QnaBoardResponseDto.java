@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.dto;
+package com.esquad.esquadbe.qnaboard.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
