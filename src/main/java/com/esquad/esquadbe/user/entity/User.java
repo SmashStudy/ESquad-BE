@@ -1,18 +1,27 @@
 package com.esquad.esquadbe.user.entity;
 
-import com.esquad.esquadbe.global.entity.BasicEntity;
+import com.esquad.esquadbe.notification.entity.Notification;
+import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
+import com.esquad.esquadbe.storage.entity.StoredFile;
+import com.esquad.esquadbe.streaming.entity.StreamingParticipant;
+import com.esquad.esquadbe.streaming.entity.StreamingSession;
+import com.esquad.esquadbe.studypage.entity.StudyPageUser;
+import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
-@Data
+@Table(name = "USERS")
+@Getter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,5 +59,29 @@ public class User extends BasicEntity {
 
     @Column(name = "ADDRESS", nullable = false, length = 255)
     private String address;
+
+    @OneToMany(mappedBy = "user")
+    private List<Notification> notifications = new ArrayList<>();
+
+     @OneToMany(mappedBy = "user")
+     private List<StoredFile> storedFiles = new ArrayList<>();
+
+    @OneToMany(mappedBy = "writer")
+    private List<BookQnaBoard> bookQnaBoards = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<StreamingSession> streamingSessions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    private List<StreamingParticipant> streamingParticipants = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user")
+    private UserSetting userSetting;
+
+    @OneToMany(mappedBy = "member")
+    private List<TeamSpaceUser> teamSpaceUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private Set<StudyPageUser> studyPageUsers = new HashSet<>();
 
 }
