@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "TABLE_SPACE_USERS")
+@Table(name = "TEAM_SPACE_USERS")
 @Getter
 @SuperBuilder
 @AllArgsConstructor
