@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QnA 게시판</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .pagination {
+            margin-top: 20px;
+        }
+        .page-item {
+            display: inline-block;
+            margin-right: 10px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+<h1>QnA 게시판</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>게시글 번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>좋아요</th>
+    </tr>
+    </thead>
+    <tbody id="question-list">
+    <!-- 질문 목록이 여기에 표시됩니다. -->
+    </tbody>
+</table>
+
+<div class="pagination" id="pagination">
+    <!-- 페이지네이션이 여기에 표시됩니다. -->
+</div>
+
+<script>
+    const API_URL = '/qna/questions';
+    let currentPage = 0;
+    const pageSize = 10;
+
+    function loadQuestions(page) {
+        fetch(`${API_URL}?page=${page}&size=${pageSize}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data); // API 응답 데이터 확인을 위한 콘솔 출력
+                const questionList = document.getElementById('question-list');
+                questionList.innerHTML = '';
+
+                if (data.content.length === 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `<td colspan="4">게시물이 없습니다.</td>`;
+                    questionList.appendChild(row);
+                } else {
+                    data.content.forEach(question => {
+                        const writerName = question.writer ? question.writer.username : '작성자 정보 없음';
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${question.id}</td>
+                            <td><a href="detail.html?id=${question.id}">${question.title}</a></td>
+                            <td>${writerName}</td>
+                            <td>${question.likes}</td>
+                        `;
+                        questionList.appendChild(row);
+                    });
+                }
+
+                // 페이지네이션 설정
+                setupPagination(data.totalPages);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    function setupPagination(totalPages) {
+        const pagination = document.getElementById('pagination');
+        pagination.innerHTML = '';
+
+        for (let i = 0; i < totalPages; i++) {
+            const pageItem = document.createElement('div');
+            pageItem.className = 'page-item';
+            pageItem.textContent = i + 1;
+            pageItem.addEventListener('click', () => {
+                currentPage = i;
+                loadQuestions(currentPage);
+            });
+            pagination.appendChild(pageItem);
+        }
+    }
+
+    // 페이지가 로드될 때 첫 페이지를 불러옵니다.
+    loadQuestions(currentPage);
+</script>
+
+</body>
+</html>

@@ -5,10 +5,10 @@ import com.esquad.esquadbe.qnaboard.dto.QnaBoardRequestsDto;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -16,11 +16,11 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
 
-    // 전체 게시글 조회
-    public List<QnaBoardRequestsDto> getAllQuestions() {
-        return questionRepository.findAll().stream()
-                .map(this::qnaBoardDto)
-                .collect(Collectors.toList());
+    // 페이징 처리된 전체 게시글 조회
+    public Page<QnaBoardRequestsDto> getAllQuestions(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return questionRepository.findAll(pageable)
+                .map(this::qnaBoardDto);
     }
 
     // 특정 ID의 게시글 조회

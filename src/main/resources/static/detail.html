@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 상세 보기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .post {
+            margin-bottom: 20px;
+        }
+        .post-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .post-content {
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>게시글 상세 보기</h1>
+
+<div class="post">
+    <div class="post-title" id="post-title"></div>
+    <div class="post-writer" id="post-writer"></div>
+    <div class="post-likes" id="post-likes"></div>
+    <div class="post-content" id="post-content"></div>
+</div>
+
+<a href="index.html">목록으로 돌아가기</a>
+
+<script>
+    const API_URL = '/qna/questions';
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('id');
+
+    function loadPostDetails(id) {
+        fetch(`${API_URL}/${id}`)
+            .then(response => response.json())
+            .then(post => {
+                document.getElementById('post-title').textContent = post.title;
+                document.getElementById('post-writer').textContent = '작성자: ' + post.writer.username;
+                document.getElementById('post-likes').textContent = '좋아요: ' + post.likes;
+                document.getElementById('post-content').textContent = post.content;
+            });
+    }
+
+    // 페이지가 로드될 때 게시글 상세 정보를 불러옵니다.
+    loadPostDetails(postId);
+</script>
+
+</body>
+</html>
