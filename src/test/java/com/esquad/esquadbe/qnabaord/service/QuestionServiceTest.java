@@ -1,9 +1,10 @@
-package com.esquad.esquadbe.qnaboard.service;
+package com.esquad.esquadbe.qnabaord.service;
 
 import com.esquad.esquadbe.exception.ResourceNotFoundException;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardRequestsDto;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
+import com.esquad.esquadbe.qnaboard.service.QuestionService;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
@@ -13,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -73,16 +78,20 @@ class QuestionServiceTest {
 
     @Test
     void testGetAllQuestions() {
-        when(questionRepository.findAll()).thenReturn(Arrays.asList(bookQnaBoard));
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<BookQnaBoard> page = new PageImpl<>(Arrays.asList(bookQnaBoard), pageable, 1);
 
-        List<QnaBoardRequestsDto> dtos = questionService.getAllQuestions();
+        when(questionRepository.findAll(pageable)).thenReturn(page);
+
+        Page<QnaBoardRequestsDto> dtos = questionService.getAllQuestions(0, 10);
 
         assertNotNull(dtos);
-        assertEquals(1, dtos.size());
-        assertEquals("실전스프링부트", dtos.get(0).getTitle());
+        assertEquals(1, dtos.getTotalElements());
+        assertEquals("실전스프링부트", dtos.getContent().get(0).getTitle());
 
-        verify(questionRepository, times(1)).findAll();
+        verify(questionRepository, times(1)).findAll(pageable);
     }
+
 
     @Test
     void testGetQuestionById() {
