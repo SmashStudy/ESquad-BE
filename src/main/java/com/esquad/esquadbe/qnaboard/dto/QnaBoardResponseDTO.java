@@ -5,5 +5,5 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class QnaBoardResponseDto {
+public class QnaBoardResponseDTO {
 }
