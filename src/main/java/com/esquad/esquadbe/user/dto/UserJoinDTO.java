@@ -1,16 +1,21 @@
 package com.esquad.esquadbe.user.dto;
 
 import com.esquad.esquadbe.user.entity.User;
+
+
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserJoinDTO {
+
 
     @NotBlank(message = "아이디를 입력해주세요.")
     @Pattern(regexp = "^[a-zA-Z]{8,12}$", message = "아이디는 영어만 포함한 8~12자여야 합니다.")
@@ -39,10 +44,9 @@ public class UserJoinDTO {
 
     private String nickname;
 
-    public void emptyNickname() {
-        if (this.nickname == null || this.nickname.isEmpty()) {
+
+    public void setDefaultNickname() {
             this.nickname = this.userId;
-        }
     }
 
     public User toEntity() {
@@ -58,4 +62,7 @@ public class UserJoinDTO {
                 .build();
     }
 
+    public void encodePassword(BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.password = bCryptPasswordEncoder.encode(this.password);
+    }
 }
