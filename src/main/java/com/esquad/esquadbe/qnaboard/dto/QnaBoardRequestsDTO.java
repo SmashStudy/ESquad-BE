@@ -9,7 +9,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class QnaBoardRequestsDto {
+public class QnaBoardRequestsDTO {
     private Long id;
     private User writer;
     private String title;
