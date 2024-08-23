@@ -1,5 +1,6 @@
 package com.esquad.esquadbe.user.entity;
 
+import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.notification.entity.Notification;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.storage.entity.StoredFile;
@@ -7,9 +8,12 @@ import com.esquad.esquadbe.streaming.entity.StreamingParticipant;
 import com.esquad.esquadbe.streaming.entity.StreamingSession;
 import com.esquad.esquadbe.studypage.entity.StudyPageUser;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
+
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
@@ -20,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "USERS")
 @Getter
 @SuperBuilder
 @NoArgsConstructor
