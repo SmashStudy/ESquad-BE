@@ -1,7 +1,7 @@
 package com.esquad.esquadbe.qnaboard.service;
 
 import com.esquad.esquadbe.exception.ResourceNotFoundException;
-import com.esquad.esquadbe.qnaboard.dto.QnaBoardRequestsDto;
+import com.esquad.esquadbe.qnaboard.dto.QnaBoardRequestsDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,22 +17,22 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
 
     // 페이징 처리된 전체 게시글 조회
-    public Page<QnaBoardRequestsDto> getAllQuestions(int page, int size) {
+    public Page<QnaBoardRequestsDTO> getAllQuestions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return questionRepository.findAll(pageable)
                 .map(this::qnaBoardDto);
     }
 
     // 특정 ID의 게시글 조회
-    public QnaBoardRequestsDto getQuestionById(Long id) {
+    public QnaBoardRequestsDTO getQuestionById(Long id) {
         return questionRepository.findById(id)
                 .map(this::qnaBoardDto)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
     }
 
     // 엔티티를 DTO로 변환
-    private QnaBoardRequestsDto qnaBoardDto(BookQnaBoard bookQnaBoard) {
-        return QnaBoardRequestsDto.builder()
+    private QnaBoardRequestsDTO qnaBoardDto(BookQnaBoard bookQnaBoard) {
+        return QnaBoardRequestsDTO.builder()
                 .id(bookQnaBoard.getId())
                 .writer(bookQnaBoard.getWriter())
                 .title(bookQnaBoard.getTitle())
