@@ -111,4 +111,42 @@ public class ChatController {
         });
         return futureResponse;
     }
+    @DeleteMapping("/chat/delete/{roomId}/{messageId}")
+    public ResponseEntity<Map<String, String>> deleteMessage(
+            @PathVariable String roomId,
+            @PathVariable String messageId,
+            @RequestBody Map<String, String> request) {
+
+        String userId = request.get("userId");
+
+        DatabaseReference messageRef = firebaseService.getReference("MESSAGES/" + roomId + "/" + messageId);
+
+        CompletableFuture<ResponseEntity<Map<String, String>>> futureResponse = new CompletableFuture<>();
+        Map<String, String> response = new HashMap<>();
+
+        messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String originalUserId = dataSnapshot.getValue(String.class);
+
+                if (originalUserId != null && originalUserId.equals(userId)) {
+                    firebaseService.deleteMessage(roomId, messageId); // 메시지 삭제
+                    response.put("status", "success");
+                    futureResponse.complete(ResponseEntity.ok(response));
+                } else {
+                    response.put("status", "error");
+                    response.put("message", "Unauthorized");
+                    futureResponse.complete(ResponseEntity.status(HttpStatus.FORBIDDEN).body(response));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                response.put("status", "error");
+                response.put("message", databaseError.getMessage());
+                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+            }
+        });
+        return futureResponse.join();
+    }
 }
