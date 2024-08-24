@@ -1,6 +1,7 @@
 package com.esquad.esquadbe.storage.controller;
 
 import com.esquad.esquadbe.storage.entity.FileInfo;
+import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.service.S3FileService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -23,19 +24,22 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/file")
 public class S3FileController {
 
-
     private final S3FileService s3FileService;
 
-    @PostMapping
-    public ResponseEntity<FileInfo> uploadFile(@RequestParam MultipartFile file) {
-        return ResponseEntity.status(HttpStatus.OK).body(s3FileService.uploadFile(file));
+    @PostMapping("/{userId}")
+    public ResponseEntity<FileInfo> uploadFile(
+        @RequestParam MultipartFile file,
+        @RequestParam Long targetId,
+        @RequestParam TargetType targetType,
+        @PathVariable Long userId) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(s3FileService.uploadFile(file, targetId, targetType, userId));
     }
 
     @DeleteMapping("/{storedFileName}")
     public ResponseEntity<String> deleteFile(@PathVariable String storedFileName) {
         s3FileService.deleteFile(storedFileName);
-        return ResponseEntity.status(HttpStatus.OK)
-            .body("파일명 : " + storedFileName + " 정상적으로 삭제되었습니다.");
+        return ResponseEntity.ok("파일명 : " + storedFileName + " 정상적으로 삭제되었습니다.");
     }
 
     @GetMapping("/{storedFileName}")
@@ -50,6 +54,8 @@ public class S3FileController {
                 .contentLength(data.length)
                 .body(resource);
 
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
