@@ -34,4 +34,14 @@ public class ChatMessageService {
         });
         return roomId;
     }
+    public void addUserToRoom(String roomId, String userId) {
+        DatabaseReference roomUsersRef = firebaseService.getReference("ROOM_USERS/" + roomId);
+        roomUsersRef.child(userId).setValue(true, (error, ref) -> {
+            if (error != null) {
+                System.err.println("Error adding user to room: " + error.getMessage());
+            } else {
+                System.out.println("User added to room successfully");
+            }
+        });
+    }
 }
