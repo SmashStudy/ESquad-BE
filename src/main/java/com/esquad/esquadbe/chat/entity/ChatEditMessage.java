@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EditChatMessage {
+public class ChatEditMessage {
     private String userId;
     private String newMessage;
 }
