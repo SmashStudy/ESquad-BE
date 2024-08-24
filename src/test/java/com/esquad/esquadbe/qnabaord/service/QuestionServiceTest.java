@@ -1,7 +1,7 @@
 package com.esquad.esquadbe.qnabaord.service;
 
 import com.esquad.esquadbe.exception.ResourceNotFoundException;
-import com.esquad.esquadbe.qnaboard.dto.QnaBoardRequestsDto;
+import com.esquad.esquadbe.qnaboard.dto.QnaBoardRequestsDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.qnaboard.service.QuestionService;
@@ -83,7 +83,7 @@ class QuestionServiceTest {
 
         when(questionRepository.findAll(pageable)).thenReturn(page);
 
-        Page<QnaBoardRequestsDto> dtos = questionService.getAllQuestions(0, 10);
+        Page<QnaBoardRequestsDTO> dtos = questionService.getAllQuestions(0, 10);
 
         assertNotNull(dtos);
         assertEquals(1, dtos.getTotalElements());
@@ -97,7 +97,7 @@ class QuestionServiceTest {
     void testGetQuestionById() {
         when(questionRepository.findById(1L)).thenReturn(Optional.of(bookQnaBoard));
 
-        QnaBoardRequestsDto dto = questionService.getQuestionById(1L);
+        QnaBoardRequestsDTO dto = questionService.getQuestionById(1L);
 
         assertNotNull(dto);
         assertEquals("실전스프링부트", dto.getTitle());
