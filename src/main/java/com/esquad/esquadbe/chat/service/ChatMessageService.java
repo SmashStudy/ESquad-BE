@@ -44,4 +44,24 @@ public class ChatMessageService {
             }
         });
     }
+    public void saveMessage(String roomId, String userId, String message, String type, String status) {
+        DatabaseReference messagesRef = firebaseService.getReference("MESSAGES/" + roomId);
+        String messageId = messagesRef.push().getKey();
+
+        Map<String, Object> messageData = new HashMap<>();
+        messageData.put("messageId", messageId);
+        messageData.put("userId", userId);
+        messageData.put("message", message);
+        messageData.put("timestamp", ServerValue.TIMESTAMP);
+        messageData.put("type", type);
+        messageData.put("status", status);
+
+        messagesRef.child(messageId).setValue(messageData, (error, ref) -> {
+            if (error != null) {
+                System.err.println("Error saving message: " + error.getMessage());
+            } else {
+                System.out.println("Message saved successfully");
+            }
+        });
+    }
 }
