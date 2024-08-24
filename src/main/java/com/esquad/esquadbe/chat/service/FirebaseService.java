@@ -71,4 +71,14 @@ public class FirebaseService {
             }
         });
     }
+    public void deleteMessage(String roomId, String messageId) {
+        DatabaseReference messageRef = getReference("MESSAGES/" + roomId + "/" + messageId);
+        messageRef.removeValue((databaseError, databaseReference) -> {
+            if (databaseError != null) {
+                System.err.println("Message deletion failed: " + databaseError.getMessage());
+            } else {
+                System.out.println("Message successfully deleted.");
+            }
+        });
+    }
 }
