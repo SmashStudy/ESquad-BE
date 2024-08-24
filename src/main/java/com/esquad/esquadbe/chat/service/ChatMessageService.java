@@ -16,4 +16,22 @@ public class ChatMessageService {
     public ChatMessageService(FirebaseService firebaseService) {
         this.firebaseService = firebaseService;
     }
+
+    public String createChatRoom(String roomName) {
+        DatabaseReference roomsRef = firebaseService.getReference("ROOMS");
+        String roomId = roomsRef.push().getKey();
+
+        Map<String, Object> roomData = new HashMap<>();
+        roomData.put("roomName", roomName);
+        roomData.put("timestamp", ServerValue.TIMESTAMP);
+
+        roomsRef.child(roomId).setValue(roomData, (error, ref) -> {
+            if (error != null) {
+                System.err.println("Error creating chat room: " + error.getMessage());
+            } else {
+                System.out.println("Chat room created successfully");
+            }
+        });
+        return roomId;
+    }
 }
