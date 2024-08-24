@@ -2,6 +2,7 @@ package com.esquad.esquadbe.chat.service;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -63,5 +64,9 @@ public class ChatMessageService {
                 System.out.println("Message saved successfully");
             }
         });
+    }
+    public void getMessages(String roomId, ValueEventListener listener) {
+        DatabaseReference messagesRef = firebaseService.getReference("MESSAGES/" + roomId);
+        messagesRef.addListenerForSingleValueEvent(listener);
     }
 }
