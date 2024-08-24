@@ -1,10 +1,16 @@
 package com.esquad.esquadbe.storage.service;
 
 import com.esquad.esquadbe.storage.entity.FileInfo;
+import com.esquad.esquadbe.storage.entity.StoredFile;
+import com.esquad.esquadbe.storage.entity.TargetType;
+import com.esquad.esquadbe.storage.repository.StoredFileRepository;
+import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.repository.UserRepository;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -19,11 +25,15 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 public class S3FileService {
 
     private final S3Client s3Client;
+    private final StoredFileRepository storedFileRepository;
+    private final UserRepository userRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    public FileInfo uploadFile(MultipartFile multipartFile) {
+    @Transactional
+    public FileInfo uploadFile(MultipartFile multipartFile, Long targetId, TargetType targetType,
+        Long userId) {
         if (multipartFile.isEmpty()) {
             throw new IllegalArgumentException("업로드할 파일이 비어있습니다.");
         }
@@ -38,11 +48,26 @@ public class S3FileService {
         } catch (IOException e) {
             throw new IllegalArgumentException("파일 업로드에 실패하였습니다: " + e.getMessage());
         }
+        User user = userRepository.findById(userId).orElseThrow(
+            () -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+
+        StoredFile storedFile = StoredFile.builder()
+            .fileInfo(fileInfo)
+            .targetId(targetId)
+            .targetType(targetType)
+            .user(user)
+            .build();
+
+        storedFileRepository.save(storedFile);
 
         return fileInfo;
     }
 
+    @Transactional
     public void deleteFile(String storedFileName) {
+        StoredFile storedFile = storedFileRepository.findByFileInfo_StoredFileName(storedFileName)
+            .orElseThrow(() -> new IllegalArgumentException("해당 파일이 존재하지 않습니다: " + storedFileName));
+
         try {
             s3Client.deleteObject(DeleteObjectRequest.builder()
                 .bucket(bucket)
@@ -51,6 +76,8 @@ public class S3FileService {
         } catch (RuntimeException e) {
             throw new IllegalArgumentException("파일 삭제에 실패했습니다: " + e.getMessage());
         }
+
+        storedFileRepository.delete(storedFile);
     }
 
     public byte[] downloadFile(String storedFileName) {
