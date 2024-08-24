@@ -2,13 +2,15 @@ package com.esquad.esquadbe.controller;
 
 import com.esquad.esquadbe.chat.entity.ChatMessage;
 import com.esquad.esquadbe.chat.service.FirebaseService;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -42,5 +44,28 @@ public class ChatController {
             response.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @GetMapping("/chat/messages/{roomId}")
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> getMessages(@PathVariable String roomId) {
+        Map<String, Object> response = new HashMap<>();
+        CompletableFuture<ResponseEntity<Map<String, Object>>> futureResponse = new CompletableFuture<>();
+
+        DatabaseReference messagesRef = firebaseService.getReference("MESSAGES/" + roomId);
+        messagesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                response.put("messages", dataSnapshot.getValue());
+                response.put("status", "success");
+                futureResponse.complete(ResponseEntity.ok(response));
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                response.put("status", "error");
+                response.put("message", databaseError.getMessage());
+                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+            }
+        });
+        return futureResponse;
     }
 }
