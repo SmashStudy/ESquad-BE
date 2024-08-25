@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.firebaseCallback;
+package com.esquad.esquadbe.chat.firebaseCallback;
 
 public interface FirebaseCallback {
     void onSuccess();

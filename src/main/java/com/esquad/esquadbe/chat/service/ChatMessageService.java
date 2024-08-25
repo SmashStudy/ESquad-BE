@@ -3,6 +3,8 @@ package com.esquad.esquadbe.chat.service;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,13 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class ChatMessageService {
     private final FirebaseService firebaseService;
-
-    @Autowired
-    public ChatMessageService(FirebaseService firebaseService) {
-        this.firebaseService = firebaseService;
-    }
 
     public String createChatRoom(String roomName) {
         DatabaseReference roomsRef = firebaseService.getReference("ROOMS");
@@ -28,7 +27,7 @@ public class ChatMessageService {
 
         roomsRef.child(roomId).setValue(roomData, (error, ref) -> {
             if (error != null) {
-                System.err.println("Error creating chat room: " + error.getMessage());
+                log.error(error.getMessage());
             } else {
                 System.out.println("Chat room created successfully");
             }
@@ -39,7 +38,7 @@ public class ChatMessageService {
         DatabaseReference roomUsersRef = firebaseService.getReference("ROOM_USERS/" + roomId);
         roomUsersRef.child(userId).setValue(true, (error, ref) -> {
             if (error != null) {
-                System.err.println("Error adding user to room: " + error.getMessage());
+               log.error(error.getMessage());
             } else {
                 System.out.println("User added to room successfully");
             }
@@ -59,7 +58,7 @@ public class ChatMessageService {
 
         messagesRef.child(messageId).setValue(messageData, (error, ref) -> {
             if (error != null) {
-                System.err.println("Error saving message: " + error.getMessage());
+               log.error(error.getMessage());
             } else {
                 System.out.println("Message saved successfully");
             }

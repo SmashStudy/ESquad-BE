@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.controller;
+package com.esquad.esquadbe.chat.controller;
 
 import com.esquad.esquadbe.chat.entity.ChatEditMessage;
 import com.esquad.esquadbe.chat.entity.ChatMessage;

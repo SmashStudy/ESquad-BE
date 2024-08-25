@@ -1,6 +1,6 @@
 package com.esquad.esquadbe.chat.service;
 
-import com.esquad.esquadbe.firebaseCallback.FirebaseCallback;
+import com.esquad.esquadbe.chat.firebaseCallback.FirebaseCallback;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
