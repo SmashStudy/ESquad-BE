@@ -1,0 +1,73 @@
+package com.esquad.esquadbe.studypage.service;
+
+import com.esquad.esquadbe.studypage.config.BookApi;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.net.URI;
+
+@Component
+@Slf4j
+public class BookApiService {
+
+    private final BookApi bookApi;
+    private final RestTemplate restTemplate;
+
+    @Autowired
+    public BookApiService(BookApi bookApi) {
+        this.bookApi = bookApi;
+        this.restTemplate = new RestTemplate();
+    }
+
+    public static URI buildUriForSearch(String path, String query, int display) {
+        return UriComponentsBuilder
+                .fromUriString("https://openapi.naver.com")
+                .path(path)
+                .queryParam("query", query)
+                .queryParam("display", display)
+                .queryParam("start", 1)
+                .queryParam("sort", "sim")
+                .encode()
+                .build()
+                .toUri();
+    }
+
+    public static URI buildUriForDetail(String path, String isbn) {
+        return UriComponentsBuilder
+                .fromUriString("https://openapi.naver.com")
+                .path(path)
+                .queryParam("d_isbn", isbn)
+                .queryParam("display", 1)
+                .queryParam("start", 1)
+                .queryParam("sort", "sim")
+                .encode()
+                .build()
+                .toUri();
+    }
+
+    public String fetchData(URI uri) {
+
+        RequestEntity<Void> req = RequestEntity.get(uri)
+                .header("X-Naver-Client-Id", bookApi.getId())
+                .header("X-Naver-Client-Secret", bookApi.getSecret())
+                .build();
+
+        try {
+            ResponseEntity<String> resp = restTemplate.exchange(req, String.class);
+            return resp.getBody();
+
+        } catch (HttpClientErrorException e) {
+            log.error("HttpClientErrorException 발생: 상태 코드: {}, 응답 본문: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            return null;
+        } catch (Exception e) {
+            log.error("네이버 API 요청 처리 중 예상치 못한 오류가 발생했습니다.", e);
+            return null;
+        }
+    }
+}

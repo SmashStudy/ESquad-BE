@@ -1,6 +1,7 @@
 package com.esquad.esquadbe.studypage.controller;
 
 import com.esquad.esquadbe.studypage.service.BookService;
+import com.esquad.esquadbe.studypage.vo.BookDetailVo;
 import com.esquad.esquadbe.studypage.vo.BookVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,10 @@ public class BookController {
     }
 
     @GetMapping("/search/{isbn}")
-    public ResponseEntity<List<BookVo>> showDetail(@PathVariable String isbn, Model model) {
+    public ResponseEntity<List<BookDetailVo>> showDetail(@PathVariable String isbn, Model model) {
         log.info("받은 ISBN: {}", isbn);
 
-        List<BookVo> book = bookService.resultDetail(isbn);
+        List<BookDetailVo> book = bookService.resultDetail(isbn);
         model.addAttribute("book", book);
 
         return ResponseEntity.status(200).body(book);
