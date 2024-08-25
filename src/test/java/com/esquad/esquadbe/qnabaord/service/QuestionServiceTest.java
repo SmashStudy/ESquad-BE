@@ -9,6 +9,7 @@ import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -77,6 +78,7 @@ class QuestionServiceTest {
     }
 
     @Test
+    @DisplayName("모든 Q&A 게시글을 페이징하여 가져오는 테스트")
     void testGetAllQuestions() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<BookQnaBoard> page = new PageImpl<>(Arrays.asList(bookQnaBoard), pageable, 1);
@@ -94,6 +96,7 @@ class QuestionServiceTest {
 
 
     @Test
+    @DisplayName("특정 ID의 Q&A 게시글을 가져오는 테스트")
     void testGetQuestionById() {
         when(questionRepository.findById(1L)).thenReturn(Optional.of(bookQnaBoard));
 
@@ -106,6 +109,7 @@ class QuestionServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 ID로 Q&A 게시글을 조회할 때 예외를 던지는 테스트")
     void testGetQuestionById_NotFound() {
         when(questionRepository.findById(1L)).thenReturn(Optional.empty());
 
