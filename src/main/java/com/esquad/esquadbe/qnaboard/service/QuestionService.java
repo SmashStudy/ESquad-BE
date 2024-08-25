@@ -20,26 +20,16 @@ public class QuestionService {
     public Page<QnaBoardRequestsDTO> getAllQuestions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         return questionRepository.findAll(pageable)
-                .map(this::qnaBoardDto);
+                .map(QnaBoardRequestsDTO::fromEntity);
     }
 
     // 특정 ID의 게시글 조회
     public QnaBoardRequestsDTO getQuestionById(Long id) {
         return questionRepository.findById(id)
-                .map(this::qnaBoardDto)
+                .map(QnaBoardRequestsDTO::fromEntity)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
     }
 
-    // 엔티티를 DTO로 변환
-    private QnaBoardRequestsDTO qnaBoardDto(BookQnaBoard bookQnaBoard) {
-        return QnaBoardRequestsDTO.builder()
-                .id(bookQnaBoard.getId())
-                .writer(bookQnaBoard.getWriter())
-                .title(bookQnaBoard.getTitle())
-                .studyPage(bookQnaBoard.getStudyPage())
-                .book(bookQnaBoard.getBook())
-                .content(bookQnaBoard.getContent())
-                .likes(bookQnaBoard.getLikes())
-                .build();
-    }
+
+
 }
