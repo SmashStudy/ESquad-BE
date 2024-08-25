@@ -1,5 +1,6 @@
 package com.esquad.esquadbe.storage.service;
 
+import com.esquad.esquadbe.storage.dto.ResponseFileListDto;
 import com.esquad.esquadbe.storage.entity.FileInfo;
 import com.esquad.esquadbe.storage.entity.StoredFile;
 import com.esquad.esquadbe.storage.entity.TargetType;
@@ -7,6 +8,7 @@ import com.esquad.esquadbe.storage.repository.StoredFileRepository;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -103,5 +105,10 @@ public class S3FileService {
             .contentLength(multipartFile.getSize())
             .key(fileName)
             .build();
+    }
+
+    public List<ResponseFileListDto> getFileList(Long targetId, TargetType targetType) {
+        return storedFileRepository.findAllByTargetIdAndTargetType(targetId, targetType).stream()
+            .map(ResponseFileListDto::from).toList();
     }
 }

@@ -1,10 +1,12 @@
 package com.esquad.esquadbe.storage.controller;
 
+import com.esquad.esquadbe.storage.dto.ResponseFileListDto;
 import com.esquad.esquadbe.storage.entity.FileInfo;
 import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.service.S3FileService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -59,5 +61,17 @@ public class S3FileController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/qna/{targetId}")
+    public ResponseEntity<List<ResponseFileListDto>> getFilesFromQnaBoard(
+        @PathVariable Long targetId) {
+        return ResponseEntity.ok(s3FileService.getFileList(targetId, TargetType.QNA));
+    }
+
+    @GetMapping("/bookPage/{targetId}")
+    public ResponseEntity<List<ResponseFileListDto>> getFilesFromBookPage(
+        @PathVariable Long targetId) {
+        return ResponseEntity.ok(s3FileService.getFileList(targetId, TargetType.BOOK_PAGE));
     }
 }
