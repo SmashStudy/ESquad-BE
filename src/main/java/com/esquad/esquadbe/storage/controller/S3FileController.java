@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/file")
+@RequestMapping("/files")
 public class S3FileController {
 
     private final S3FileService s3FileService;
@@ -63,15 +63,11 @@ public class S3FileController {
         }
     }
 
-    @GetMapping("/qna/{targetId}")
-    public ResponseEntity<List<ResponseFileListDto>> getFilesFromQnaBoard(
+    @GetMapping("/{type}/{targetId}")
+    public ResponseEntity<List<ResponseFileListDto>> getFiles(
+        @PathVariable String type,
         @PathVariable Long targetId) {
-        return ResponseEntity.ok(s3FileService.getFileList(targetId, TargetType.QNA));
-    }
-
-    @GetMapping("/bookPage/{targetId}")
-    public ResponseEntity<List<ResponseFileListDto>> getFilesFromBookPage(
-        @PathVariable Long targetId) {
-        return ResponseEntity.ok(s3FileService.getFileList(targetId, TargetType.BOOK_PAGE));
+        return ResponseEntity.ok(
+            s3FileService.getFileList(targetId, TargetType.valueOf(type.toUpperCase())));
     }
 }
