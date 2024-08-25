@@ -1,6 +1,6 @@
 package com.esquad.esquadbe.storage.service;
 
-import com.esquad.esquadbe.storage.dto.ResponseFileListDto;
+import com.esquad.esquadbe.storage.dto.ResponseFileDto;
 import com.esquad.esquadbe.storage.entity.FileInfo;
 import com.esquad.esquadbe.storage.entity.StoredFile;
 import com.esquad.esquadbe.storage.entity.TargetType;
@@ -107,8 +107,8 @@ public class S3FileService {
             .build();
     }
 
-    public List<ResponseFileListDto> getFileList(Long targetId, TargetType targetType) {
+    public List<ResponseFileDto> getFileList(Long targetId, TargetType targetType) {
         return storedFileRepository.findAllByTargetIdAndTargetType(targetId, targetType).stream()
-            .map(ResponseFileListDto::from).toList();
+            .map(ResponseFileDto::from).toList();
     }
 }

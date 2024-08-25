@@ -1,6 +1,6 @@
 package com.esquad.esquadbe.storage.controller;
 
-import com.esquad.esquadbe.storage.dto.ResponseFileListDto;
+import com.esquad.esquadbe.storage.dto.ResponseFileDto;
 import com.esquad.esquadbe.storage.entity.FileInfo;
 import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.service.S3FileService;
@@ -64,7 +64,7 @@ public class S3FileController {
     }
 
     @GetMapping("/{type}/{targetId}")
-    public ResponseEntity<List<ResponseFileListDto>> getFiles(
+    public ResponseEntity<List<ResponseFileDto>> getFiles(
         @PathVariable String type,
         @PathVariable Long targetId) {
         return ResponseEntity.ok(
