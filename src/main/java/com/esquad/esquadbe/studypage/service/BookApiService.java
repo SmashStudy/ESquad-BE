@@ -64,10 +64,7 @@ public class BookApiService {
 
         } catch (HttpClientErrorException e) {
             log.error("HttpClientErrorException 발생: 상태 코드: {}, 응답 본문: {}", e.getStatusCode(), e.getResponseBodyAsString());
-            return null;
-        } catch (Exception e) {
-            log.error("네이버 API 요청 처리 중 예상치 못한 오류가 발생했습니다.", e);
-            return null;
+            throw new RuntimeException("네이버 API 요청 실패: " + e.getMessage(), e);
         }
     }
 }

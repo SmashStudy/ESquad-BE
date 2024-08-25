@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -27,19 +26,15 @@ public class BookApiServiceTest {
     @Autowired
     private BookApi bookApi;
 
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate = Mockito.mock(RestTemplate.class);
     private URI uri;
     private RequestEntity<Void> requestEntity;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        restTemplate = Mockito.mock(RestTemplate.class);
-        bookApiService = new BookApiService(bookApi);
-
-        String path = "/v1/search/book_adv.json";
-        String isbn = "9788959895205";
-        uri = bookApiService.buildUriForDetail(path, isbn);
+        final String path = "/v1/search/book_adv.json";
+        final String isbn = "9788959895205";
+        uri = BookApiService.buildUriForDetail(path, isbn);
 
         requestEntity = RequestEntity.get(uri)
                 .header("X-Naver-Client-Id", bookApi.getId())
@@ -48,33 +43,30 @@ public class BookApiServiceTest {
     }
 
     @Test
-    @DisplayName("토큰 확인용")
+    @DisplayName("Token 확인")
     void testToken() {
-        assertNotNull(bookApi.getId());
-        assertNotNull(bookApi.getSecret());
+        String clientId = bookApi.getId();
+        String clientSecret = bookApi.getSecret();
+
+        assertNotNull(clientId);
+        assertNotNull(clientSecret);
     }
     @Test
     @DisplayName("Uri 확인")
     void testGetResultByKeyword() {
-        assertEquals(uri.toString(), "https://openapi.naver.com/v1/search/book_adv.json?d_isbn=9788959895205&display=1&start=1&sort=sim");
+        String actualUri = uri.toString();
+
+        assertEquals("https://openapi.naver.com/v1/search/book_adv.json?d_isbn=9788959895205&display=1&start=1&sort=sim", actualUri);
     }
 
     @Test
+    @DisplayName("HttpClientErrorException 처리")
     void testFetchDataHttpClientErrorException() {
         when(restTemplate.exchange(requestEntity, String.class))
                 .thenThrow(new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Bad Request"));
 
-        assertNull("HTTP 클라이언트 오류가 발생할 경우 응답이 null이어야 합니다.", requestEntity.getBody());
-    }
+        String result = bookApiService.fetchData(uri);
 
-    @Test
-    void testFetchDataUnexpectedException() {
-
-        // RuntimeException을 발생시키도록 모킹
-        when(restTemplate.exchange(requestEntity, String.class))
-                .thenThrow(new RuntimeException("Unexpected Error"));
-
-        // RuntimeException 발생 시 fetchData 메서드가 null을 반환하는지 확인
-        assertNull("예상치 못한 오류가 발생할 경우 응답이 null이어야 합니다.",requestEntity.getBody());
+        assertNull("HTTP 클라이언트 오류가 발생할 경우 응답이 null이어야 합니다.", result);
     }
 }

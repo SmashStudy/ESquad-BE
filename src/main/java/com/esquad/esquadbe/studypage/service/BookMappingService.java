@@ -2,10 +2,9 @@ package com.esquad.esquadbe.studypage.service;
 
 import com.esquad.esquadbe.studypage.vo.BookDetailVo;
 import com.esquad.esquadbe.studypage.vo.BookVo;
-import com.esquad.esquadbe.studypage.vo.ResultDetailVo;
-import com.esquad.esquadbe.studypage.vo.ResultVo;
+import com.esquad.esquadbe.studypage.vo.BookDetailResultVo;
+import com.esquad.esquadbe.studypage.vo.BookResultVo;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -30,17 +29,12 @@ public class BookMappingService {
         }
 
         try {
-            ResultVo resultVo = objectMapper.readValue(jsonResponse, ResultVo.class);
-            return resultVo.getItems();
-        } catch (JsonMappingException e) {
-            log.error("JSON 매핑 오류: 응답을 ResultVo 객체로 변환하는 중 문제가 발생했습니다.", e);
+            BookResultVo bookResultVo = objectMapper.readValue(jsonResponse, BookResultVo.class);
+            return bookResultVo.getItems();
         } catch (JsonProcessingException e) {
             log.error("JSON 처리 오류: 응답 처리 중 문제가 발생했습니다.", e);
-        } catch (Exception e) {
-            log.error("예상치 못한 오류 발생: JSON 응답을 처리하는 중 문제가 발생했습니다.", e);
+            return Collections.emptyList();
         }
-
-        return Collections.emptyList();
     }
     public List<BookDetailVo> mapToBook(String jsonResponse) {
         if (jsonResponse == null) {
@@ -49,16 +43,11 @@ public class BookMappingService {
         }
 
         try {
-            ResultDetailVo resultDetailVo = objectMapper.readValue(jsonResponse, ResultDetailVo.class);
-            return resultDetailVo.getItems();
-        } catch (JsonMappingException e) {
-            log.error("JSON 매핑 오류: 응답을 ResultVo 객체로 변환하는 중 문제가 발생했습니다.", e);
+            BookDetailResultVo bookDetailResultVo = objectMapper.readValue(jsonResponse, BookDetailResultVo.class);
+            return bookDetailResultVo.getItems();
         } catch (JsonProcessingException e) {
             log.error("JSON 처리 오류: 응답 처리 중 문제가 발생했습니다.", e);
-        } catch (Exception e) {
-            log.error("예상치 못한 오류 발생: JSON 응답을 처리하는 중 문제가 발생했습니다.", e);
+            return Collections.emptyList();
         }
-
-        return Collections.emptyList();
     }
 }
