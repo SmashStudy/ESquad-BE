@@ -12,5 +12,5 @@ public interface StoredFileRepository extends CrudRepository<StoredFile, Long> {
 
     Boolean existsByFileInfo_StoredFileName(String storedFileName);
 
-    List<StoredFile> findAllByTargetIdAndTargetType(Long TargetId, TargetType targetType);
+    List<StoredFile> findAllByTargetIdAndTargetType(Long targetId, TargetType targetType);
 }
