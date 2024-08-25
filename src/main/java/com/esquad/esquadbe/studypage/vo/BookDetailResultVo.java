@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 @Getter
-public class ResultDetailVo {
+public class BookDetailResultVo {
     private String lastBuildDate;
     private int total;
     private int start;

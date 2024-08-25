@@ -9,10 +9,10 @@ import java.util.List;
 @AllArgsConstructor
 @Setter
 @Getter
-public class ResultVo {
+public class BookResultDetailVo {
     private String lastBuildDate;
     private int total;
     private int start;
     private int display;
-    private List<BookVo> items;
+    private List<BookDetailVo> items;
 }
