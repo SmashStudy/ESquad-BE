@@ -20,21 +20,19 @@ public class BookController {
     private BookService bookService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<BookVo>> searchTitle(@RequestParam("title") String title, Model model) {
+    public ResponseEntity<List<BookVo>> searchTitle(@RequestParam("title") String title) {
         log.info("받은 제목: {}", title);
 
         List<BookVo> bookList = bookService.resultList(title);
-        model.addAttribute("bookList", bookList);
 
         return ResponseEntity.status(200).body(bookList);
     }
 
     @GetMapping("/search/{isbn}")
-    public ResponseEntity<List<BookDetailVo>> showDetail(@PathVariable String isbn, Model model) {
+    public ResponseEntity<List<BookDetailVo>> showDetail(@PathVariable String isbn) {
         log.info("받은 ISBN: {}", isbn);
 
         List<BookDetailVo> book = bookService.resultDetail(isbn);
-        model.addAttribute("book", book);
 
         return ResponseEntity.status(200).body(book);
     }
