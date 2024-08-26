@@ -28,9 +28,8 @@ public class UserJoinService {
             userJoinDTO.setDefaultNickname();
         }
 
-        User user = userJoinDTO.toEntity();
+        User user = userJoinDTO.toEntity(bCryptPasswordEncoder);
 
         userRepository.save(user);
-        userJoinDTO.encodePassword(bCryptPasswordEncoder);
     }
 }
