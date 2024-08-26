@@ -1,17 +1,20 @@
-package com.esquad.esquadbe.studypage.vo;
+package com.esquad.esquadbe.studypage.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @ToString
-@AllArgsConstructor
 @NoArgsConstructor
-@Setter
+@AllArgsConstructor
 @Getter
-public class BookDetailVo {
+public class BookSearchDto {
     private String title;
     private String link;
     private String image;
     private String author;
+    private String discount;
     private String publisher;
     private String isbn;
     private String description;
