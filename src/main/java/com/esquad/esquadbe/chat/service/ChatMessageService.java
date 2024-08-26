@@ -15,6 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class ChatMessageService {
+
     private final FirebaseService firebaseService;
 
     public String createChatRoom(String roomName) {

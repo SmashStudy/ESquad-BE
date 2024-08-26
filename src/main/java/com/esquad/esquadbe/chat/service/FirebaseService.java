@@ -1,45 +1,22 @@
 package com.esquad.esquadbe.chat.service;
 
 import com.esquad.esquadbe.chat.firebaseCallback.FirebaseCallback;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
-import com.google.firebase.database.*;
-import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Value;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.FirebaseDatabase;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.FileInputStream;
-import java.io.IOException;
 
 @Service
 public class FirebaseService {
 
-    @Value("${firebase.service-account-path}")
-    private String serviceAccountPath;
+    private final FirebaseDatabase firebaseDatabase;
 
-    @Value("${firebase.database-url}")
-    private String databaseUrl;
-
-    private FirebaseDatabase firebaseDatabase;
-
-    @PostConstruct
-    private void initializeFirebase() {
-        try {
-            FileInputStream serviceAccount = new FileInputStream(serviceAccountPath);
-
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                    .setDatabaseUrl(databaseUrl)
-                    .build();
-
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options);
-            }
-            firebaseDatabase = FirebaseDatabase.getInstance();
-        } catch (IOException e) {
-            System.err.println("Firebase initialization error: " + e.getMessage());
-        }
+    @Autowired
+    public FirebaseService(FirebaseDatabase firebaseDatabase) {
+        this.firebaseDatabase = firebaseDatabase;
     }
 
     public DatabaseReference getReference(String path) {
@@ -65,12 +42,14 @@ public class FirebaseService {
                     callback.onFailure(new Exception("Unauthorized"));
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 callback.onFailure(databaseError.toException());
             }
         });
     }
+
     public void deleteMessage(String roomId, String messageId) {
         DatabaseReference messageRef = getReference("MESSAGES/" + roomId + "/" + messageId);
         messageRef.removeValue((databaseError, databaseReference) -> {

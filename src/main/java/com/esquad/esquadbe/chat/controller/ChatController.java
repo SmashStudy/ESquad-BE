@@ -1,7 +1,7 @@
 package com.esquad.esquadbe.chat.controller;
 
-import com.esquad.esquadbe.chat.entity.ChatEditMessage;
-import com.esquad.esquadbe.chat.entity.ChatMessage;
+import com.esquad.esquadbe.chat.dto.ChatEditMessage;
+import com.esquad.esquadbe.chat.dto.ChatMessage;
 import com.esquad.esquadbe.chat.service.FirebaseService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,16 +12,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 public class ChatController {
     @Autowired
     private FirebaseService firebaseService;
 
-    @PostMapping("/chat/send")
+    @PostMapping("/api/chat/send")
     public ResponseEntity<Map<String, String>> sendMessage(@RequestBody ChatMessage chatMsg) {
         Map<String, String> response = new HashMap<>();
         try {
@@ -47,7 +50,7 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/chat/messages/{roomId}")
+    @GetMapping("/api/chat/messages/{roomId}")
     public CompletableFuture<ResponseEntity<Map<String, Object>>> getMessages(@PathVariable String roomId) {
         Map<String, Object> response = new HashMap<>();
         CompletableFuture<ResponseEntity<Map<String, Object>>> futureResponse = new CompletableFuture<>();
@@ -56,7 +59,18 @@ public class ChatController {
         messagesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                response.put("messages", dataSnapshot.getValue());
+                if (dataSnapshot.exists()) {
+                    Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                    List<Map<String, Object>> messages = new ArrayList<>();
+                    for (DataSnapshot child : children) {
+                        Map<String, Object> message = (Map<String, Object>) child.getValue();
+                        message.put("id", child.getKey());
+                        messages.add(message);
+                    }
+                    response.put("messages", messages);
+                } else {
+                    response.put("messages", new ArrayList<>());
+                }
                 response.put("status", "success");
                 futureResponse.complete(ResponseEntity.ok(response));
             }
@@ -69,7 +83,8 @@ public class ChatController {
         });
         return futureResponse;
     }
-    @PutMapping("/chat/edit/{roomId}/{messageId}")
+
+    @PutMapping("/api/chat/edit/{roomId}/{messageId}")
     public CompletableFuture<ResponseEntity<Map<String, String>>> updateMessage(
             @PathVariable String roomId,
             @PathVariable String messageId,
@@ -111,7 +126,7 @@ public class ChatController {
         });
         return futureResponse;
     }
-    @DeleteMapping("/chat/delete/{roomId}/{messageId}")
+    @DeleteMapping("/api/chat/delete/{roomId}/{messageId}")
     public ResponseEntity<Map<String, String>> deleteMessage(
             @PathVariable String roomId,
             @PathVariable String messageId,

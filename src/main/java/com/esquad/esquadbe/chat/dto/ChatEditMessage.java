@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.chat.entity;
+package com.esquad.esquadbe.chat.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
