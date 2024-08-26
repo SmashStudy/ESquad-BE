@@ -2,9 +2,17 @@ package com.esquad.esquadbe.user.dto;
 
 import com.esquad.esquadbe.user.entity.User;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-import jakarta.validation.constraints.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
@@ -13,9 +21,7 @@ import java.time.LocalDate;
 @Builder
 @ToString
 @AllArgsConstructor
-@NoArgsConstructor
 public class UserJoinDTO {
-
 
     @NotBlank(message = "아이디를 입력해주세요.")
     @Pattern(regexp = "^[a-zA-Z]{8,12}$", message = "아이디는 영어만 포함한 8~12자여야 합니다.")
@@ -49,10 +55,10 @@ public class UserJoinDTO {
             this.nickname = this.userId;
     }
 
-    public User toEntity() {
+    public User toEntity(BCryptPasswordEncoder bCryptPasswordEncoder) {
         return User.builder()
                 .userId(this.userId)
-                .password(this.password)
+                .password(bCryptPasswordEncoder.encode(this.password))
                 .userName(this.userName)
                 .email(this.email)
                 .phoneNo(this.phoneNo)
@@ -62,7 +68,4 @@ public class UserJoinDTO {
                 .build();
     }
 
-    public void encodePassword(BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.password = bCryptPasswordEncoder.encode(this.password);
-    }
 }
