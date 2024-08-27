@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
 public class ChatController {
     @Autowired
     private FirebaseService firebaseService;
@@ -28,9 +27,12 @@ public class ChatController {
     public ResponseEntity<Map<String, String>> sendMessage(@RequestBody ChatMessage chatMsg) {
         Map<String, String> response = new HashMap<>();
         try {
-            DatabaseReference messageRef = firebaseService.getReference("MESSAGES/" + chatMsg.getRoomId() + "/" + chatMsg.getMessageId());
-            CompletableFuture<Void> future = new CompletableFuture<>();
+            DatabaseReference roomRef = firebaseService.getReference("MESSAGES/" + chatMsg.getRoomId());
+            DatabaseReference messageRef = roomRef.push();  // Firebase에서 메시지 ID 자동 생성
+            String newMessageId = messageRef.getKey();
+            chatMsg.setMessageId(newMessageId);
 
+            CompletableFuture<Void> future = new CompletableFuture<>();
             messageRef.setValue(chatMsg, (error, ref) -> {
                 if (error != null) {
                     response.put("status", "error");
@@ -38,10 +40,11 @@ public class ChatController {
                     future.completeExceptionally(error.toException());
                 } else {
                     response.put("status", "success");
+                    response.put("messageId", newMessageId);
                     future.complete(null);
                 }
             });
-            future.join();
+            future.join();  // 비동기 작업 완료까지 대기
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("status", "error");
@@ -59,21 +62,19 @@ public class ChatController {
         messagesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Map<String, Object>> messages = new ArrayList<>();
                 if (dataSnapshot.exists()) {
-                    Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                    List<Map<String, Object>> messages = new ArrayList<>();
-                    for (DataSnapshot child : children) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
                         Map<String, Object> message = (Map<String, Object>) child.getValue();
                         message.put("id", child.getKey());
                         messages.add(message);
                     }
-                    response.put("messages", messages);
-                } else {
-                    response.put("messages", new ArrayList<>());
                 }
+                response.put("messages", messages);
                 response.put("status", "success");
                 futureResponse.complete(ResponseEntity.ok(response));
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 response.put("status", "error");
@@ -117,6 +118,7 @@ public class ChatController {
                     futureResponse.complete(ResponseEntity.status(HttpStatus.FORBIDDEN).body(response));
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 response.put("status", "error");
@@ -126,6 +128,7 @@ public class ChatController {
         });
         return futureResponse;
     }
+
     @DeleteMapping("/api/chat/delete/{roomId}/{messageId}")
     public ResponseEntity<Map<String, String>> deleteMessage(
             @PathVariable String roomId,
@@ -145,9 +148,16 @@ public class ChatController {
                 String originalUserId = dataSnapshot.getValue(String.class);
 
                 if (originalUserId != null && originalUserId.equals(userId)) {
-                    firebaseService.deleteMessage(roomId, messageId); // 메시지 삭제
-                    response.put("status", "success");
-                    futureResponse.complete(ResponseEntity.ok(response));
+                    messageRef.removeValue((error, ref) -> {
+                        if (error != null) {
+                            response.put("status", "error");
+                            response.put("message", error.getMessage());
+                            futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+                        } else {
+                            response.put("status", "success");
+                            futureResponse.complete(ResponseEntity.ok(response));
+                        }
+                    });
                 } else {
                     response.put("status", "error");
                     response.put("message", "Unauthorized");
