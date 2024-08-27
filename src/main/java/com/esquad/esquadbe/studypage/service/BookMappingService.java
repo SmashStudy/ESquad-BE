@@ -1,9 +1,9 @@
 package com.esquad.esquadbe.studypage.service;
 
-import com.esquad.esquadbe.studypage.vo.BookDetailVo;
-import com.esquad.esquadbe.studypage.vo.BookVo;
-import com.esquad.esquadbe.studypage.vo.BookDetailResultVo;
-import com.esquad.esquadbe.studypage.vo.BookResultVo;
+import com.esquad.esquadbe.studypage.dto.BookSearchDetailDto;
+import com.esquad.esquadbe.studypage.dto.BookSearchDetailResultDto;
+import com.esquad.esquadbe.studypage.dto.BookSearchDto;
+import com.esquad.esquadbe.studypage.dto.BookSearchResultDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -22,31 +22,25 @@ public class BookMappingService {
         this.objectMapper = objectMapper;
     }
 
-    public List<BookVo> mapToBookList(String jsonResponse) {
-        if (jsonResponse == null) {
-            log.warn("JSON 응답이 null입니다. 빈 리스트를 반환합니다.");
+    public List<BookSearchDto> mapToBookList(String jsonResponse) {
+        if(jsonResponse == null || jsonResponse.isEmpty()) {
             return Collections.emptyList();
         }
-
         try {
-            BookResultVo bookResultVo = objectMapper.readValue(jsonResponse, BookResultVo.class);
-            return bookResultVo.getItems();
+            BookSearchResultDto bookSearchResultDto = objectMapper.readValue(jsonResponse, BookSearchResultDto.class);
+            return bookSearchResultDto.getItems();
         } catch (JsonProcessingException e) {
             log.error("JSON 처리 오류: 응답 처리 중 문제가 발생했습니다.", e);
             return Collections.emptyList();
         }
     }
-    public List<BookDetailVo> mapToBook(String jsonResponse) {
-        if (jsonResponse == null) {
-            log.warn("JSON 응답이 null입니다. 빈 리스트를 반환합니다.");
-            return Collections.emptyList();
-        }
 
+    public List<BookSearchDetailDto> mapToBook(String jsonResponse) {
         try {
-            BookDetailResultVo bookDetailResultVo = objectMapper.readValue(jsonResponse, BookDetailResultVo.class);
-            return bookDetailResultVo.getItems();
-        } catch (JsonProcessingException e) {
-            log.error("JSON 처리 오류: 응답 처리 중 문제가 발생했습니다.", e);
+            BookSearchDetailResultDto bookSearchDetailResultDto = objectMapper.readValue(jsonResponse, BookSearchDetailResultDto.class);
+            return bookSearchDetailResultDto.getItems();
+        } catch (JsonProcessingException jpe) {
+            log.error("JSON 처리 오류: 응답 처리 중 문제가 발생했습니다.", jpe);
             return Collections.emptyList();
         }
     }

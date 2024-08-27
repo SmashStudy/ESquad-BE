@@ -4,7 +4,6 @@ import com.esquad.esquadbe.studypage.config.BookApi;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -52,16 +51,13 @@ public class BookApiService {
     }
 
     public String fetchData(URI uri) {
-
         RequestEntity<Void> req = RequestEntity.get(uri)
                 .header("X-Naver-Client-Id", bookApi.getId())
                 .header("X-Naver-Client-Secret", bookApi.getSecret())
                 .build();
 
         try {
-            ResponseEntity<String> resp = restTemplate.exchange(req, String.class);
-            return resp.getBody();
-
+            return restTemplate.exchange(req, String.class).getBody();
         } catch (HttpClientErrorException e) {
             log.error("HttpClientErrorException 발생: 상태 코드: {}, 응답 본문: {}", e.getStatusCode(), e.getResponseBodyAsString());
             throw new RuntimeException("네이버 API 요청 실패: " + e.getMessage(), e);
