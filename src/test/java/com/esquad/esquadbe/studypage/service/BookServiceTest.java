@@ -1,30 +1,32 @@
 package com.esquad.esquadbe.studypage.service;
 
-import com.esquad.esquadbe.studypage.vo.BookDetailVo;
-import com.esquad.esquadbe.studypage.vo.BookVo;
+import com.esquad.esquadbe.studypage.dto.BookSearchDetailDto;
+import com.esquad.esquadbe.studypage.dto.BookSearchDto;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
 
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+
 
 class BookServiceTest {
-
-    @InjectMocks
-    private BookService bookService;
-
     @Mock
     private BookApiService bookApiService;
 
     @Mock
     private BookMappingService bookMappingService;
+
+    @InjectMocks
+    private BookService bookService;
 
     String jsonResponse = "{ \"items\": [ {\n" +
             "        \"title\": \"네이버는 어떻게 일하는가 (네이버 그린팩토리는 24시간 멈추지 않는다)\",\n" +
@@ -38,6 +40,11 @@ class BookServiceTest {
             "        \"pubdate\": \"20180608\"\n" +
             "    } ] }";
 
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
+
     @Test
     @DisplayName("유효한 검색어에 대한 조회 시 도서 목록 반환")
     void testResultListSuccess() {
@@ -46,8 +53,7 @@ class BookServiceTest {
 
         when(bookApiService.fetchData(uri)).thenReturn(jsonResponse);
 
-
-        BookVo expectedBook = new BookVo(
+        BookSearchDto expectedBook = new BookSearchDto(
                 "네이버는 어떻게 일하는가 (네이버 그린팩토리는 24시간 멈추지 않는다)",
                 "https://search.shopping.naver.com/book/catalog/32455473672",
                 "https://shopping-phinf.pstatic.net/main_3245547/32455473672.20220527083840.jpg",
@@ -57,7 +63,7 @@ class BookServiceTest {
         );
         when(bookMappingService.mapToBookList(jsonResponse)).thenReturn(Collections.singletonList(expectedBook));
 
-        List<BookVo> result = bookService.resultList("그린팩토리");
+        List<BookSearchDto> result = bookService.resultList("그린팩토리");
 
         assertEquals(expectedBook.getTitle(), result.get(0).getTitle(), "책 제목이 예상과 일치해야 합니다.");
         assertNotNull(result, "책 리스트는 null이 아니어야 합니다.");
@@ -70,7 +76,7 @@ class BookServiceTest {
         URI uri = URI.create("https://api.example.com/books?query=그린팩토리");
         when(bookApiService.fetchData(uri)).thenReturn(null);
 
-        List<BookVo> result = bookService.resultList("그린팩토리");
+        List<BookSearchDto> result = bookService.resultList("그린팩토리");
 
         assertNotNull(result, "책 리스트는 null이 아니어야 합니다.");
         assertTrue(result.isEmpty(), "책 리스트는 비어 있어야 합니다.");
@@ -81,7 +87,7 @@ class BookServiceTest {
     void testResultDetailSuccess() {
         URI uri = BookApiService.buildUriForDetail("/v1/search/book_adv.json", "9788959895205");
         when(bookApiService.fetchData(uri)).thenReturn(jsonResponse);
-        BookDetailVo expectedBook = new BookDetailVo(
+        BookSearchDetailDto expectedBook = new BookSearchDetailDto(
                 "네이버는 어떻게 일하는가 (네이버 그린팩토리는 24시간 멈추지 않는다)",
                 "https://search.shopping.naver.com/book/catalog/32455473672",
                 "https://shopping-phinf.pstatic.net/main_3245547/32455473672.20220527083840.jpg",
@@ -91,7 +97,7 @@ class BookServiceTest {
         );
         when(bookMappingService.mapToBook(jsonResponse)).thenReturn(Collections.singletonList(expectedBook));
 
-        List<BookDetailVo> result = bookService.resultDetail("9788959895205");
+        List<BookSearchDetailDto> result = bookService.resultDetail("9788959895205");
 
         assertNotNull(result, "책 리스트는 null이 아니어야 합니다.");
         assertEquals(1, result.size(), "책 리스트의 크기가 1이어야 합니다.");
@@ -99,14 +105,13 @@ class BookServiceTest {
         assertEquals("9788959895205", result.get(0).getIsbn(), "ISBN이 '9788959895205'이어야 합니다.");
     }
 
-
     @Test
     @DisplayName("유효하지 않은 isbn에 대한 조회 시 빈 목록 반환")
     void testResultDetailFetchDataReturnsNull() {
         URI uri = URI.create("https://api.example.com/books?isbn=1234567890");
         when(bookApiService.fetchData(uri)).thenReturn(null);
 
-        List<BookDetailVo> result = bookService.resultDetail("1234567890");
+        List<BookSearchDetailDto> result = bookService.resultDetail("1234567890");
 
         assertNotNull(result, "책 리스트는 null이 아니어야 합니다.");
         assertTrue(result.isEmpty(), "책 리스트는 비어 있어야 합니다.");
