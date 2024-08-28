@@ -34,7 +34,7 @@ public class S3FileService {
     private String bucket;
 
     @Transactional
-    public FileInfo uploadFile(MultipartFile multipartFile, Long targetId, TargetType targetType,
+    public ResponseFileDto uploadFile(MultipartFile multipartFile, Long targetId, TargetType targetType,
         Long userId) {
         if (multipartFile.isEmpty()) {
             throw new IllegalArgumentException("업로드할 파일이 비어있습니다.");
@@ -62,7 +62,7 @@ public class S3FileService {
 
         storedFileRepository.save(storedFile);
 
-        return fileInfo;
+        return ResponseFileDto.from(storedFile);
     }
 
     @Transactional

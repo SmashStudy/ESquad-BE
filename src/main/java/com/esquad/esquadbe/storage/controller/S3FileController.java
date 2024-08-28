@@ -1,7 +1,6 @@
 package com.esquad.esquadbe.storage.controller;
 
 import com.esquad.esquadbe.storage.dto.ResponseFileDto;
-import com.esquad.esquadbe.storage.entity.FileInfo;
 import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.service.S3FileService;
 import java.net.URLEncoder;
@@ -29,7 +28,7 @@ public class S3FileController {
     private final S3FileService s3FileService;
 
     @PostMapping("/{userId}")
-    public ResponseEntity<FileInfo> uploadFile(
+    public ResponseEntity<ResponseFileDto> uploadFile(
         @RequestParam MultipartFile file,
         @RequestParam Long targetId,
         @RequestParam TargetType targetType,

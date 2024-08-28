@@ -2,7 +2,7 @@ package com.esquad.esquadbe.storage.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.esquad.esquadbe.storage.entity.FileInfo;
+import com.esquad.esquadbe.storage.dto.ResponseFileDto;
 import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.repository.StoredFileRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +47,8 @@ class S3FileServiceTest {
         final Long targetId = 1L;
         final TargetType targetType = TargetType.QNA;
 
-        FileInfo uploadedFileInfo = s3FileService.uploadFile(mockFile, targetId, targetType, 1L);
+        ResponseFileDto uploadedFileInfo = s3FileService.uploadFile(mockFile, targetId, targetType,
+            1L);
         String storedFileName = uploadedFileInfo.getStoredFileName();
 
         // When
@@ -85,7 +86,7 @@ class S3FileServiceTest {
         final TargetType targetType = TargetType.QNA;
 
         // When
-        FileInfo fileInfo = s3FileService.uploadFile(mockFile, targetId, targetType, 1L);
+        ResponseFileDto fileInfo = s3FileService.uploadFile(mockFile, targetId, targetType, 1L);
 
         // Then
         assertTrue(
