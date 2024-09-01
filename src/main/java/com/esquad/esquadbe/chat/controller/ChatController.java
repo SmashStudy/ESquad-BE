@@ -19,11 +19,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
+@RequestMapping("/api/chat")
 public class ChatController {
     @Autowired
     private FirebaseService firebaseService;
 
-    @PostMapping("/api/chat/send")
+    @PostMapping("/send")
     public ResponseEntity<Map<String, String>> sendMessage(@RequestBody ChatMessage chatMsg) {
         Map<String, String> response = new HashMap<>();
         try {
@@ -44,7 +45,7 @@ public class ChatController {
                     future.complete(null);
                 }
             });
-            future.join();  // 비동기 작업 완료까지 대기
+            future.join();
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.put("status", "error");
@@ -53,7 +54,7 @@ public class ChatController {
         }
     }
 
-    @GetMapping("/api/chat/messages/{roomId}")
+    @GetMapping("/messages/{roomId}")
     public CompletableFuture<ResponseEntity<Map<String, Object>>> getMessages(@PathVariable String roomId) {
         Map<String, Object> response = new HashMap<>();
         CompletableFuture<ResponseEntity<Map<String, Object>>> futureResponse = new CompletableFuture<>();
@@ -85,7 +86,7 @@ public class ChatController {
         return futureResponse;
     }
 
-    @PutMapping("/api/chat/edit/{roomId}/{messageId}")
+    @PutMapping("/edit/{roomId}/{messageId}")
     public CompletableFuture<ResponseEntity<Map<String, String>>> updateMessage(
             @PathVariable String roomId,
             @PathVariable String messageId,
@@ -129,7 +130,7 @@ public class ChatController {
         return futureResponse;
     }
 
-    @DeleteMapping("/api/chat/delete/{roomId}/{messageId}")
+    @DeleteMapping("/delete/{roomId}/{messageId}")
     public ResponseEntity<Map<String, String>> deleteMessage(
             @PathVariable String roomId,
             @PathVariable String messageId,
