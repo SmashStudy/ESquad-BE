@@ -40,11 +40,10 @@ class UserJoinServiceTest {
         Mockito.when(bCryptPasswordEncoder.encode(anyString())).thenReturn("encryptedPassword");
 
         userJoinDTO = UserJoinDTO.builder()
-                .userId("testUser")
-                .password("TestPasswd1234@")  // 평문 비밀번호 설정
-                .userName("이정민")
+                .username("testUser")
+                .password("TestPasswd1234@")
                 .email("testuser@example.com")
-                .phoneNo("01012345678")
+                .phoneNumber("01012345678")
                 .birthDay(LocalDate.parse("2000-09-09"))
                 .address("부산광역시 어딘가")
                 .nickname("testUser")
@@ -55,7 +54,7 @@ class UserJoinServiceTest {
     @DisplayName("이미 존재하는 아이디로 회원가입 시 UserIdException 발생")
     void userIdExist() {
         // Given
-        Mockito.when(userRepository.existsByUserId(userJoinDTO.getUserId())).thenReturn(true);
+        Mockito.when(userRepository.existsByUsername(userJoinDTO.getUsername())).thenReturn(true);
 
         // When & Then
         assertThrows(UserIdException.class, () -> userJoinService.joinProcess(userJoinDTO));
@@ -75,7 +74,7 @@ class UserJoinServiceTest {
     @DisplayName("회원가입이 정상적으로 진행된다")
     void successJoinUser() {
         // Given
-        Mockito.when(userRepository.existsByUserId(userJoinDTO.getUserId())).thenReturn(false);
+        Mockito.when(userRepository.existsByUsername(userJoinDTO.getUsername())).thenReturn(false);
         Mockito.when(userRepository.existsByNickname(userJoinDTO.getNickname())).thenReturn(false);
 
         // When & Then
@@ -88,17 +87,16 @@ class UserJoinServiceTest {
     void defaultNicknameIfEmpty() {
         // Given
         UserJoinDTO emptyNicknameDTO = UserJoinDTO.builder()
-                .userId("testUsers")
+                .username("testUsers")
                 .password("TestPasswd1234@")
-                .userName("김경민")
                 .email("testuser2@example.com")
-                .phoneNo("01098765432")
+                .phoneNumber("01098765432")
                 .birthDay(LocalDate.parse("2000-01-01"))
                 .address("부산광역시 진흥원")
                 .nickname("")  // 닉네임을 비워둠
                 .build();
 
-        Mockito.when(userRepository.existsByUserId(emptyNicknameDTO.getUserId())).thenReturn(false);
+        Mockito.when(userRepository.existsByUsername(emptyNicknameDTO.getUsername())).thenReturn(false);
         Mockito.when(userRepository.existsByNickname(emptyNicknameDTO.getNickname())).thenReturn(false);
 
         // When
