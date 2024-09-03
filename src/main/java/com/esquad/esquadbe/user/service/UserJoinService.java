@@ -16,7 +16,7 @@ public class UserJoinService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void joinProcess(UserJoinDTO userJoinDTO) {
-        if (userRepository.existsByUserId(userJoinDTO.getUserId())) {
+        if (userRepository.existsByUsername(userJoinDTO.getUsername())) {
             throw new UserIdException("이미 존재하는 아이디입니다.");
         }
 
@@ -31,5 +31,13 @@ public class UserJoinService {
         User user = userJoinDTO.toEntity(bCryptPasswordEncoder);
 
         userRepository.save(user);
+    }
+
+    public boolean checkUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    public boolean checkNickname(String nickname) {
+        return userRepository.existsByNickname(nickname);
     }
 }
