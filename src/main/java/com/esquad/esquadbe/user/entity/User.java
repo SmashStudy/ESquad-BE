@@ -1,5 +1,8 @@
 package com.esquad.esquadbe.user.entity;
 
+import java.time.LocalDate;
+import java.util.*;
+
 import com.esquad.esquadbe.notification.entity.Notification;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.storage.entity.StoredFile;
@@ -7,17 +10,20 @@ import com.esquad.esquadbe.streaming.entity.StreamingParticipant;
 import com.esquad.esquadbe.streaming.entity.StreamingSession;
 import com.esquad.esquadbe.studypage.entity.StudyPageUser;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
-import jakarta.persistence.*;
+import com.esquad.esquadbe.user.dto.ResponseDTO;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "USERS")
@@ -31,17 +37,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "USER_ID", nullable = false, unique = true, length = 20)
-    private String userId;
+    @Column(name = "USERNAME", nullable = false, unique = true, length = 20)
+    private String username;
 
     @Column(name = "NICKNAME", nullable = false, unique = true, length = 20)
     private String nickname;
 
     @Column(name = "PASSWORD", nullable = false, length = 60)
     private String password;
-
-    @Column(name = "USER_NAME", nullable = false, length = 12)
-    private String userName;
 
     @Column(name = "EMAIL", nullable = false, length = 25)
     private String email;
@@ -78,5 +81,11 @@ public class User {
 
     @OneToMany(mappedBy = "member")
     private Set<StudyPageUser> studyPageUsers = new HashSet<>();
+
+    public Optional<ResponseDTO> toResponseDTO() {
+        return Optional.ofNullable(ResponseDTO.builder()
+                .nickname(this.nickname)
+                .build());
+    }
 
 }
