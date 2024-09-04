@@ -1,20 +1,20 @@
 package com.esquad.esquadbe.team.dto;
 
 
+import java.util.List;
+
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 
-import java.util.List;
-
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Builder
+@AllArgsConstructor
 public class TeamSpaceRequestDTO {
 
    private Long id;
