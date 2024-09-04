@@ -1,5 +1,15 @@
-INSERT INTO users (user_id, user_name, nickname, password, email, phone_no, birth_day, address) VALUES
-('user1', 'user1', 'user11', 'u3kvlk9ekd', 'user1@naver.com', '01091358452', '1992-05-04', '부산시 수영구 광안해변로 291'),
-('user2', 'user2', 'user12', 'fenlciok22', 'user2@naver.com', '01091351111', '1992-08-04', '부산시 수영구 광안해변로 291'),
-('user3', 'user3', 'user13', 'olenlcidhl2', 'user3@naver.com', '01022221111', '1996-08-04', '부산시 수영구 광안해변로 291'),
-('user4', 'user4', 'user14', 'i3bkcudb2ol', 'user4@naver.com', '01091315111', '1992-04-12', '부산시 수영구 광안해변로 291');
+INSERT INTO users (username, nickname, password, email, phone_no, birth_day, address) VALUES
+('user1', 'Sparky', 'u3kvlk9ekd', 'user1@naver.com', '01091358452', '1992-05-04', '부산시 수영구 광안해변로 291'),
+('user2', 'Whiz', 'fenlciok22', 'user2@naver.com', '01091351111', '1992-08-04', '부산시 수영구 광안해변로 291'),
+('user3', 'Doodle', 'olenlcidhl2', 'user3@naver.com', '01022221111', '1996-08-04', '부산시 수영구 광안해변로 291'),
+('user5', 'Glimmer', 'i3bkcudb2ol', 'user4@naver.com', '01091315111', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user6', 'Zephyr', 'ekfnal422fd', 'zephyr@naver.com', '01084452123', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user7', 'Nifty', 'dfjo334', 'nifty@naver.com', '01016541293', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user8', 'Pippin', '68efkdfnl2dk', 'pippin@naver.com', '01055542225', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user9', 'Quirk', 'sdfj34if54', 'qurik@naver.com', '01055563336', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user10', 'Sizzle', 'f3pjrfasdf7', 'sizzle@naver.com', '01095654524', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user11', 'Vortex', 'elrilkf51', 'vortex@naver.com', '01075465124', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user12', 'Bubbles', 'dfjafasd8964', 'bubbles@naver.com', '01032654578', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user13', 'Moxie', 'srj23rfadf5', 'moxie@naver.com', '01012253254', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user14', 'Zippy', 'fwfaklsdf3', 'zippy@naver.com', '01096541258', '1992-04-12', '부산시 수영구 광안해변로 291'),
+('user15', 'Twirl', '564epfneklw', 'twirl@naver.com', '01035486517', '1992-04-12', '부산시 수영구 광안해변로 291');
