@@ -11,10 +11,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class BookSearchResultDto {
+public class BookSearchResultListDto {
     private String lastBuildDate;
     private int total;
     private int start;
     private int display;
-    private List<BookSearchDto> items;
+    private List<BookSearchResultItemDto> items;
 }
