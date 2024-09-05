@@ -13,36 +13,23 @@ import java.net.URI;
 
 @Component
 @Slf4j
-public class BookApiService {
+public class BookUriService {
 
     private final BookApi bookApi;
     private final RestTemplate restTemplate;
 
     @Autowired
-    public BookApiService(BookApi bookApi) {
+    public BookUriService(BookApi bookApi) {
         this.bookApi = bookApi;
         this.restTemplate = new RestTemplate();
     }
 
-    public static URI buildUriForSearch(String path, String query, int display) {
+    public static URI buildUriForSearch(String path, String query) {
         return UriComponentsBuilder
                 .fromUriString("https://openapi.naver.com")
                 .path(path)
                 .queryParam("query", query)
-                .queryParam("display", display)
-                .queryParam("start", 1)
-                .queryParam("sort", "sim")
-                .encode()
-                .build()
-                .toUri();
-    }
-
-    public static URI buildUriForDetail(String path, String isbn) {
-        return UriComponentsBuilder
-                .fromUriString("https://openapi.naver.com")
-                .path(path)
-                .queryParam("d_isbn", isbn)
-                .queryParam("display", 1)
+                .queryParam("display", 100)
                 .queryParam("start", 1)
                 .queryParam("sort", "sim")
                 .encode()
@@ -55,7 +42,6 @@ public class BookApiService {
                 .header("X-Naver-Client-Id", bookApi.getId())
                 .header("X-Naver-Client-Secret", bookApi.getSecret())
                 .build();
-
         try {
             return restTemplate.exchange(req, String.class).getBody();
         } catch (HttpClientErrorException e) {
