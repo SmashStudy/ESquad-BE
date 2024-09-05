@@ -2,7 +2,6 @@ package com.esquad.esquadbe.studypage.controller;
 
 import com.esquad.esquadbe.studypage.service.BookService;
 import com.esquad.esquadbe.studypage.dto.BookSearchDetailDto;
-import com.esquad.esquadbe.studypage.dto.BookSearchDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

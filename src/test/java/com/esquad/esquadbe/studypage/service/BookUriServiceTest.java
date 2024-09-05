@@ -12,12 +12,11 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
-public class BookApiServiceTest {
+public class BookUriServiceTest {
     @Autowired
-    private BookApiService bookApiService;
+    private BookUriService bookUriService;
 
     @Autowired
     private BookApi bookApi;
@@ -25,9 +24,9 @@ public class BookApiServiceTest {
 
     @BeforeEach
     void setUp() {
-        final String path = "/v1/search/book_adv.json";
+        final String path = "/v1/search/book.json";
         final String isbn = "9788959895205";
-        uri = BookApiService.buildUriForDetail(path, isbn);
+        uri = BookUriService.buildUriForSearch(path, isbn);
 
     }
 
