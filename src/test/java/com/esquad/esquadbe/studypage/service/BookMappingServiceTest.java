@@ -1,9 +1,6 @@
 package com.esquad.esquadbe.studypage.service;
 
-import com.esquad.esquadbe.studypage.dto.BookSearchDetailDto;
-import com.esquad.esquadbe.studypage.dto.BookSearchDetailResultDto;
-import com.esquad.esquadbe.studypage.dto.BookSearchDto;
-import com.esquad.esquadbe.studypage.dto.BookSearchResultDto;
+import com.esquad.esquadbe.studypage.dto.BookSearchResultItemDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,25 +37,16 @@ public class BookMappingServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        exception = new JsonProcessingException("Json Processing error"){};
+        exception = new JsonProcessingException("Json Processing error") {
+        };
     }
 
     @Test
     @DisplayName("JsonProcessingException 처리")
     void testMapToBookListWithJsonProcessingException() throws JsonProcessingException {
-        when(objectMapper.readValue(addAttributeRes, BookSearchResultDto.class)).thenThrow(exception);
+        when(objectMapper.readValue(addAttributeRes, BookSearchResultItemDto.class)).thenThrow(exception);
 
-        List<BookSearchDto> result = bookMappingService.mapToBookList(addAttributeRes);
-
-        assertTrue(result.isEmpty(), "JSON 처리 오류가 발생하면 빈 리스트를 반환해야 합니다.");
-    }
-
-    @Test
-    @DisplayName("JsonProcessingException 처리")
-    void testMapToBookWithJsonProcessingException() throws JsonProcessingException {
-        when(objectMapper.readValue(addAttributeRes, BookSearchDetailResultDto.class)).thenThrow(exception);
-
-        List<BookSearchDetailDto> result = bookMappingService.mapToBook(addAttributeRes);
+        List<BookSearchResultItemDto> result = bookMappingService.mapToBookList(addAttributeRes);
 
         assertTrue(result.isEmpty(), "JSON 처리 오류가 발생하면 빈 리스트를 반환해야 합니다.");
     }
