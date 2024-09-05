@@ -20,6 +20,7 @@ configurations {
 }
 
 repositories {
+    google()
     mavenCentral()
 }
 
@@ -38,6 +39,8 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'io.springfox:springfox-swagger-ui:3.0.0'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
+    implementation 'com.google.firebase:firebase-database:20.1.0'
 }
 
 tasks.named('test') {
