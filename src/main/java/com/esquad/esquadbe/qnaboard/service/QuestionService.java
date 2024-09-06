@@ -85,6 +85,10 @@ public class QuestionService {
         return QnaBoardResponseDTO.from(updatedQuestion);
     }
 
-
-
+    // 게시글 삭제
+    public void deleteQuestion(Long id) {
+        BookQnaBoard question = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
+        questionRepository.delete(question);
+    }
 }
