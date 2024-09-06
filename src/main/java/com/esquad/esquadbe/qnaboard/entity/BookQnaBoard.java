@@ -1,15 +1,12 @@
 package com.esquad.esquadbe.qnaboard.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
-import com.esquad.esquadbe.studypage.entity.Book;
-import com.esquad.esquadbe.studypage.entity.StudyPage;
-import com.esquad.esquadbe.user.entity.User;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import jakarta.persistence.*;
 
 @SuperBuilder
 @NoArgsConstructor
@@ -24,17 +21,11 @@ public class BookQnaBoard extends BasicEntity {
     @Column(name = "ID")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "WRITER_ID")
-    private User writer;
+    @Column(name = "WRITER", nullable = false)
+    private String writer;
 
-    @ManyToOne
-    @JoinColumn(name = "STUDY_PAGE_ID")
-    private StudyPage studyPage;
-
-    @ManyToOne
-    @JoinColumn(name = "BOOK_ID")
-    private Book book;
+    @Column(name = "BOOK", nullable = false)
+    private String book;
 
     @Column(name = "TITLE", nullable = false, length = 30)
     private String title;
@@ -44,5 +35,4 @@ public class BookQnaBoard extends BasicEntity {
 
     @Column(name = "LIKES")
     private Integer likes;
-
 }
