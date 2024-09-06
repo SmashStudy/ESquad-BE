@@ -4,6 +4,7 @@ import com.esquad.esquadbe.global.entity.BasicEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import jakarta.persistence.*;
@@ -11,6 +12,7 @@ import jakarta.persistence.*;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
 @Getter
 @Entity
 @Table(name = "BOOK_QNA_BOARD")
