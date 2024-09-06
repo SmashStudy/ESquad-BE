@@ -1,5 +1,6 @@
 package com.esquad.esquadbe.qnaboard.dto;
 
+import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 @Builder
 @Getter
 @Setter
-public class QnaBoardResponseDTO {
+public class QnaBoardResponseDTO  {
     private Long id;
     private String title;
     private String writerName;
@@ -31,7 +32,7 @@ public class QnaBoardResponseDTO {
                 .createdAt(bookQnaBoard.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .modifiedAt(bookQnaBoard.getModifiedAt() != null
                         ? bookQnaBoard.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                        : null)  // 수정일시 추가
+                        : null)
                 .likes(bookQnaBoard.getLikes())
                 .build();
     }
