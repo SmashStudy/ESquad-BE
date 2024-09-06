@@ -60,4 +60,16 @@ public class QnaBoardController {
         return questionService.getQuestionsByWriter(writer, page, size);
     }
 
+    // 게시글 수정
+    @PutMapping("/{id}")
+    public QnaBoardResponseDTO updateQuestion(
+            @PathVariable Long id,
+            @RequestParam("title") String title,
+            @RequestParam("content")String content,
+            @RequestParam("book") String book){
+        return questionService.updateQuestion(id,title, content, book);
+    }
+
+    // 게시글 삭제
+
 }
