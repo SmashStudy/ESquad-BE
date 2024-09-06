@@ -10,7 +10,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class QuestionService {
@@ -58,4 +60,31 @@ public class QuestionService {
         return questionRepository.findByWriter(writer, pageable)
                 .map(QnaBoardResponseDTO::from);
     }
+
+    // 게시글 수정 로직
+    public QnaBoardResponseDTO updateQuestion(Long id, String title, String content, String book) {
+
+        BookQnaBoard existingQuestion = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
+
+
+        BookQnaBoard updatedQuestion = BookQnaBoard.builder()
+                .id(existingQuestion.getId())
+                .writer(existingQuestion.getWriter())
+                .book(book)
+                .title(title)
+                .content(content)
+                .likes(existingQuestion.getLikes())
+                .createdAt(existingQuestion.getCreatedAt())
+                .build();
+
+        // 변경된 엔티티 저장
+        questionRepository.save(updatedQuestion);
+
+        // DTO로 변환하여 반환
+        return QnaBoardResponseDTO.from(updatedQuestion);
+    }
+
+
+
 }
