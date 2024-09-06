@@ -17,6 +17,7 @@ public class QnaBoardResponseDTO {
     private String book;
     private String content;
     private String createdAt;
+    private String modifiedAt;
     private Integer likes;
 
     // 정적 팩토리 메서드
@@ -28,6 +29,9 @@ public class QnaBoardResponseDTO {
                 .book(bookQnaBoard.getBook())
                 .content(bookQnaBoard.getContent())
                 .createdAt(bookQnaBoard.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .modifiedAt(bookQnaBoard.getModifiedAt() != null
+                        ? bookQnaBoard.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                        : null)  // 수정일시 추가
                 .likes(bookQnaBoard.getLikes())
                 .build();
     }
