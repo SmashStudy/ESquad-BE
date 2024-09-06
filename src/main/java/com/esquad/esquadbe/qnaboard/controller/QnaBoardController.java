@@ -65,11 +65,15 @@ public class QnaBoardController {
     public QnaBoardResponseDTO updateQuestion(
             @PathVariable Long id,
             @RequestParam("title") String title,
-            @RequestParam("content")String content,
-            @RequestParam("book") String book){
-        return questionService.updateQuestion(id,title, content, book);
+            @RequestParam("content") String content,
+            @RequestParam("book") String book) {
+        return questionService.updateQuestion(id, title, content, book);
     }
 
     // 게시글 삭제
+    @DeleteMapping("/{id}")
+    public void deleteQuestion(@PathVariable Long id) {
+        questionService.deleteQuestion(id);
+    }
 
 }
