@@ -32,6 +32,9 @@ public class StudyPage extends BasicEntity {
     @JoinColumn(name = "BOOK_ID", nullable = false)
     private Book book;
 
+    @Column(name = "STUDY_PAGE_NAME")
+    private String studyPageName;
+
     @Column(name = "START_DATE")
     private LocalDate startDate;
 
@@ -43,6 +46,9 @@ public class StudyPage extends BasicEntity {
 
     @OneToMany(mappedBy = "studyPage")
     private List<StudyPageUser> studyPageUsers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "studyPage")
+    private List<StudyRemind> studyReminds = new ArrayList<>();
 
     @OneToOne(mappedBy = "channel")
     private StreamingSession streamingSession;
