@@ -3,7 +3,7 @@ package com.esquad.esquadbe.security.jwt;
 
 import com.esquad.esquadbe.redis.RedisUtil;
 
-import com.esquad.esquadbe.user.dto.RefreshTokenResponseDTO;
+import com.esquad.esquadbe.security.dto.RefreshTokenResponseDTO;
 import com.esquad.esquadbe.security.exception.RefreshTokenException;
 import com.esquad.esquadbe.security.exception.RefreshTokenExceptionResult;
 
