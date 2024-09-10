@@ -29,7 +29,7 @@ public class QnaBoardResponseDTO  {
         return QnaBoardResponseDTO.builder()
                 .id(bookQnaBoard.getId())
                 .title(bookQnaBoard.getTitle())
-                .user(bookQnaBoard.getUser())
+                .user(bookQnaBoard.getWriter())
                 .book(bookQnaBoard.getBook())
                 .teamSpace(bookQnaBoard.getTeamSpace())
                 .content(bookQnaBoard.getContent())
