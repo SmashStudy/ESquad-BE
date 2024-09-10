@@ -20,7 +20,6 @@ public class QnaBoardController {
     public Page<QnaBoardResponseDTO> getAllQuestions(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info(page + "/" + size);
         return questionService.getAllQuestions(page, size);
     }
 
@@ -35,10 +34,12 @@ public class QnaBoardController {
     public QnaBoardResponseDTO createQuestion(
             @RequestParam("title") String title,
             @RequestParam("content") String content,
-            @RequestParam("writer") String writer,
-            @RequestParam("book") String book) {
-        return questionService.createQuestion(title, content, writer, book);
+            @RequestParam("userId") Long userId,
+            @RequestParam("bookId") Long bookId,
+            @RequestParam("teamSpaceId") Long teamSpaceId) {
+        return questionService.createQuestion(title, content, userId, bookId, teamSpaceId);
     }
+
 
     // 특정 제목의 게시글 조회
     @GetMapping("/search")
@@ -53,22 +54,24 @@ public class QnaBoardController {
     // 특정 작성자의 게시글 조회
     @GetMapping("/by-writer")
     public Page<QnaBoardResponseDTO> getQuestionsByWriter(
-            @RequestParam("writer") String writer,
+            @RequestParam("userId") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info("Searching for questions by writer: " + writer);
-        return questionService.getQuestionsByWriter(writer, page, size);
+        log.info("Searching for questions by writer: " + userId);
+        return questionService.getQuestionsByWriter(userId, page, size);
     }
 
     // 게시글 수정
     @PutMapping("/{id}")
     public QnaBoardResponseDTO updateQuestion(
             @PathVariable Long id,
+            @RequestParam("userId") Long userId,       // User ID로 받아서 User 객체로 조회
             @RequestParam("title") String title,
             @RequestParam("content") String content,
-            @RequestParam("book") String book) {
-        return questionService.updateQuestion(id, title, content, book);
+            @RequestParam("bookId") Long bookId) {     // Book ID로 책 조회
+        return questionService.updateQuestion(id, userId, title, content, bookId);
     }
+
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
