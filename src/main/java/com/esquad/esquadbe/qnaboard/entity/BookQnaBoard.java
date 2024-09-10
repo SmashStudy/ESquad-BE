@@ -1,35 +1,39 @@
 package com.esquad.esquadbe.qnaboard.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.esquad.esquadbe.team.entity.TeamSpace;
+import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.studypage.entity.Book;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import jakarta.persistence.*;
-
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
-@Getter
 @Entity
 @Table(name = "BOOK_QNA_BOARD")
 public class BookQnaBoard extends BasicEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "WRITER", nullable = false)
-    private String writer;
+    @ManyToOne
+    @JoinColumn(name = "USER_ID", nullable = false)
+    private User user;
 
-    @Column(name = "BOOK", nullable = false)
-    private String book;
+    @ManyToOne
+    @JoinColumn(name = "TEAM_SPACE_ID", nullable = false)
+    private TeamSpace teamSpace;
 
-    @Column(name = "TITLE", nullable = false, length = 30)
+    @ManyToOne
+    @JoinColumn(name = "BOOK_ID", nullable = false)
+    private Book book;
+
+    @Column(name = "TITLE", nullable = false)
     private String title;
 
     @Column(name = "CONTENT", nullable = false, columnDefinition = "TEXT")
