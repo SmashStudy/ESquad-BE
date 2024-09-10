@@ -1,7 +1,9 @@
 package com.esquad.esquadbe.qnaboard.dto;
 
-import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
+import com.esquad.esquadbe.studypage.entity.Book;
+import com.esquad.esquadbe.team.entity.TeamSpace;
+import com.esquad.esquadbe.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,8 +16,9 @@ import java.time.format.DateTimeFormatter;
 public class QnaBoardResponseDTO  {
     private Long id;
     private String title;
-    private String writerName;
-    private String book;
+    private User user;
+    private Book book;
+    private TeamSpace teamSpace;
     private String content;
     private String createdAt;
     private String modifiedAt;
@@ -26,8 +29,9 @@ public class QnaBoardResponseDTO  {
         return QnaBoardResponseDTO.builder()
                 .id(bookQnaBoard.getId())
                 .title(bookQnaBoard.getTitle())
-                .writerName(bookQnaBoard.getWriter())
+                .user(bookQnaBoard.getUser())
                 .book(bookQnaBoard.getBook())
+                .teamSpace(bookQnaBoard.getTeamSpace())
                 .content(bookQnaBoard.getContent())
                 .createdAt(bookQnaBoard.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .modifiedAt(bookQnaBoard.getModifiedAt() != null
