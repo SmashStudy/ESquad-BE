@@ -4,6 +4,12 @@ import com.esquad.esquadbe.exception.ResourceNotFoundException;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
+import com.esquad.esquadbe.studypage.entity.Book;
+import com.esquad.esquadbe.studypage.repository.BookRepository;
+import com.esquad.esquadbe.team.entity.TeamSpace;
+import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
+import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,14 +23,38 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class QuestionService {
 
+    private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
+    private final BookRepository bookRepository;
+    private final TeamSpaceRepository teamSpaceRepository;
+
+    // User, Book, TeamSpace 엔티티를 찾기 위한 헬퍼 메서드 추가
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+    }
+
+    private Book findBookById(Long bookId) {
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+    }
+
+    private TeamSpace findTeamSpaceById(Long teamSpaceId) {
+        return teamSpaceRepository.findById(teamSpaceId)
+                .orElseThrow(() -> new ResourceNotFoundException("TeamSpace not found with id: " + teamSpaceId));
+    }
 
     // 전체 게시글 조회
     public Page<QnaBoardResponseDTO> getAllQuestions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return questionRepository.findAll(pageable)
-                .map(QnaBoardResponseDTO::from);
+
+        // questionRepository.findAll은 항상 빈 페이지를 반환하므로 null 검사 불필요
+        Page<BookQnaBoard> questionPage = questionRepository.findAll(pageable);
+
+        // 결과를 DTO로 매핑하여 반환
+        return questionPage.map(QnaBoardResponseDTO::from);
     }
+
 
     // 특정 ID의 게시글 조회
     public QnaBoardResponseDTO getQuestionById(Long id) {
@@ -33,14 +63,20 @@ public class QuestionService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
     }
 
-    // 새로운 질문 생성
-    public QnaBoardResponseDTO createQuestion(String title, String content, String writer, String book) {
+    // 게시글 생성
+    public QnaBoardResponseDTO createQuestion(String title, String content, Long userId, Long bookId, Long teamSpaceId) {
+        // 헬퍼 메서드 사용
+        User user = findUserById(userId);
+        Book book = findBookById(bookId);
+        TeamSpace teamSpace = findTeamSpaceById(teamSpaceId);
+
         BookQnaBoard question = BookQnaBoard.builder()
                 .title(title)
                 .content(content)
-                .writer(writer)
+                .writer(user)
                 .book(book)
-                .likes(0)  // 초기 좋아요 수는 0
+                .teamSpace(teamSpace)
+                .likes(0)
                 .build();
 
         BookQnaBoard savedQuestion = questionRepository.save(question);
@@ -55,33 +91,28 @@ public class QuestionService {
     }
 
     // 특정 작성자의 게시글 조회
-    public Page<QnaBoardResponseDTO> getQuestionsByWriter(String writer, int page, int size) {
+    public Page<QnaBoardResponseDTO> getQuestionsByWriter(Long userId, int page, int size) {
+        User user = findUserById(userId);  // 헬퍼 메서드 사용
+
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return questionRepository.findByWriter(writer, pageable)
+        return questionRepository.findByWriter(user, pageable)
                 .map(QnaBoardResponseDTO::from);
     }
 
     // 게시글 수정 로직
-    public QnaBoardResponseDTO updateQuestion(Long id, String title, String content, String book) {
-
+    public QnaBoardResponseDTO updateQuestion(Long id, Long userId, String title, String content, Long bookId) {
         BookQnaBoard existingQuestion = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + id));
 
+        User user = findUserById(userId);    // 헬퍼 메서드 사용
+        Book book = findBookById(bookId);
 
-        BookQnaBoard updatedQuestion = BookQnaBoard.builder()
-                .id(existingQuestion.getId())
-                .writer(existingQuestion.getWriter())
-                .book(book)
-                .title(title)
-                .content(content)
-                .likes(existingQuestion.getLikes())
-                .createdAt(existingQuestion.getCreatedAt())
-                .build();
+        existingQuestion.setTitle(title);
+        existingQuestion.setContent(content);
+        existingQuestion.setWriter(user);
+        existingQuestion.setBook(book);
 
-        // 변경된 엔티티 저장
-        questionRepository.save(updatedQuestion);
-
-        // DTO로 변환하여 반환
+        BookQnaBoard updatedQuestion = questionRepository.save(existingQuestion);
         return QnaBoardResponseDTO.from(updatedQuestion);
     }
 
