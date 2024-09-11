@@ -31,7 +31,7 @@ public class LoginController {
     private final RefreshTokenService refreshTokenService;
 
 
-    @PostMapping("/login")
+    @PostMapping("/sign-in")
     public ResponseEntity<ApiResponseEntity> login(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
         // login 체크 후 token 생성
         var loginInfo = loginService.login(loginRequestDTO);
