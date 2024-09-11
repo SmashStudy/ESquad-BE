@@ -4,17 +4,14 @@ import com.esquad.esquadbe.studypage.dto.StudyInfoDto;
 import com.esquad.esquadbe.studypage.dto.StudyPageDto;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
-import com.esquad.esquadbe.studypage.entity.StudyPageUser;
-import com.esquad.esquadbe.studypage.entity.StudyRemind;
 import com.esquad.esquadbe.studypage.repository.*;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Slf4j
 @Service
 public class StudyPageService {
     
@@ -37,6 +34,7 @@ public class StudyPageService {
 
     // Create
     public Long createStudyPage(Long teamId, Long bookId, StudyInfoDto dto) {
+        log.info("createStudyPage"+teamId+bookId+dto);
 
         // 팀, 책 정보
         TeamSpace teamSpace = teamSpaceRepository.findById(teamId).orElseThrow(() -> new IllegalArgumentException("Invalid TeamSpace ID"));
