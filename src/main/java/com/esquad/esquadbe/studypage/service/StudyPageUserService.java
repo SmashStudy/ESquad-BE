@@ -6,16 +6,18 @@ import com.esquad.esquadbe.studypage.repository.StudyPageRepository;
 import com.esquad.esquadbe.studypage.repository.StudyPageUserRepository;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class StudyPageUserService {
-    private StudyPageRepository studyPageRepository;
-    private UserRepository userRepository;
-    private StudyPageUserRepository studyPageUserRepository;
+    private final StudyPageRepository studyPageRepository;
+    private final UserRepository userRepository;
+    private final StudyPageUserRepository studyPageUserRepository;
 
     @Autowired
     public StudyPageUserService(StudyPageRepository studyPageRepository, UserRepository userRepository, StudyPageUserRepository studyPageUserRepository) {
@@ -27,10 +29,13 @@ public class StudyPageUserService {
     public void createStudyPageUser(Long studyPageId, List<Long> ids) {
         //스터디 정보
         StudyPage studyPage = studyPageRepository.findById(studyPageId).orElseThrow(()-> new IllegalArgumentException("Invalid studyPageID"));
+        log.info(String.valueOf(ids.get(0)));
 
-        //스터디 멤버 정보
-        for(Long userId : ids )  {
-            User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("Invalid StudyPageUser ID"));
+        // 1차 기능 - 모든 유저가 사용할 수 있음 : 팀 전체 -> 개별 설정
+        Iterable<User> allUsers = userRepository.findAll();
+
+        //스터디 유저에 정보 저장
+        for (User user : allUsers) {
             StudyPageUser studyPageUser = StudyPageUser.builder()
                     .studyPage(studyPage) // 스터디 정보
                     .member(user)
