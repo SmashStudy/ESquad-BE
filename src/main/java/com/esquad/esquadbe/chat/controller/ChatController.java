@@ -89,4 +89,47 @@ public class ChatController {
         });
         return futureResponse;
     }
+
+    @PutMapping("/edit/{roomId}/{messageId}")
+    public CompletableFuture<ResponseEntity<Map<String, String>>> updateMessage(
+            @PathVariable String roomId,
+            @PathVariable String messageId,
+            @RequestBody ChatEditMessage request) {
+
+        Map<String, String> response = new HashMap<>();
+        CompletableFuture<ResponseEntity<Map<String, String>>> futureResponse = new CompletableFuture<>();
+
+        DatabaseReference messageRef = firebaseService.getReference("MESSAGES/" + roomId + "/" + messageId);
+
+        messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String originalUserId = dataSnapshot.getValue(String.class);
+                if (originalUserId != null && originalUserId.equals(request.getUserId())) {
+                    messageRef.child("message").setValue(request.getNewMessage(), (error, ref) -> {
+                        if (error != null) {
+                            response.put("status", "error");
+                            response.put("message", error.getMessage());
+                            futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+                        } else {
+                            response.put("status", "success");
+                            futureResponse.complete(ResponseEntity.ok(response));
+                        }
+                    });
+                } else {
+                    response.put("status", "error");
+                    response.put("message", "Unauthorized");
+                    futureResponse.complete(ResponseEntity.status(HttpStatus.FORBIDDEN).body(response));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                response.put("status", "error");
+                response.put("message", databaseError.getMessage());
+                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+            }
+        });
+        return futureResponse;
+    }
 }
