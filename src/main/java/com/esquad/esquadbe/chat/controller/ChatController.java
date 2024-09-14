@@ -52,4 +52,41 @@ public class ChatController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @GetMapping("/messages/{roomId}")
+    public CompletableFuture<ResponseEntity<Map<String, Object>>> getMessages(@PathVariable String roomId) {
+        Map<String, Object> response = new HashMap<>();
+        CompletableFuture<ResponseEntity<Map<String, Object>>> futureResponse = new CompletableFuture<>();
+
+        DatabaseReference messagesRef = firebaseService.getReference("MESSAGES/" + roomId);
+        messagesRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                    List<Map<String, Object>> messages = new ArrayList<>();
+                    for (DataSnapshot child : children) {
+                        Map<String, Object> message = (Map<String, Object>) child.getValue();
+                        if (message != null) {
+                            message.put("id", child.getKey());
+                            messages.add(message);
+                        }
+                    }
+                    response.put("messages", messages);
+                } else {
+                    response.put("messages", new ArrayList<>());
+                }
+                response.put("status", "success");
+                futureResponse.complete(ResponseEntity.ok(response));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                response.put("status", "error");
+                response.put("message", databaseError.getMessage());
+                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+            }
+        });
+        return futureResponse;
+    }
 }
