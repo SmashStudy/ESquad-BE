@@ -37,4 +37,8 @@ public class FirebaseService {
 
         messageRef.setValueAsync(message);
     }
+    public void receiveMessage(String teamId, String roomId, String messageId, ValueEventListener listener) {
+        DatabaseReference messageRef = getReference("CHAT_ROOMS/" + teamId + "/" + roomId + "/messages/" + messageId);
+        messageRef.addListenerForSingleValueEvent(listener);
+    }
 }
