@@ -40,4 +40,19 @@ public class ChatMessageService {
             throw new RuntimeException("Error creating chat room", e);
         }
     }
+    public void addUserToRoom(String roomId, String userId) {
+        try {
+            DatabaseReference roomUsersRef = firebaseService.getReference("ROOM_USERS/" + roomId);
+            roomUsersRef.child(userId).setValue(true, (error, ref) -> {
+                if (error != null) {
+                    log.error("Failed to add user to room: {}", error.getMessage());
+                } else {
+                    log.info("User {} added to room {} successfully", userId, roomId);
+                }
+            });
+        } catch (Exception e) {
+            log.error("Error adding user to room", e);
+            throw new RuntimeException("Error adding user to room", e);
+        }
+    }
 }
