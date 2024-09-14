@@ -2,6 +2,7 @@ package com.esquad.esquadbe.chat.service;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ServerValue;
+import com.google.firebase.database.ValueEventListener;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,15 @@ public class ChatMessageService {
         } catch (Exception e) {
             log.error("Error saving message", e);
             throw new RuntimeException("Error saving message", e);
+        }
+    }
+    public void getMessages(String roomId, ValueEventListener listener) {
+        try {
+            DatabaseReference messagesRef = firebaseService.getReference("MESSAGES/" + roomId);
+            messagesRef.addListenerForSingleValueEvent(listener);
+        } catch (Exception e) {
+            log.error("Error getting messages", e);
+            throw new RuntimeException("Error getting messages", e);
         }
     }
 }
