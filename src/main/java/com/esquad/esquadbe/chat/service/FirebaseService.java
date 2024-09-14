@@ -41,4 +41,12 @@ public class FirebaseService {
         DatabaseReference messageRef = getReference("CHAT_ROOMS/" + teamId + "/" + roomId + "/messages/" + messageId);
         messageRef.addListenerForSingleValueEvent(listener);
     }
+    public void editMessage(String teamId, String roomId, String userId, String messageId, String newMessageContent, long newTimestamp) {
+        DatabaseReference messageRef = getReference("CHAT_ROOMS/" + teamId + "/" + roomId + "/messages/" + messageId);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("messageContent", newMessageContent);
+        updates.put("timestamp", newTimestamp);
+
+        messageRef.updateChildrenAsync(updates);
+    }
 }
