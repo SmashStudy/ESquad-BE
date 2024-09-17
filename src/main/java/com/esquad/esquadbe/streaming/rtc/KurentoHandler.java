@@ -48,6 +48,9 @@ public class KurentoHandler extends TextWebSocketHandler {
                 case "iceCandidate":
                     handleIceCandidateFromClient(session, jsonMessage);
                     break;
+                case "receiveVideoFrom":
+                    handleReceiveVideoFrom(session, jsonMessage);
+                    break;
                 default:
                     log.warn("세션 '{}'에서 처리되지 않은 메시지 ID: {}", session.getId(), id);
                     break;
@@ -199,7 +202,6 @@ public class KurentoHandler extends TextWebSocketHandler {
         try {
             log.info("세션 '{}'에서 'receiveVideoFrom' 처리 중", session.getId());
 
-            // 'sender'와 'sdpOffer' 필드에 대한 유효성 검사
             if (jsonMessage.has("sender") && !jsonMessage.get("sender").isJsonNull() &&
                     jsonMessage.has("sdpOffer") && !jsonMessage.get("sdpOffer").isJsonNull() &&
                     !jsonMessage.get("sdpOffer").getAsString().isEmpty()) {
@@ -211,7 +213,6 @@ public class KurentoHandler extends TextWebSocketHandler {
                 KurentoUserSession user = registry.getBySession(session);
 
                 if (sender != null && user != null) {
-                    // SDP Offer 중복 처리를 방지
                     if (!user.isSdpNegotiated(senderName)) {
                         user.receiveVideoFrom(sender, sdpOffer);
                     } else {
