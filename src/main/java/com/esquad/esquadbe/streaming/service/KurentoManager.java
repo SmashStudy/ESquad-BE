@@ -77,6 +77,28 @@ public class KurentoManager {
         }
     }
 
+    public synchronized void leaveRoom(KurentoUserSession user) {
+        try {
+            KurentoRoomDto room = getRoom(user.getRoomId());
+            if (room != null) {
+                room.getParticipants().remove(user.getUserId());
+                user.close();
+                log.info("사용자 {} 방 {} 을 떠남", user.getUserId(), room.getRoomId());
+
+                JsonObject participantLeftMessage = new JsonObject();
+                participantLeftMessage.addProperty("id", "participantLeft");
+                participantLeftMessage.addProperty("userId", user.getUserId());
+                room.broadcastMessage(participantLeftMessage);
+
+                if (room.getParticipants().isEmpty()) {
+                    removeRoom(room);
+                }
+            }
+        } catch (Exception e) {
+            log.error("사용자 {} 방 {} 떠나는 중 오류 발생: {}", user.getUserId(), user.getRoomId(), e.getMessage());
+        }
+    }
+
     private void broadcastParticipantList(KurentoRoomDto room) {
         wsLock.lock();
         try {

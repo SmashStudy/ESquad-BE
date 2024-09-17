@@ -41,6 +41,9 @@ public class KurentoHandler extends TextWebSocketHandler {
                 case "joinRoom":
                     handleJoinRoom(session, jsonMessage);
                     break;
+                case "leaveRoom":
+                    handleLeaveRoom(session);
+                    break;
                 default:
                     log.warn("세션 '{}'에서 처리되지 않은 메시지 ID: {}", session.getId(), id);
                     break;
@@ -69,6 +72,25 @@ public class KurentoHandler extends TextWebSocketHandler {
         } catch (Exception e) {
             log.error("세션 '{}'에서 방 참여 처리 중 오류 발생", session.getId(), e);
             sendErrorMessage(session, "방 참여 처리 중 오류 발생");
+        }
+    }
+
+    private void handleLeaveRoom(WebSocketSession session) {
+        try {
+            log.info("세션 '{}'에서 사용자가 방을 떠나는 중", session.getId());
+
+            KurentoUserSession user = registry.removeBySession(session);
+            if (user != null) {
+                roomManager.leaveRoom(user);
+                log.info("사용자 '{}'가 방 '{}'을 떠남", user.getUserId(), user.getRoomId());
+
+
+            } else {
+                log.warn("세션 '{}'에서 사용자를 찾을 수 없음", session.getId());
+            }
+        } catch (Exception e) {
+            log.error("세션 '{}'에서 방 나가기 처리 중 오류 발생", session.getId(), e);
+            sendErrorMessage(session, "방 나가기 처리 중 오류 발생");
         }
     }
 
