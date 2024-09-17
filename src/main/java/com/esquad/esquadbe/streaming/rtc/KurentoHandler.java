@@ -67,6 +67,8 @@ public class KurentoHandler extends TextWebSocketHandler {
 
             sendExistingParticipantInfo(room, user);
 
+            broadcastParticipantList(room);
+
             exchangeIceCandidates(room, user);
 
         } catch (Exception e) {
@@ -84,7 +86,10 @@ public class KurentoHandler extends TextWebSocketHandler {
                 roomManager.leaveRoom(user);
                 log.info("사용자 '{}'가 방 '{}'을 떠남", user.getUserId(), user.getRoomId());
 
-
+                KurentoRoomDto room = roomManager.getRoom(user.getRoomId());
+                if (room != null) {
+                    broadcastParticipantList(room);
+                }
             } else {
                 log.warn("세션 '{}'에서 사용자를 찾을 수 없음", session.getId());
             }
@@ -93,6 +98,34 @@ public class KurentoHandler extends TextWebSocketHandler {
             sendErrorMessage(session, "방 나가기 처리 중 오류 발생");
         }
     }
+
+    private void broadcastParticipantList(KurentoRoomDto room) {
+        try {
+            log.info("방 '{}'의 참가자 목록을 브로드캐스트 중", room.getRoomId());
+
+            JsonObject updateMessage = new JsonObject();
+            updateMessage.addProperty("id", "updateParticipantList");
+            JsonObject participants = new JsonObject();
+
+            for (KurentoUserSession participant : room.getParticipants().values()) {
+                participants.addProperty(participant.getUserId(), participant.getNickname());
+            }
+
+            updateMessage.add("participants", participants);
+
+            for (KurentoUserSession participant : room.getParticipants().values()) {
+                participant.getSession().sendMessage(new TextMessage(updateMessage.toString()));
+            }
+
+            log.info("방 '{}'의 참가자 목록 브로드캐스트 완료", room.getRoomId());
+        } catch (Exception e) {
+            log.error("방 '{}'의 참가자 목록 브로드캐스트 중 오류 발생", room.getRoomId(), e);
+            for (KurentoUserSession participant : room.getParticipants().values()) {
+                sendErrorMessage(participant.getSession(), "참가자 목록 브로드캐스트 중 오류 발생");
+            }
+        }
+    }
+
 
     private void exchangeIceCandidates(KurentoRoomDto room, KurentoUserSession user) {
         for (KurentoUserSession participant : room.getParticipants().values()) {
