@@ -53,6 +53,15 @@ public class KurentoUserSession {
         webRtcEndpoints.clear();
     }
 
+    public void sendExistingParticipantInfoToNewUser(KurentoUserSession existingUser) {
+        JsonObject message = new JsonObject();
+        message.addProperty("id", "existingParticipant");
+        message.addProperty("userId", existingUser.getUserId());
+        message.addProperty("nickname", existingUser.getNickname());
+
+        sendMessage(message);
+    }
+
     public void sendNewParticipantInfoToExistingUser(KurentoUserSession newUser) {
         JsonObject message = new JsonObject();
         message.addProperty("id", "newParticipant");

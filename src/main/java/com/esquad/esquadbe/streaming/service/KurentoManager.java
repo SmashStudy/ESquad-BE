@@ -44,6 +44,7 @@ public class KurentoManager {
 
                     participant.sendNewParticipantInfoToExistingUser(user);
 
+                    user.sendExistingParticipantInfoToNewUser(participant);
 
                 }
             }
