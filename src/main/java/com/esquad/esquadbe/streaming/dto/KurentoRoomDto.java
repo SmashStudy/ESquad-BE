@@ -35,4 +35,13 @@ public class KurentoRoomDto {
         });
     }
 
+    public void broadcastNewParticipant(String userId, String nickname) {
+        JsonObject newParticipantMessage = new JsonObject();
+        newParticipantMessage.addProperty("id", "newParticipantArrived");
+        newParticipantMessage.addProperty("userId", userId);
+        newParticipantMessage.addProperty("nickname", nickname);
+
+        broadcastMessage(newParticipantMessage);
+    }
+
 }
