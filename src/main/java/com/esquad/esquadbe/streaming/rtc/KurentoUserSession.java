@@ -182,6 +182,26 @@ public class KurentoUserSession {
         }
     }
 
+    public void sendIceCandidates(KurentoUserSession remoteUser, String senderId) {
+        if (this.webRtcEndpoints.containsKey(senderId)) {
+            WebRtcEndpoint webRtcEndpoint = this.webRtcEndpoints.get(senderId);
+            if (webRtcEndpoint != null) {
+                webRtcEndpoint.addIceCandidateFoundListener(event -> {
+                    try {
+                        JsonObject iceCandidateMessage = new JsonObject();
+                        iceCandidateMessage.addProperty("id", "iceCandidate");
+                        iceCandidateMessage.add("candidate", JsonUtils.toJsonObject(event.getCandidate()));
+                        iceCandidateMessage.addProperty("userId", this.userId);
+
+                        remoteUser.sendMessage(iceCandidateMessage);
+                    } catch (Exception e) {
+                        log.error("사용자에게 ICE 후보자 전송 중 오류 발생: {}", e.getMessage());
+                    }
+                });
+            }
+        }
+    }
+
     public boolean isSdpNegotiated(String senderId) {
         return sdpNegotiatedMap.getOrDefault(senderId, false);
     }

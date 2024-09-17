@@ -64,9 +64,24 @@ public class KurentoHandler extends TextWebSocketHandler {
 
             sendExistingParticipantInfo(room, user);
 
+            exchangeIceCandidates(room, user);
+
         } catch (Exception e) {
             log.error("세션 '{}'에서 방 참여 처리 중 오류 발생", session.getId(), e);
             sendErrorMessage(session, "방 참여 처리 중 오류 발생");
+        }
+    }
+
+    private void exchangeIceCandidates(KurentoRoomDto room, KurentoUserSession user) {
+        for (KurentoUserSession participant : room.getParticipants().values()) {
+            if (!participant.getUserId().equals(user.getUserId())) {
+                try {
+                    participant.sendIceCandidates(user, user.getUserId());
+                    user.sendIceCandidates(participant, participant.getUserId());
+                } catch (Exception e) {
+                    log.error("ICE 후보자 교환 중 오류 발생: {}", e.getMessage(), e);
+                }
+            }
         }
     }
 
