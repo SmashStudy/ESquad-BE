@@ -44,6 +44,7 @@ dependencies {
     implementation platform('io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1')
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3:3.1.1")
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation group: 'org.kurento', name: 'kurento-client', version: '6.18.0'
 }
 
 tasks.named('test') {
