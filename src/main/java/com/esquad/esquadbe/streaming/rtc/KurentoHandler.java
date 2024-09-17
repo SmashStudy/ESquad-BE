@@ -39,7 +39,7 @@ public class KurentoHandler extends TextWebSocketHandler {
 
             switch (id) {
                 case "joinRoom":
-                    //handleJoinRoom(session, jsonMessage);
+                    handleJoinRoom(session, jsonMessage);
                     break;
                 default:
                     log.warn("세션 '{}'에서 처리되지 않은 메시지 ID: {}", session.getId(), id);
@@ -49,6 +49,31 @@ public class KurentoHandler extends TextWebSocketHandler {
             log.error("세션 '{}'에서 WebSocket 메시지 처리 중 오류 발생", session.getId(), e);
             sendErrorMessage(session, "메시지 처리 중 오류 발생");
         }
+    }
+
+    private void handleJoinRoom(WebSocketSession session, JsonObject jsonMessage) {
+        try {
+            log.info("세션 '{}'에서 'joinRoom' 처리 중", session.getId());
+
+            String roomId = jsonMessage.get("roomID").getAsString();
+            String userId = jsonMessage.get("userId").getAsString();
+            String nickname = jsonMessage.get("nickname").getAsString();
+
+            KurentoRoomDto room = getOrCreateRoom(roomId);
+
+        } catch (Exception e) {
+            log.error("세션 '{}'에서 방 참여 처리 중 오류 발생", session.getId(), e);
+            sendErrorMessage(session, "방 참여 처리 중 오류 발생");
+        }
+    }
+
+    private KurentoRoomDto getOrCreateRoom(String roomId) {
+        KurentoRoomDto room = roomManager.getRoom(roomId);
+        if (room == null) {
+            log.info("새로운 방 생성 중: 방 ID '{}'", roomId);
+            room = roomManager.createRoom(roomId, kurentoClient);
+        }
+        return room;
     }
 
     private void sendErrorMessage(WebSocketSession session, String error) {
