@@ -171,6 +171,20 @@ public class KurentoUserSession {
         }
     }
 
+    public void addIceCandidate(String senderId, IceCandidate candidate) {
+        WebRtcEndpoint webRtcEndpoint = webRtcEndpoints.get(senderId);
+        if (webRtcEndpoint != null) {
+            try {
+                webRtcEndpoint.addIceCandidate(candidate);
+            } catch (Exception e) {
+                log.error("ICE 후보자 추가 중 오류 발생: {}", e.getMessage());
+                pendingIceCandidates.add(candidate);
+            }
+        } else {
+            pendingIceCandidates.add(candidate);
+        }
+    }
+
     private void addIceCandidateListener(String senderId, WebRtcEndpoint webRtcEndpoint) {
         if (webRtcEndpoint != null) {
             webRtcEndpoint.addIceCandidateFoundListener(event -> {

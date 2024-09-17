@@ -6,6 +6,7 @@ import com.esquad.esquadbe.streaming.service.KurentoUserRegistry;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
+import org.kurento.client.IceCandidate;
 import org.kurento.client.KurentoClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +45,9 @@ public class KurentoHandler extends TextWebSocketHandler {
                 case "leaveRoom":
                     handleLeaveRoom(session);
                     break;
+                case "iceCandidate":
+                    handleIceCandidateFromClient(session, jsonMessage);
+                    break;
                 default:
                     log.warn("세션 '{}'에서 처리되지 않은 메시지 ID: {}", session.getId(), id);
                     break;
@@ -53,6 +57,32 @@ public class KurentoHandler extends TextWebSocketHandler {
             sendErrorMessage(session, "메시지 처리 중 오류 발생");
         }
     }
+
+    private void handleIceCandidateFromClient(WebSocketSession session, JsonObject jsonMessage) {
+        try {
+            KurentoUserSession user = registry.getBySession(session);
+            if (user == null) {
+                log.warn("ICE 후보자가 수신되었지만, 세션 '{}'에서 사용자를 찾을 수 없음", session.getId());
+                return;
+            }
+
+            JsonObject candidate = jsonMessage.get("candidate").getAsJsonObject();
+            IceCandidate iceCandidate = new IceCandidate(
+                    candidate.get("candidate").getAsString(),
+                    candidate.get("sdpMid").getAsString(),
+                    candidate.get("sdpMLineIndex").getAsInt()
+            );
+
+            String senderId = jsonMessage.get("userId").getAsString(); // senderId를 포함해야 함
+            user.addIceCandidate(senderId, iceCandidate);
+            log.info("세션 '{}'에서 sender '{}'의 ICE 후보자 추가 완료: {}", session.getId(), senderId, iceCandidate);
+
+        } catch (Exception e) {
+            log.error("세션 '{}'에서 ICE 후보자 처리 중 오류 발생", session.getId(), e);
+            sendErrorMessage(session, "ICE 후보자 처리 중 오류 발생: " + e.getMessage());
+        }
+    }
+
 
     private void handleJoinRoom(WebSocketSession session, JsonObject jsonMessage) {
         try {
