@@ -46,6 +46,8 @@ public class KurentoManager {
 
                     user.sendExistingParticipantInfoToNewUser(participant);
 
+                    String offerSdp = participant.generateSdpOffer(user.getUserId());
+                    user.receiveVideoFrom(participant, offerSdp);
                 }
             }
 

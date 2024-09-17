@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.kurento.client.IceCandidate;
 import org.kurento.client.MediaPipeline;
 import org.kurento.client.WebRtcEndpoint;
+import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.TextMessage;
@@ -52,6 +53,26 @@ public class KurentoUserSession {
         }
         webRtcEndpoints.clear();
     }
+
+    public String generateSdpOffer(String senderId) {
+        try {
+            WebRtcEndpoint webRtcEndpoint = getWebRtcEndpoint(senderId);
+            if (webRtcEndpoint == null) {
+                log.info("WebRtcEndpoint가 없음. 사용자 '{}'에 대해 새로 생성 중...", senderId);
+                webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
+                addIceCandidateListener(senderId, webRtcEndpoint);
+                setWebRtcEndpoint(senderId, webRtcEndpoint);
+            }
+
+            String sdpOffer = webRtcEndpoint.generateOffer();
+            log.info("SDP Offer 생성 완료: 사용자 '{}', SDP Offer: {}", senderId, sdpOffer);
+            return sdpOffer;
+        } catch (Exception e) {
+            log.error("SDP Offer 생성 중 오류 발생: {}", e.getMessage());
+            return null;
+        }
+    }
+
 
     public void sendExistingParticipantInfoToNewUser(KurentoUserSession existingUser) {
         JsonObject message = new JsonObject();
@@ -102,4 +123,79 @@ public class KurentoUserSession {
             }
         }
     }
+
+    public void receiveVideoFrom(KurentoUserSession sender, String sdpOffer) {
+        try {
+            String senderId = sender.getUserId();
+            log.info("사용자 '{}'로부터 비디오 수신 중", senderId);
+
+            // 이미 협상된 상태인 경우, 새로 SDP Offer 처리하지 않음
+            if (isSdpNegotiated(senderId)) {
+                log.warn("사용자 '{}'와 이미 협상이 완료된 상태입니다. SDP Offer 처리를 건너뜁니다.", senderId);
+                return;
+            }
+
+            // 새로운 WebRtcEndpoint 생성
+            log.info("WebRtcEndpoint가 없음. 사용자 '{}'에 대해 새로 생성 중", senderId);
+            WebRtcEndpoint webRtcEndpoint = new WebRtcEndpoint.Builder(pipeline).build();
+            addIceCandidateListener(senderId, webRtcEndpoint);
+            setWebRtcEndpoint(senderId, webRtcEndpoint);
+            log.info("WebRtcEndpoint 생성 완료: {}", webRtcEndpoint);
+
+            log.info("SDP Offer 처리 중. 사용자 '{}'", senderId);
+            String sdpAnswer = webRtcEndpoint.processOffer(sdpOffer);
+            log.info("SDP Answer 생성 완료: 사용자 '{}', SDP Answer: {}", senderId, sdpAnswer);
+
+            webRtcEndpoint.gatherCandidates();
+            log.info("ICE 후보자 수집 시작: 사용자 '{}'", senderId);
+
+            setSdpNegotiated(senderId, true); // 협상 완료 상태 설정
+            log.info("SDP 협상 완료: 사용자 '{}'", senderId);
+
+            JsonObject response = new JsonObject();
+            response.addProperty("id", "receiveVideoAnswer");
+            response.addProperty("sdpAnswer", sdpAnswer);
+            sendMessage(response);
+
+            if (!pendingIceCandidates.isEmpty()) {
+                log.info("준비된 WebRtcEndpoint에 대기 중이던 ICE 후보자 추가 중: 사용자 '{}'", senderId);
+                for (IceCandidate candidate : pendingIceCandidates) {
+                    webRtcEndpoint.addIceCandidate(candidate);
+                }
+                pendingIceCandidates.clear();
+                log.info("ICE 후보자 추가 완료: 사용자 '{}'", senderId);
+            }
+
+        } catch (Exception e) {
+            log.error("사용자로부터 비디오 수신 중 오류 발생: 사용자 '{}', 오류: {}", sender.getUserId(), e.getMessage(), e);
+        }
+    }
+
+    private void addIceCandidateListener(String senderId, WebRtcEndpoint webRtcEndpoint) {
+        if (webRtcEndpoint != null) {
+            webRtcEndpoint.addIceCandidateFoundListener(event -> {
+                JsonObject response = new JsonObject();
+                response.addProperty("id", "iceCandidate");
+                response.add("candidate", JsonUtils.toJsonObject(event.getCandidate()));
+                sendMessage(response);
+            });
+        }
+    }
+
+    public boolean isSdpNegotiated(String senderId) {
+        return sdpNegotiatedMap.getOrDefault(senderId, false);
+    }
+
+    public void setSdpNegotiated(String senderId, boolean negotiated) {
+        sdpNegotiatedMap.put(senderId, negotiated);
+    }
+
+    public WebRtcEndpoint getWebRtcEndpoint(String senderId) {
+        return webRtcEndpoints.get(senderId);
+    }
+
+    public void setWebRtcEndpoint(String senderId, WebRtcEndpoint webRtcEndpoint) {
+        webRtcEndpoints.put(senderId, webRtcEndpoint);
+    }
+
 }
