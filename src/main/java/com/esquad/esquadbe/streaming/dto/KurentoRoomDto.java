@@ -44,4 +44,11 @@ public class KurentoRoomDto {
         broadcastMessage(newParticipantMessage);
     }
 
+    public void close() {
+        if (pipeline != null) {
+            pipeline.release();
+        }
+        participants.clear();
+    }
+
 }
