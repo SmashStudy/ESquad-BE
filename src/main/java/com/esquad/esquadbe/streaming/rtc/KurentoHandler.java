@@ -17,5 +17,6 @@ public class KurentoHandler extends TextWebSocketHandler {
     private static final Logger log = LoggerFactory.getLogger(KurentoHandler.class);
     private final KurentoUserRegistry registry;
     private final KurentoManager roomManager;
+    private final KurentoClient kurentoClient;
     private final Gson gson = new Gson();
 }
