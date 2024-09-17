@@ -37,7 +37,16 @@ public class KurentoManager {
             user.setPipeline(room.getPipeline());
             log.info("사용자 {} 방 {} 에 참여함", user.getUserId(), room.getRoomId());
 
+            room.broadcastNewParticipant(user.getUserId(), user.getNickname());
 
+            for (KurentoUserSession participant : room.getParticipants().values()) {
+                if (!participant.getUserId().equals(user.getUserId())) {
+
+                    participant.sendNewParticipantInfoToExistingUser(user);
+
+
+                }
+            }
 
         } catch (Exception e) {
             log.error("사용자 {} 의 방 {} 참여 처리 중 오류 발생: {}", user.getUserId(), room.getRoomId(), e.getMessage());
