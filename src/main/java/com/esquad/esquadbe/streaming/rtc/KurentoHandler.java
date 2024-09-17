@@ -62,10 +62,72 @@ public class KurentoHandler extends TextWebSocketHandler {
             KurentoRoomDto room = getOrCreateRoom(roomId);
             KurentoUserSession user = createUserSession(session, userId, nickname, roomId, room);
 
+            sendExistingParticipantInfo(room, user);
 
         } catch (Exception e) {
             log.error("세션 '{}'에서 방 참여 처리 중 오류 발생", session.getId(), e);
             sendErrorMessage(session, "방 참여 처리 중 오류 발생");
+        }
+    }
+
+    private void sendExistingParticipantInfo(KurentoRoomDto room, KurentoUserSession user) {
+        for (KurentoUserSession participant : room.getParticipants().values()) {
+            if (!participant.getUserId().equals(user.getUserId())) {
+                try {
+                    participant.sendExistingParticipantInfoToNewUser(user);
+                    user.sendExistingParticipantInfoToNewUser(participant);
+
+                    if (!participant.isSdpNegotiated(user.getUserId())) {
+                        String sdpOffer = participant.generateSdpOffer(user.getUserId());
+                        if (sdpOffer != null) {
+                            JsonObject receiveVideoMessage = new JsonObject();
+                            receiveVideoMessage.addProperty("sender", participant.getUserId());
+                            receiveVideoMessage.addProperty("sdpOffer", sdpOffer);
+                            handleReceiveVideoFrom(user.getSession(), receiveVideoMessage);
+                        } else {
+                            log.warn("SDP Offer 생성 실패: 사용자 '{}'", participant.getUserId());
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("참가자 정보 전달 중 오류 발생: {}", e.getMessage(), e);
+                }
+            }
+        }
+    }
+
+    private void handleReceiveVideoFrom(WebSocketSession session, JsonObject jsonMessage) {
+        try {
+            log.info("세션 '{}'에서 'receiveVideoFrom' 처리 중", session.getId());
+
+            // 'sender'와 'sdpOffer' 필드에 대한 유효성 검사
+            if (jsonMessage.has("sender") && !jsonMessage.get("sender").isJsonNull() &&
+                    jsonMessage.has("sdpOffer") && !jsonMessage.get("sdpOffer").isJsonNull() &&
+                    !jsonMessage.get("sdpOffer").getAsString().isEmpty()) {
+
+                String senderName = jsonMessage.get("sender").getAsString();
+                String sdpOffer = jsonMessage.get("sdpOffer").getAsString();
+
+                KurentoUserSession sender = registry.getByName(senderName);
+                KurentoUserSession user = registry.getBySession(session);
+
+                if (sender != null && user != null) {
+                    // SDP Offer 중복 처리를 방지
+                    if (!user.isSdpNegotiated(senderName)) {
+                        user.receiveVideoFrom(sender, sdpOffer);
+                    } else {
+                        log.warn("사용자 '{}'와 이미 협상이 완료된 상태입니다.", senderName);
+                    }
+                } else {
+                    log.warn("세션 '{}'에서 송신자 또는 사용자를 찾을 수 없음", session.getId());
+                    sendErrorMessage(session, "송신자 또는 사용자를 찾을 수 없음");
+                }
+            } else {
+                log.warn("메시지에 'sender' 또는 'sdpOffer' 필드가 누락되었거나 유효하지 않음: {}", jsonMessage);
+                sendErrorMessage(session, "필수 필드 누락 또는 유효하지 않음: sender 또는 sdpOffer");
+            }
+        } catch (Exception e) {
+            log.error("세션 '{}'에서 SDP 제안 처리 중 오류 발생", session.getId(), e);
+            sendErrorMessage(session, "SDP 제안 처리 중 오류 발생");
         }
     }
 

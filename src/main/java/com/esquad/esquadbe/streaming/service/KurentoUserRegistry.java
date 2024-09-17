@@ -52,4 +52,11 @@ public class KurentoUserRegistry {
         log.info("현재 등록된 사용자 목록: {}", usersByName.keySet());
         log.info("현재 등록된 세션 목록: {}", usersBySessionId.keySet());
     }
+
+    public KurentoUserSession getByName(String name) {
+        KurentoUserSession user = usersByName.get(name);
+        log.info("이름으로 사용자 조회: {}", name);
+        log.debug("조회된 사용자: {}", user != null ? user.getUserId() : "없음");
+        return user;
+    }
 }
