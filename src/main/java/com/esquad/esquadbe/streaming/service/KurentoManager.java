@@ -35,6 +35,16 @@ public class KurentoManager {
         return room;
     }
 
+    public synchronized void removeRoom(KurentoRoomDto room) {
+        try {
+            roomMap.getChannelRooms().remove(room.getRoomId());
+            room.close();
+            log.info("방 {} 삭제 및 종료됨", room.getRoomId());
+        } catch (Exception e) {
+            log.error("방 {} 삭제 중 오류 발생: {}", room.getRoomId(), e.getMessage());
+        }
+    }
+
     public synchronized void joinRoom(KurentoRoomDto room, KurentoUserSession user) {
         try {
             if (room.getParticipants().size() >= MAX_PARTICIPANTS) {
