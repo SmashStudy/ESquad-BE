@@ -51,6 +51,9 @@ public class KurentoHandler extends TextWebSocketHandler {
                 case "receiveVideoFrom":
                     handleReceiveVideoFrom(session, jsonMessage);
                     break;
+                case "newParticipantArrived":
+                    handleNewParticipantArrived(session, jsonMessage);
+                    break;
                 default:
                     log.warn("세션 '{}'에서 처리되지 않은 메시지 ID: {}", session.getId(), id);
                     break;
@@ -58,6 +61,17 @@ public class KurentoHandler extends TextWebSocketHandler {
         } catch (Exception e) {
             log.error("세션 '{}'에서 WebSocket 메시지 처리 중 오류 발생", session.getId(), e);
             sendErrorMessage(session, "메시지 처리 중 오류 발생");
+        }
+    }
+
+    private void handleNewParticipantArrived(WebSocketSession session, JsonObject jsonMessage) {
+        try {
+            String userId = jsonMessage.get("userId").getAsString();
+            String nickname = jsonMessage.get("nickname").getAsString();
+            log.info("새로운 참가자가 도착했습니다: {} ({}), 세션 '{}'", nickname, userId, session.getId());
+        } catch (Exception e) {
+            log.error("세션 '{}'에서 새로운 참가자 도착 처리 중 오류 발생", session.getId(), e);
+            sendErrorMessage(session, "새로운 참가자 처리 중 오류 발생");
         }
     }
 
