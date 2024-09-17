@@ -54,6 +54,9 @@ public class KurentoHandler extends TextWebSocketHandler {
                 case "newParticipantArrived":
                     handleNewParticipantArrived(session, jsonMessage);
                     break;
+                case "updateParticipantList":
+                    handleUpdateParticipantList(session, jsonMessage);
+                    break;
                 default:
                     log.warn("세션 '{}'에서 처리되지 않은 메시지 ID: {}", session.getId(), id);
                     break;
@@ -61,6 +64,17 @@ public class KurentoHandler extends TextWebSocketHandler {
         } catch (Exception e) {
             log.error("세션 '{}'에서 WebSocket 메시지 처리 중 오류 발생", session.getId(), e);
             sendErrorMessage(session, "메시지 처리 중 오류 발생");
+        }
+    }
+
+    private void handleUpdateParticipantList(WebSocketSession session, JsonObject jsonMessage) {
+        try {
+            log.info("세션 '{}'에서 참가자 목록 업데이트 수신: {}", session.getId(), jsonMessage);
+            JsonObject participantsJson = jsonMessage.getAsJsonObject("participants");
+            log.debug("업데이트된 참가자 목록: {}", participantsJson);
+        } catch (Exception e) {
+            log.error("세션 '{}'에서 참가자 목록 업데이트 처리 중 오류 발생", session.getId(), e);
+            sendErrorMessage(session, "참가자 목록 업데이트 처리 중 오류 발생");
         }
     }
 
