@@ -37,4 +37,18 @@ public class KurentoUserSession {
         this.session = session;
         this.roomId = roomId;
     }
+
+    public void setPipeline(MediaPipeline pipeline) {
+        this.pipeline = pipeline;
+    }
+
+    public void close() {
+        for (WebRtcEndpoint webRtcEndpoint : webRtcEndpoints.values()) {
+            if (webRtcEndpoint != null) {
+                webRtcEndpoint.release();
+            }
+        }
+        webRtcEndpoints.clear();
+    }
+
 }

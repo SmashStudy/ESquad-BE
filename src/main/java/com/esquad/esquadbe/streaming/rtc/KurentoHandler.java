@@ -60,6 +60,8 @@ public class KurentoHandler extends TextWebSocketHandler {
             String nickname = jsonMessage.get("nickname").getAsString();
 
             KurentoRoomDto room = getOrCreateRoom(roomId);
+            KurentoUserSession user = createUserSession(session, userId, nickname, roomId, room);
+
 
         } catch (Exception e) {
             log.error("세션 '{}'에서 방 참여 처리 중 오류 발생", session.getId(), e);
@@ -74,6 +76,15 @@ public class KurentoHandler extends TextWebSocketHandler {
             room = roomManager.createRoom(roomId, kurentoClient);
         }
         return room;
+    }
+
+    private KurentoUserSession createUserSession(WebSocketSession session, String userId, String nickname, String roomId, KurentoRoomDto room) {
+        KurentoUserSession user = new KurentoUserSession(userId, nickname, session, roomId);
+        user.setPipeline(room.getPipeline());
+        roomManager.joinRoom(room, user);
+        registry.register(user);
+        log.info("사용자 '{}'가 방 '{}'에 참여함", userId, roomId);
+        return user;
     }
 
     private void sendErrorMessage(WebSocketSession session, String error) {
