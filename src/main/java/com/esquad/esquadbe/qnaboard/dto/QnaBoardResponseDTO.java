@@ -1,9 +1,6 @@
 package com.esquad.esquadbe.qnaboard.dto;
 
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
-import com.esquad.esquadbe.studypage.entity.Book;
-import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.user.entity.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,9 +13,12 @@ import java.time.format.DateTimeFormatter;
 public class QnaBoardResponseDTO  {
     private Long id;
     private String title;
-    private User user;
-    private Book book;
-    private TeamSpace teamSpace;
+    private Long userId;
+    private String writerName;
+    private Long bookId;
+    private String bookTitle;
+    private Long teamSpaceId;
+    private String teamSpaceName;
     private String content;
     private String createdAt;
     private String modifiedAt;
@@ -29,9 +29,12 @@ public class QnaBoardResponseDTO  {
         return QnaBoardResponseDTO.builder()
                 .id(bookQnaBoard.getId())
                 .title(bookQnaBoard.getTitle())
-                .user(bookQnaBoard.getWriter())
-                .book(bookQnaBoard.getBook())
-                .teamSpace(bookQnaBoard.getTeamSpace())
+                .userId(bookQnaBoard.getWriter().getId())
+                .writerName(bookQnaBoard.getWriter().getNickname())
+                .bookId(bookQnaBoard.getBook().getId())
+                .bookTitle(bookQnaBoard.getBook().getTitle())
+                .teamSpaceId(bookQnaBoard.getTeamSpace().getId())
+                .teamSpaceName(bookQnaBoard.getTeamSpace().getTeamName())
                 .content(bookQnaBoard.getContent())
                 .createdAt(bookQnaBoard.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 .modifiedAt(bookQnaBoard.getModifiedAt() != null
@@ -40,4 +43,5 @@ public class QnaBoardResponseDTO  {
                 .likes(bookQnaBoard.getLikes())
                 .build();
     }
+
 }
