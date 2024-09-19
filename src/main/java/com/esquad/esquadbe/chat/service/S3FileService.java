@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.UUID;
@@ -32,4 +33,15 @@ public class S3FileService {
             throw new RuntimeException(e);
         }
     }
+
+    public void deleteFile(String fileName) {
+        try{
+            s3Client.deleteObject(DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName).build());
+        } catch (RuntimeException e) {
+            throw new RuntimeException("파일 삭제에 실패했음 : " + e.getMessage());
+        }
+    }
+
 }
