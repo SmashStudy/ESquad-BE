@@ -5,9 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.util.UUID;
@@ -44,4 +47,17 @@ public class S3FileService {
         }
     }
 
+    public byte[] downloadFile(String fileName) {
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .build();
+
+            ResponseBytes<GetObjectResponse> s3FileObjet = s3Client.getObjectAsBytes(getObjectRequest);
+            return s3FileObjet.asByteArray();
+        }catch (RuntimeException e) {
+            throw new IllegalArgumentException("파일 다운로드에 실패했음 : " + e.getMessage());
+        }
+    }
 }
