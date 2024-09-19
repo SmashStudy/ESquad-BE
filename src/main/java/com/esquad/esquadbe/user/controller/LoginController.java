@@ -19,11 +19,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/users")
 public class LoginController {
 
     private final LoginService loginService;
@@ -31,7 +33,7 @@ public class LoginController {
     private final RefreshTokenService refreshTokenService;
 
 
-    @PostMapping("/sign-in")
+    @PostMapping("login")
     public ResponseEntity<ApiResponseEntity> login(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
         // login 체크 후 token 생성
         var loginInfo = loginService.login(loginRequestDTO);
@@ -39,7 +41,7 @@ public class LoginController {
         return ApiResponseEntity.successResponseEntity(loginInfo);
     }
 
-    @GetMapping("/user")
+    @GetMapping("/inquiry")
     public ResponseEntity<ApiResponseEntity> dashboard(Authentication authentication) {
         // 사용자 정보 조회
         var result = userGetService.getUserById(JwtUtil.getLoginId(authentication));
