@@ -5,7 +5,9 @@ import com.esquad.esquadbe.chat.entity.S3FileEntity;
 import com.esquad.esquadbe.chat.repository.S3FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,5 +48,18 @@ public class FileService {
         S3FileEntity s3FileEntity = s3FileRepository.findByFileName(filename)
                 .orElseThrow(() -> new IllegalArgumentException("삭제할 해당 파일이 없음" + filename));
         s3FileRepository.delete(s3FileEntity);
+    }
+
+    public ResponseEntity<byte[]> downloadFile(String fileName) {
+        S3FileEntity s3FileEntity = s3FileRepository.findByFileName(fileName)
+                .orElseThrow(() -> new RuntimeException("다운로드 할 파일이 없음 : " + fileName));
+
+        byte[] fileData = s3FileService.downloadFile(s3FileEntity.getFileName());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + s3FileEntity.getOriginalFilename());
+        headers.setContentLength(fileData.length);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
     }
 }
