@@ -21,4 +21,10 @@ public class S3FileController {
 
         return fileService.uploadFile(multipartFile, username);
     }
+
+    @DeleteMapping("/delete/{filename}")
+    public ResponseEntity<String> deleteFile(@PathVariable String filename) {
+        fileService.deleteFile(filename);
+        return ResponseEntity.ok("File deleted successfully with " + filename);
+    }
 }
