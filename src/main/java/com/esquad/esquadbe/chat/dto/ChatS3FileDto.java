@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Getter
 @Builder
 @AllArgsConstructor
-public class S3FileDto {
+public class ChatS3FileDto {
     private String userName;
     private String originalFileName;
     private String fileName;

@@ -1,8 +1,8 @@
 package com.esquad.esquadbe.chat.service;
 
-import com.esquad.esquadbe.chat.dto.S3FileDto;
-import com.esquad.esquadbe.chat.entity.S3FileEntity;
-import com.esquad.esquadbe.chat.repository.S3FileRepository;
+import com.esquad.esquadbe.chat.dto.ChatS3FileDto;
+import com.esquad.esquadbe.chat.entity.ChatS3FileEntity;
+import com.esquad.esquadbe.chat.repository.ChatS3FileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -18,9 +18,9 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class FileService {
-    private final S3FileService s3FileService;
-    private final S3FileRepository s3FileRepository;
+public class ChatFileService {
+    private final ChatS3FileService s3FileService;
+    private final ChatS3FileRepository s3FileRepository;
 
     @Transactional
     public ResponseEntity<?> uploadFile(MultipartFile file, String username) {
@@ -30,9 +30,9 @@ public class FileService {
             }
             String storedFileName = s3FileService.uploadFile(file);
 
-            S3FileDto s3FileDto = new S3FileDto(username, file.getOriginalFilename(), storedFileName, LocalDate.now());
+            ChatS3FileDto s3FileDto = new ChatS3FileDto(username, file.getOriginalFilename(), storedFileName, LocalDate.now());
 
-            S3FileEntity fileEntity = new S3FileEntity(s3FileDto.getUserName(), s3FileDto.getOriginalFileName(), s3FileDto.getFileName());
+            ChatS3FileEntity fileEntity = new ChatS3FileEntity(s3FileDto.getUserName(), s3FileDto.getOriginalFileName(), s3FileDto.getFileName());
 
             s3FileRepository.save(fileEntity);
             return ResponseEntity.ok(s3FileDto);
@@ -45,13 +45,13 @@ public class FileService {
 
     @Transactional
     public void deleteFile (String filename) {
-        S3FileEntity s3FileEntity = s3FileRepository.findByFileName(filename)
+        ChatS3FileEntity s3FileEntity = s3FileRepository.findByFileName(filename)
                 .orElseThrow(() -> new IllegalArgumentException("삭제할 해당 파일이 없음" + filename));
         s3FileRepository.delete(s3FileEntity);
     }
 
     public ResponseEntity<byte[]> downloadFile(String fileName) {
-        S3FileEntity s3FileEntity = s3FileRepository.findByFileName(fileName)
+        ChatS3FileEntity s3FileEntity = s3FileRepository.findByFileName(fileName)
                 .orElseThrow(() -> new RuntimeException("다운로드 할 파일이 없음 : " + fileName));
 
         byte[] fileData = s3FileService.downloadFile(s3FileEntity.getFileName());

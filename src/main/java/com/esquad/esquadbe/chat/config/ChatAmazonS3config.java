@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 @Slf4j
 @Configuration
-public class AmazonS3config {
+public class ChatAmazonS3config {
 
     @Value("${cloud.aws.credentials.chat_accessKey}")
     private String accessKey;
@@ -21,7 +21,8 @@ public class AmazonS3config {
     private String secretKey;
     @Value("${cloud.aws.chat_region.static}")
     private String region;
-    @Bean
+
+    @Bean (name = "chatAwsCredentialsProvider")
     @Primary
     public AwsCredentialsProvider awsCredentialsProvider() {
         return () -> new AwsCredentials() {

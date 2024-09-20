@@ -1,6 +1,5 @@
 package com.esquad.esquadbe.chat.service;
 
-import com.esquad.esquadbe.chat.repository.S3FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.util.UUID;
 
 @Service
-public class S3FileService {
+public class ChatS3FileService {
     @Value("${cloud.aws.s3.chat_bucket}")
     private String bucketName;
 

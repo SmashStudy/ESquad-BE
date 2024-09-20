@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class S3FileEntity extends BasicEntity {
+public class ChatS3FileEntity extends BasicEntity {
     @Id
     @Column(name = "USERNAME" , nullable = false, length = 20)
     private String userName;

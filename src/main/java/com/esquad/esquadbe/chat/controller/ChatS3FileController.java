@@ -1,6 +1,6 @@
 package com.esquad.esquadbe.chat.controller;
 
-import com.esquad.esquadbe.chat.service.FileService;
+import com.esquad.esquadbe.chat.service.ChatFileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 @RequestMapping("/api/chat/file")
 public class ChatS3FileController {
 
-    private final FileService fileService;
+    private final ChatFileService fileService;
 
     @PostMapping("/upload")
     public ResponseEntity<?> fileUpload(@RequestPart(value = "file", required = false) MultipartFile multipartFile,
