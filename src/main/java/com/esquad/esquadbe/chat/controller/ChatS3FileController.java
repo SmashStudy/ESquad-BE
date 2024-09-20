@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/chat/file")
-public class S3FileController {
+public class ChatS3FileController {
 
     private final FileService fileService;
 
