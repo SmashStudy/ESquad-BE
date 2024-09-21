@@ -32,30 +32,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String token = request.getHeader("Authorization");
 
         String username = null;
-        System.out.println("token is " + token);
-        // Bearer token 검증 후 username 조회
+
         if(token != null && !token.isEmpty()) {
             String jwtToken = token.substring(7);
 
 
             username = jwtProvider.getUsernameFromToken(jwtToken);
-            System.out.println("token username: " + username);
+            System.out.println("token id: " + username);
         }
 
-        // token 검증 완료 후 SecurityContextHolder 내 인증 정보가 없는 경우 저장
+
         if(username != null && !username.isEmpty() && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Spring Security Context Holder 인증 정보 set
             SecurityContextHolder.getContext().setAuthentication(getUserAuth(username));
         }
 
         filterChain.doFilter(request,response);
     }
 
-    /**
-     * token의 사용자 idx를 이용하여 사용자 정보 조회하고, UsernamePasswordAuthenticationToken 생성
-     * @param username 사용자 idx
-     * @return 사용자 UsernamePasswordAuthenticationToken
-     */
     private UsernamePasswordAuthenticationToken getUserAuth(String username) {
         var userInfo = userGetService.getUserById(Long.parseLong(username));
 
