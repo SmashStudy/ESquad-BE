@@ -1,8 +1,11 @@
 package com.esquad.esquadbe.qnaboard.service;
 
 import com.esquad.esquadbe.exception.ResourceNotFoundException;
+import com.esquad.esquadbe.exception.UnauthorizedException;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
+import com.esquad.esquadbe.qnaboard.entity.BookQnaLike;
+import com.esquad.esquadbe.qnaboard.repository.BookQnaLikeRepository;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
@@ -11,6 +14,7 @@ import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +22,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+@Slf4j
 @Transactional
 @RequiredArgsConstructor
 @Service
@@ -27,8 +33,8 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final BookRepository bookRepository;
     private final TeamSpaceRepository teamSpaceRepository;
+    private final BookQnaLikeRepository likeRepository;
 
-    // User, Book, TeamSpace 엔티티를 찾기 위한 헬퍼 메서드 추가
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
@@ -48,10 +54,10 @@ public class QuestionService {
     public Page<QnaBoardResponseDTO> getAllQuestions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
 
-        // questionRepository.findAll은 항상 빈 페이지를 반환하므로 null 검사 불필요
+
         Page<BookQnaBoard> questionPage = questionRepository.findAll(pageable);
 
-        // 결과를 DTO로 매핑하여 반환
+
         return questionPage.map(QnaBoardResponseDTO::from);
     }
 
@@ -65,7 +71,7 @@ public class QuestionService {
 
     // 게시글 생성
     public QnaBoardResponseDTO createQuestion(String title, String content, Long userId, Long bookId, Long teamSpaceId) {
-        // 헬퍼 메서드 사용
+
         User user = findUserById(userId);
         Book book = findBookById(bookId);
         TeamSpace teamSpace = findTeamSpaceById(teamSpaceId);
@@ -92,19 +98,34 @@ public class QuestionService {
 
     // 특정 작성자의 게시글 조회
     public Page<QnaBoardResponseDTO> getQuestionsByWriter(Long userId, int page, int size) {
-        User user = findUserById(userId);  // 헬퍼 메서드 사용
+        User user = findUserById(userId);
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return questionRepository.findByWriter(user, pageable)
                 .map(QnaBoardResponseDTO::from);
     }
 
-    // 게시글 수정 로직
     public QnaBoardResponseDTO updateQuestion(Long id, Long userId, String title, String content, Long bookId) {
+        BookQnaBoard existBoard = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
+
+        if (!existBoard.getWriter().getId().equals(userId)) {
+            throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
+        }
+
+        if (bookId == null) {
+            return updateQuestionNoBook(id, userId, title, content);
+        }
+
+        return updateQuestionWithBook(id, userId, title, content, bookId);
+    }
+
+    // 게시글 수정 로직
+    private QnaBoardResponseDTO updateQuestionWithBook(Long id, Long userId, String title, String content, Long bookId) {
         BookQnaBoard existingQuestion = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + id));
 
-        User user = findUserById(userId);    // 헬퍼 메서드 사용
+        User user = findUserById(userId);
         Book book = findBookById(bookId);
 
         existingQuestion.setTitle(title);
@@ -116,10 +137,52 @@ public class QuestionService {
         return QnaBoardResponseDTO.from(updatedQuestion);
     }
 
+    private QnaBoardResponseDTO updateQuestionNoBook(Long id, Long userId, String title, String content) {
+        BookQnaBoard existingQuestion = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + id));
+
+        User user = findUserById(userId);
+
+        existingQuestion.setTitle(title);
+        existingQuestion.setContent(content);
+        existingQuestion.setWriter(user);
+
+        BookQnaBoard updatedQuestion = questionRepository.save(existingQuestion);
+        return QnaBoardResponseDTO.from(updatedQuestion);
+    }
+
     // 게시글 삭제
     public void deleteQuestion(Long id) {
         BookQnaBoard question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
         questionRepository.delete(question);
+    }
+
+    // 좋아요 처리 로직
+    @Transactional
+    public String boardLike(Long boardId, Long userId) {
+        log.info("사용자가 게시글에 좋아요 요청");
+        BookQnaBoard board = questionRepository.findById(boardId)
+                .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + boardId));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        // 이미 좋아요를 눌렀는지 확인
+        BookQnaLike existingLike = likeRepository.findByUserAndBoard(user, board);
+
+        if (existingLike != null) {
+            // 이미 좋아요를 눌렀다면 취소
+            likeRepository.delete(existingLike);
+            board.setLikes(board.getLikes() - 1); // 좋아요 수 감소
+            questionRepository.save(board); // 좋아요 수 업데이트
+            return "좋아요 취소";
+        } else {
+            // 좋아요가 없으면 추가
+            BookQnaLike newLike = new BookQnaLike(null, user, board);
+            likeRepository.save(newLike);
+            board.setLikes(board.getLikes() + 1); // 좋아요 수 증가
+            questionRepository.save(board); // 좋아요 수 업데이트
+            return "좋아요 추가";
+        }
     }
 }
