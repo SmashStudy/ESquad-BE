@@ -5,6 +5,7 @@ import com.esquad.esquadbe.qnaboard.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -15,7 +16,7 @@ public class QnaBoardController {
 
     private final QuestionService questionService;
 
-    // 페이징된 전체 게시글 조회
+    // 전체 게시글 조회
     @GetMapping
     public Page<QnaBoardResponseDTO> getAllQuestions(
             @RequestParam(defaultValue = "0") int page,
@@ -68,10 +69,11 @@ public class QnaBoardController {
             @RequestParam("userId") Long userId,       // User ID로 받아서 User 객체로 조회
             @RequestParam("title") String title,
             @RequestParam("content") String content,
-            @RequestParam("bookId") Long bookId) {     // Book ID로 책 조회
-        return questionService.updateQuestion(id, userId, title, content, bookId);
-    }
+            @RequestParam(value = "bookId", required = false) Long bookId) {     // Book ID로 책 조회
 
+        return questionService.updateQuestion(id, userId, title, content, bookId);
+
+    }
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
@@ -79,4 +81,12 @@ public class QnaBoardController {
         questionService.deleteQuestion(id);
     }
 
+    // 좋아요 추가/취소
+    @PostMapping("/like/{boardId}")
+    public ResponseEntity<String> boardLike(@PathVariable Long boardId, @RequestParam Long userId) {
+        String result = questionService.boardLike(boardId, userId);
+        return ResponseEntity.ok(result);
+    }
+
 }
+
