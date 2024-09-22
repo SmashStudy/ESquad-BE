@@ -1,11 +1,11 @@
-package com.esquad.esquadbe.user.config;
+package com.esquad.esquadbe.security.service;
 
 import com.esquad.esquadbe.user.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
+
 
 public class UserDetailsImpl implements UserDetails {
     private User user;
@@ -16,7 +16,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return null;
     }
 
     @Override

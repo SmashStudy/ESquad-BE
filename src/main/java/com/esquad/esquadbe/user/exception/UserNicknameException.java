@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.exception;
+package com.esquad.esquadbe.user.exception;
 
 public class UserNicknameException extends RuntimeException {
     public UserNicknameException(String message) {

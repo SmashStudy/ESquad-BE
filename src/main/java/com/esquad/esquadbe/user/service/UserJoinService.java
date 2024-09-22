@@ -1,7 +1,7 @@
 package com.esquad.esquadbe.user.service;
 
-import com.esquad.esquadbe.exception.UserIdException;
-import com.esquad.esquadbe.exception.UserNicknameException;
+import com.esquad.esquadbe.user.exception.UserIdException;
+import com.esquad.esquadbe.user.exception.UserNicknameException;
 import com.esquad.esquadbe.user.dto.UserJoinDTO;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.repository.UserRepository;

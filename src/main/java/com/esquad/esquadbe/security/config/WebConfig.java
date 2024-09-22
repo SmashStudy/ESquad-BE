@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.user.config;
+package com.esquad.esquadbe.security.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
