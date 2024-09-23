@@ -1,11 +1,13 @@
 package com.esquad.esquadbe.user.repository;
 
 import com.esquad.esquadbe.user.entity.User;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends CrudRepository<User, Long> {
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
     boolean existsByNickname(String nickname);
-    User findByUsername(String username);
 
+    Optional<User> findByUsername(String username);
 }
