@@ -72,6 +72,8 @@ public class User extends BasicEntity {
     @Column(nullable = false, length = 255)
     private String address;
 
+    private String roleName;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<Notification> notifications = new ArrayList<>();
 
@@ -95,5 +97,6 @@ public class User extends BasicEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private Set<StudyPageUser> studyPageUsers = new HashSet<>();
+
 
 }

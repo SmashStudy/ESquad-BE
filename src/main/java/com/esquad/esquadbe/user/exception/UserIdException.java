@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.exception;
+package com.esquad.esquadbe.user.exception;
 
 public class UserIdException extends RuntimeException {
     public UserIdException(String message) {

@@ -40,3 +40,4 @@ out/
 src/main/resources/application.yml
 src/main/resources/samples/qna.sql
 src/main/resources/samples/user.sql
+src/main/resources/fb.json
