@@ -70,7 +70,7 @@ public class CommentService {
         return CommentDTO.from(updatedReply);
     }
 
-    // 댓글 삭제 (소프트 삭제)
+    // 댓글 삭제
     public void deleteComment(Long commentId, Long writerId) {
         BookQnaReply reply = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다: " + commentId));
@@ -79,9 +79,10 @@ public class CommentService {
             throw new UnauthorizedException("댓글 삭제 권한이 없습니다.");
         }
 
-        reply.setDeletedFlag(true);
-        commentRepository.save(reply);
+
+        commentRepository.delete(reply);
     }
+
 
     public List<CommentDTO> getCommentsByBoardId(Long boardId) {
         BookQnaBoard board = questionRepository.findById(boardId)
