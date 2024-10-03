@@ -25,4 +25,6 @@ public class ChatS3FileEntity extends BasicEntity {
     @Column(name = "FILENAME", nullable = false, length = 100)
     private String fileName;
 
+    @Column(name = "FILEURL", nullable = false)
+    private String fileUrl;
 }
