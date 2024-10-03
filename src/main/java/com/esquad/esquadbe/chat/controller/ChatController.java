@@ -41,6 +41,7 @@ public class ChatController {
                     future.completeExceptionally(error.toException());
                 } else {
                     response.put("status", "success");
+                    response.put("messageId", newMessageId);
                     future.complete(null);
                 }
             });
@@ -62,10 +63,9 @@ public class ChatController {
         messagesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Map<String, Object>> messages = new ArrayList<>();
                 if (dataSnapshot.exists()) {
-                    Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-                    List<Map<String, Object>> messages = new ArrayList<>();
-                    for (DataSnapshot child : children) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
                         Map<String, Object> message = (Map<String, Object>) child.getValue();
                         if (message != null) {
                             message.put("id", child.getKey());
@@ -73,10 +73,11 @@ public class ChatController {
                         }
                     }
                     response.put("messages", messages);
+                    response.put("status", "success");
                 } else {
                     response.put("messages", new ArrayList<>());
+                    response.put("status", "success");
                 }
-                response.put("status", "success");
                 futureResponse.complete(ResponseEntity.ok(response));
             }
 
@@ -87,8 +88,10 @@ public class ChatController {
                 futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
             }
         });
+
         return futureResponse;
     }
+
 
     @PutMapping("/edit/{roomId}/{messageId}")
     public CompletableFuture<ResponseEntity<Map<String, String>>> updateMessage(
