@@ -22,7 +22,7 @@ public class ChatAmazonS3config {
     @Value("${cloud.aws.chat_region.static}")
     private String region;
 
-    @Bean (name = "chatAwsCredentialsProvider")
+    @Bean
     @Primary
     public AwsCredentialsProvider awsCredentialsProvider() {
         return () -> new AwsCredentials() {
@@ -49,6 +49,7 @@ public class ChatAmazonS3config {
 
     @Bean
     public AwsRegionProvider awsRegionProvider() {
+        log.info("--------------------------> Chat Amazon S3 config Success");
         return () -> Region.of(region);
     }
 }
