@@ -53,7 +53,7 @@ public class ChatMessageService {
             throw new RuntimeException("Error adding user to room", e);
         }
     }
-    public void saveMessage(String roomId, String userId, String message, String type, String status) {
+    public void saveMessage(String roomId, String userId, String message, String type, String status, String fileUrl) {
         try {
             DatabaseReference messagesRef = firebaseService.getReference("MESSAGES/" + roomId);
             String messageId = messagesRef.push().getKey();
@@ -65,6 +65,10 @@ public class ChatMessageService {
             messageData.put("timestamp", ServerValue.TIMESTAMP);
             messageData.put("type", type);
             messageData.put("status", status);
+
+            if (fileUrl != null && !fileUrl.isEmpty()) {
+                messageData.put("fileUrl", fileUrl);
+            }
 
             messagesRef.child(messageId).setValue(messageData, (error, ref) -> {
                 if (error != null) {
