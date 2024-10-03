@@ -18,5 +18,6 @@ public class ChatMessage {
     private String type;
     private String messageId;
     private String status;
+    private String fileUrl;
     private LocalDate timestamp;
 }
