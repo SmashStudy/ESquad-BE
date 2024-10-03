@@ -64,4 +64,17 @@ public class ChatFileService {
                 .orElseThrow(() -> new IllegalArgumentException("삭제할 해당 파일이 없음" + filename));
         s3FileRepository.delete(s3FileEntity);
     }
+
+    public ResponseEntity<byte[]> downloadFile(String fileName) {
+        ChatS3FileEntity s3FileEntity = s3FileRepository.findByFileName(fileName)
+                .orElseThrow(() -> new RuntimeException("다운로드 할 파일이 없음 : " + fileName));
+
+        byte[] fileData = s3FileService.downloadFile(s3FileEntity.getFileName());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + s3FileEntity.getOriginalFilename());
+        headers.setContentLength(fileData.length);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
+    }
 }
