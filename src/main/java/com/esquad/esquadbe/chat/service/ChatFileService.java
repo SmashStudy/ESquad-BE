@@ -58,4 +58,10 @@ public class ChatFileService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("파일 업로드 중 오류가 발생했습니다.");
         }
     }
+    @Transactional
+    public void deleteFile (String filename) {
+        ChatS3FileEntity s3FileEntity = s3FileRepository.findByFileName(filename)
+                .orElseThrow(() -> new IllegalArgumentException("삭제할 해당 파일이 없음" + filename));
+        s3FileRepository.delete(s3FileEntity);
+    }
 }
