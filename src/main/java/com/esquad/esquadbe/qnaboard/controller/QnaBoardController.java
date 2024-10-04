@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @RestController
@@ -24,7 +25,7 @@ public class QnaBoardController {
         return questionService.getAllQuestions(page, size);
     }
 
-    // 특정 ID의 게시글 조회
+    // 특정 ID의 게시글 조회 (게시글번호)
     @GetMapping("/{id}")
     public QnaBoardResponseDTO getQuestionById(@PathVariable Long id) {
         return questionService.getQuestionById(id);
@@ -37,8 +38,9 @@ public class QnaBoardController {
             @RequestParam("content") String content,
             @RequestParam("userId") Long userId,
             @RequestParam("bookId") Long bookId,
-            @RequestParam("teamSpaceId") Long teamSpaceId) {
-        return questionService.createQuestion(title, content, userId, bookId, teamSpaceId);
+            @RequestParam("teamSpaceId") Long teamSpaceId,
+            @RequestParam(required = false) MultipartFile file) {
+        return questionService.createQuestion(title, content, userId, bookId, teamSpaceId, file);
     }
 
 
@@ -87,6 +89,7 @@ public class QnaBoardController {
         String result = questionService.boardLike(boardId, userId);
         return ResponseEntity.ok(result);
     }
+
 
 }
 
