@@ -7,6 +7,8 @@ import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaLike;
 import com.esquad.esquadbe.qnaboard.repository.BookQnaLikeRepository;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
+import com.esquad.esquadbe.storage.entity.TargetType;
+import com.esquad.esquadbe.storage.service.S3FileService;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
@@ -21,10 +23,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Slf4j
-@Transactional
 @RequiredArgsConstructor
 @Service
 public class QuestionService {
@@ -34,6 +36,7 @@ public class QuestionService {
     private final BookRepository bookRepository;
     private final TeamSpaceRepository teamSpaceRepository;
     private final BookQnaLikeRepository likeRepository;
+    private final S3FileService s3FileService;
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
@@ -49,6 +52,7 @@ public class QuestionService {
         return teamSpaceRepository.findById(teamSpaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("TeamSpace not found with id: " + teamSpaceId));
     }
+
 
     // 전체 게시글 조회
     public Page<QnaBoardResponseDTO> getAllQuestions(int page, int size) {
@@ -70,11 +74,15 @@ public class QuestionService {
     }
 
     // 게시글 생성
-    public QnaBoardResponseDTO createQuestion(String title, String content, Long userId, Long bookId, Long teamSpaceId) {
+    @Transactional
+    public QnaBoardResponseDTO createQuestion(String title, String content, Long userId, Long bookId, Long teamSpaceId, MultipartFile file) {
 
         User user = findUserById(userId);
         Book book = findBookById(bookId);
         TeamSpace teamSpace = findTeamSpaceById(teamSpaceId);
+
+        TargetType targetType = TargetType.QNA;
+
 
         BookQnaBoard question = BookQnaBoard.builder()
                 .title(title)
@@ -85,7 +93,15 @@ public class QuestionService {
                 .likes(0)
                 .build();
 
+        // 생성된 게시글 저장하고
         BookQnaBoard savedQuestion = questionRepository.save(question);
+        // file null일 때 이거 안 돌아가게ㅇㅇ
+        // 파일이 있을 경우에만 파일을 업로드
+        if (file != null && !file.isEmpty()) {
+            s3FileService.uploadFile(file, savedQuestion.getId(), targetType, userId);
+        }
+
+        // 저장된 게시글 정보 반환
         return QnaBoardResponseDTO.from(savedQuestion);
     }
 
@@ -121,7 +137,8 @@ public class QuestionService {
     }
 
     // 게시글 수정 로직
-    private QnaBoardResponseDTO updateQuestionWithBook(Long id, Long userId, String title, String content, Long bookId) {
+    @Transactional
+    protected QnaBoardResponseDTO updateQuestionWithBook(Long id, Long userId, String title, String content, Long bookId) {
         BookQnaBoard existingQuestion = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + id));
 
@@ -137,7 +154,8 @@ public class QuestionService {
         return QnaBoardResponseDTO.from(updatedQuestion);
     }
 
-    private QnaBoardResponseDTO updateQuestionNoBook(Long id, Long userId, String title, String content) {
+    @Transactional
+    protected QnaBoardResponseDTO updateQuestionNoBook(Long id, Long userId, String title, String content) {
         BookQnaBoard existingQuestion = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + id));
 
@@ -152,6 +170,7 @@ public class QuestionService {
     }
 
     // 게시글 삭제
+    @Transactional
     public void deleteQuestion(Long id) {
         BookQnaBoard question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
@@ -184,5 +203,6 @@ public class QuestionService {
             questionRepository.save(board); // 좋아요 수 업데이트
             return "좋아요 추가";
         }
+
     }
 }
