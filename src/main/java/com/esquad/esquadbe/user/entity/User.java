@@ -48,7 +48,10 @@ public class User extends BasicEntity {
     private Long id;
 
     @Column(nullable = false, unique = true, length = 20)
-    @Pattern(regexp = "^[a-zA-Z]{8,12}$", message = "아이디는 영어만 포함한 8~12자여야 합니다.")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9]{6,12}$",
+            message = "아이디는 영어와 숫자로 구성된 6~12자여야 합니다."
+    )
     private String username;
 
     @Column(nullable = false, unique = true, length = 20)
