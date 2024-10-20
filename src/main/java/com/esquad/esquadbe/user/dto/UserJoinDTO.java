@@ -57,6 +57,10 @@ public class UserJoinDTO {
     @NotBlank(message = "주소를 입력해주세요.")
     private String address;
 
+    private String detailAddress;
+
+    private String extraAddress;
+
     private String nickname;
 
 
@@ -65,13 +69,14 @@ public class UserJoinDTO {
     }
 
     public User toEntity(BCryptPasswordEncoder bCryptPasswordEncoder) {
+        String fullAddress = String.format("%s %s %s", address, detailAddress, extraAddress).trim();
         return User.builder()
                 .username(this.username)
                 .password(bCryptPasswordEncoder.encode(this.password))
                 .email(this.email)
                 .phoneNumber(this.phoneNumber)
                 .birthDay(this.birthDay)
-                .address(this.address)
+                .address(fullAddress)
                 .nickname(this.nickname)
                 .build();
     }
