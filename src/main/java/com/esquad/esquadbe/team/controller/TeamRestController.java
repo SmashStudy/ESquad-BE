@@ -1,13 +1,12 @@
 package com.esquad.esquadbe.team.controller;
 
 import com.esquad.esquadbe.global.exception.custom.BusinessBaseException;
-import com.esquad.esquadbe.global.exception.custom.DuplicateTeamException;
 import com.esquad.esquadbe.global.exception.response.UserErrorCode;
 import com.esquad.esquadbe.team.dto.TeamSpaceCreateRequestDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceRequestDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceResponseDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceUserResponseDTO;
-import com.esquad.esquadbe.user.dto.UserDTO;
+import com.esquad.esquadbe.user.dto.UserResponseDTO;
 import com.esquad.esquadbe.user.service.UserService;
 import com.esquad.esquadbe.team.service.TeamSpaceUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,8 +61,8 @@ public class TeamRestController {
     @Operation(summary = "팀스페이스 생성 시, 멤버 조회 요청",
             description = "유저가 새로운 팀스페이스를 생성할 때, 멤버초대를 위한 조회 요청")
     @GetMapping("/new/search/{username}")
-    public ResponseEntity<UserDTO> searchUser(Principal principal) {
-        Optional<UserDTO> user = teamSpaceUserService.searchUser(principal.getName());
+    public ResponseEntity<UserResponseDTO> searchUser(Principal principal) {
+        Optional<UserResponseDTO> user = teamSpaceUserService.searchUser(principal.getName());
         return user.map(responseDTO -> ResponseEntity.status(HttpStatus.OK).body(responseDTO))
                 .orElseThrow(() -> new BusinessBaseException(UserErrorCode.USER_NOT_FOUND_ERROR));
     }

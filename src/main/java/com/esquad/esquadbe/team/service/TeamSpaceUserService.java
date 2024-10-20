@@ -4,7 +4,7 @@ import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.team.repository.TeamSpaceUserRepository;
-import com.esquad.esquadbe.user.dto.UserDTO;
+import com.esquad.esquadbe.user.dto.UserResponseDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +24,9 @@ public class TeamSpaceUserService {
    private final UserRepository userRepository;
    private final TeamSpaceUserRepository teamSpaceUserRepository;
 
-   public Optional<UserDTO> searchUser(final String username) {
+   public Optional<UserResponseDTO> searchUser(final String username) {
       Optional<User> user = userRepository.findByUsername(username);
-      return user.map(UserDTO::from);
+      return user.map(UserResponseDTO::from);
    }
 
    public Optional<String> checkRole(Long teamId, String username) {

@@ -11,8 +11,6 @@ public record TeamSpaceResponseDTO (
      Long id,
      String teamName,
      List<TeamSpaceUserResponseDTO> members,
-     // List<StudyPage> studyPages,
-     // List<BookQnaBoard> qnaBoards,
      String description
 ) {
 
@@ -23,8 +21,6 @@ public record TeamSpaceResponseDTO (
                   .members(teamSpace.getMembers().stream()
                           .map(TeamSpaceUserResponseDTO::from)
                           .toList())
-                  // .studyPages(teamSpace.getStudyPages())
-                  // .qnaBoards(teamSpace.getQnaBoards())
                  .description(teamSpace.getDescription())
                   .build();
    }
