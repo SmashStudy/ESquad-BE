@@ -1,5 +1,8 @@
 package com.esquad.esquadbe.user.entity;
 
+import java.time.LocalDate;
+import java.util.*;
+
 import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.notification.entity.Notification;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
@@ -9,16 +12,19 @@ import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import com.esquad.esquadbe.streaming.entity.StreamingParticipant;
 import com.esquad.esquadbe.streaming.entity.StreamingSession;
 import com.esquad.esquadbe.studypage.entity.StudyPageUser;
+import com.esquad.esquadbe.user.dto.ResponseDTO;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+
+import jakarta.persistence.FetchType;
+
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -27,12 +33,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -100,6 +100,12 @@ public class User extends BasicEntity {
 
     @OneToMany(mappedBy = "member", fetch = FetchType.EAGER)
     private Set<StudyPageUser> studyPageUsers = new HashSet<>();
+
+    public Optional<ResponseDTO> toResponseDTO() {
+        return Optional.ofNullable(ResponseDTO.builder()
+                .nickname(this.nickname)
+                .build());
+    }
 
 
 }

@@ -2,9 +2,17 @@ package com.esquad.esquadbe.qnaboard.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.studypage.entity.Book;
-import com.esquad.esquadbe.studypage.entity.StudyPage;
+import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.user.entity.User;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,8 +37,8 @@ public class BookQnaBoard extends BasicEntity {
     private User writer;
 
     @ManyToOne
-    @JoinColumn(name = "STUDY_PAGE_ID")
-    private StudyPage studyPage;
+    @JoinColumn(name = "TEAM_SPACE_ID")
+    private TeamSpace teamSpace;
 
     @ManyToOne
     @JoinColumn(name = "BOOK_ID")
