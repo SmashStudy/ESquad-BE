@@ -56,7 +56,7 @@ public class NotificationService {
         emitters.forEach(
                 (key, emitter) -> {
                     emitterRepository.saveEventCache(key, notification);
-                    sendNotification(emitter, eventId, key, NotificationResponseDTO.createResponse(notification));
+                    sendNotification(emitter, eventId, key, NotificationResponseDTO.from(notification));
                 }
         );
     }

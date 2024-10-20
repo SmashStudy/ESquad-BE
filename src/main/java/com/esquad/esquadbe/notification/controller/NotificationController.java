@@ -1,7 +1,5 @@
 package com.esquad.esquadbe.notification.controller;
 
-import com.esquad.esquadbe.notification.dto.NotificationRequestDTO;
-import com.esquad.esquadbe.notification.entity.Notification;
 import com.esquad.esquadbe.notification.service.NotificationService;
 import com.esquad.esquadbe.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
