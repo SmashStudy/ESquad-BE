@@ -77,7 +77,7 @@ public class User extends BasicEntity {
 
     private String roleName;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "receiver", fetch = FetchType.EAGER)
     private List<Notification> notifications = new ArrayList<>();
 
      @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
