@@ -1,8 +1,6 @@
 package com.esquad.esquadbe.notification.dto;
 
-import com.esquad.esquadbe.notification.entity.Notification;
 import com.esquad.esquadbe.notification.entity.NotificationType;
-import com.esquad.esquadbe.user.dto.UserDTO;
 import lombok.*;
 
 @ToString
