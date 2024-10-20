@@ -32,7 +32,7 @@ public class StudyPageUserService {
         log.info(String.valueOf(ids.get(0)));
 
         // 1차 기능 - 모든 유저가 사용할 수 있음 : 팀 전체 -> 개별 설정
-        Iterable<User> allUsers = userRepository.findAll();
+        List<User> allUsers = userRepository.findAll();
 
         //스터디 유저에 정보 저장
         for (User user : allUsers) {
