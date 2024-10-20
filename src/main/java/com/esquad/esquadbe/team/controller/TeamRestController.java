@@ -28,7 +28,7 @@ import java.util.Optional;
 @Slf4j
 @Tag(name="Team", description = "팀 관련")
 @RestController
-@RequestMapping("/api/team")
+@RequestMapping("/api/teams")
 @RequiredArgsConstructor
 public class TeamRestController {
 

@@ -12,10 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.security.Principal;
+
 @Slf4j
 @Tag(name="Notification", description = "유저들의 알림 관련")
 @RestController
-@RequestMapping("/api/notify")
+@RequestMapping("/api/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
 
@@ -24,9 +26,9 @@ public class NotificationController {
     @Operation(summary = "알림 구독(subscribe)",
             description = "로그인한 유저들은 알림 서비스에 구독하게 됩니다. '유저명_시간' 으로 식별자가 생성됩니다.")
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> subscribe(@Parameter(hidden = true) User user,
-            @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        log.info("user, lastEventId: {}, {}", user, lastEventId);
-        return ResponseEntity.ok(notificationService.subscribe(user.getUsername(), lastEventId));
+    public ResponseEntity<SseEmitter> subscribe(@Parameter(hidden = true)Principal principal,
+                                                @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
+        log.info("user, lastEventId: {}, {}", principal.getName(), lastEventId);
+        return ResponseEntity.ok(notificationService.subscribe(principal.getName(), lastEventId));
     }
 }
