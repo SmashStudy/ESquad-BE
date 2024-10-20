@@ -79,8 +79,9 @@ public class QnaBoardController {
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
-    public void deleteQuestion(@PathVariable Long id) {
+    public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
         questionService.deleteQuestion(id);
+        return ResponseEntity.ok("게시글이 삭제되었습니다");
     }
 
     // 좋아요 추가/취소
