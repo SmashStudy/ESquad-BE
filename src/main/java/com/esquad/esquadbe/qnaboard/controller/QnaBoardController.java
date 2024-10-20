@@ -64,11 +64,10 @@ public class QnaBoardController {
 
     // 게시글 수정
     @PutMapping("/{id}")
-    public QnaBoardResponseDTO updateQuestion(@RequestBody QnaRequestDTO updateForm) {     // Book ID로 책 조회
-
-        return questionService.updateQuestion(updateForm);
-
+    public QnaBoardResponseDTO updateQuestion(@PathVariable Long id, @RequestBody QnaRequestDTO updateForm) {
+        return questionService.updateQuestion(id, updateForm);
     }
+
 
     // 게시글 삭제
     @DeleteMapping("/{id}")

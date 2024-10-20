@@ -103,17 +103,21 @@ public class QuestionService {
                 .map(QnaBoardResponseDTO::from);
     }
 
-    // 게시글 수정
     @Transactional
-    public QnaBoardResponseDTO updateQuestion(QnaRequestDTO qnaForm) {
-        BookQnaBoard existBoard = questionRepository.findById(qnaForm.id())
-                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + qnaForm.id()));
+    public QnaBoardResponseDTO updateQuestion(Long id, QnaRequestDTO qnaForm) {
+        // 게시글 ID로 기존 게시글 조회
+        BookQnaBoard existBoard = questionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
 
+        // 작성자 확인
         if (!existBoard.getWriter().getId().equals(qnaForm.userId())) {
             throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
         }
 
+        // 책 정보 업데이트
         Book updatedBook = qnaForm.bookId() != null ? findBookById(qnaForm.bookId()) : existBoard.getBook();
+
+        // 수정된 게시글 생성
         BookQnaBoard updatedBoard = BookQnaBoard.builder()
                 .id(existBoard.getId())
                 .title(qnaForm.title())
@@ -124,6 +128,7 @@ public class QuestionService {
                 .likes(existBoard.getLikes())
                 .build();
 
+        // 저장 후 반환
         return QnaBoardResponseDTO.from(questionRepository.save(updatedBoard));
     }
 
