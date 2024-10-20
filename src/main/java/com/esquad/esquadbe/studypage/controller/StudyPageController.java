@@ -1,8 +1,10 @@
 package com.esquad.esquadbe.studypage.controller;
 
+import com.esquad.esquadbe.studypage.dto.StudyInfoDto;
 import com.esquad.esquadbe.studypage.dto.StudyPageCreateDto;
 import com.esquad.esquadbe.studypage.dto.StudyPageReadDto;
 import com.esquad.esquadbe.studypage.dto.UpdateStudyPageRequestDto;
+import com.esquad.esquadbe.studypage.entity.StudyPage;
 import com.esquad.esquadbe.studypage.service.BookService;
 import com.esquad.esquadbe.studypage.service.StudyPageService;
 import com.esquad.esquadbe.studypage.service.StudyPageUserService;
@@ -60,14 +62,42 @@ public class StudyPageController {
         return ResponseEntity.status(HttpStatus.OK).body(studyPages);
     }
 
+    @GetMapping("/{teamId}/study-pages/{studyId}")
+    public ResponseEntity<StudyInfoDto> getStudyPageInfo(
+            @PathVariable("teamId") Long teamId,
+            @PathVariable("studyId") Long studyId) {
+        log.info("Fetching study page info: teamId = {}, studyId = {}", teamId, studyId);
+
+        try {
+            // 서비스에서 스터디 페이지 정보 가져오기
+            StudyInfoDto studyInfoDto= studyPageService.readStudyPageInfo(studyId);
+            return ResponseEntity.ok(studyInfoDto);
+
+        } catch (EntityNotFoundException ex) {
+            log.error("Study page not found: studyId = {}, teamId = {}", studyId, teamId, ex);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(null);
+
+        } catch (IllegalArgumentException ex) {
+            log.error("Invalid argument provided for teamId = {} or studyId = {}", teamId, studyId, ex);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+
+        } catch (Exception ex) {
+            log.error("Unexpected error while fetching study page: studyId = {}, teamId = {}", studyId, teamId, ex);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
     // Update
-    @PutMapping("/{teamId}/study-pages/{studyId}")
+    @PostMapping("/{teamId}/study-pages/{studyId}")
     public ResponseEntity<String> updateStudyPage(
             @PathVariable("teamId") Long teamId,
             @PathVariable("studyId") Long studyId,
             @RequestBody UpdateStudyPageRequestDto request) {
 
-        log.info("Updating study page with studyId: {} for userId: {}", studyId, request.getUserId());
+        log.info("Updating study page with studyId: {} for userId: {}", studyId);
 
         boolean isUpdated = studyPageService.updateStudyPage(studyId, request);
 
@@ -85,15 +115,22 @@ public class StudyPageController {
             @PathVariable("studyId") Long studyId,
             @RequestParam("name") String studyPageName) {
 
-        log.info("Deleting study page with ID: {} and name: {}", studyId, studyPageName);
+        log.info("Attempting to delete study page with ID: {} and name: {}", studyId, studyPageName);
 
         try {
+
             studyPageService.deleteStudyPage(studyId, studyPageName);
+            log.info("Successfully deleted study page with ID: {}", studyId);
             return ResponseEntity.status(HttpStatus.OK).body("Study page deleted successfully.");
         } catch (EntityNotFoundException e) {
+            log.warn("Study page not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (IllegalArgumentException e) {
+            log.error("Invalid argument: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error occurred while deleting study page: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the study page.");
         }
     }
 }

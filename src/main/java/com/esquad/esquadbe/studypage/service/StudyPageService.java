@@ -82,6 +82,12 @@ public class StudyPageService {
                 .collect(Collectors.toList());
     }
 
+    public StudyInfoDto readStudyPageInfo(Long id) {
+        StudyPage studyPage1 = studyPageRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No StudyPage found for Study ID: " + id));
+        return new StudyInfoDto(studyPage1.getStudyPageName(), studyPage1.getStartDate(),studyPage1.getEndDate(), studyPage1.getDescription());
+    }
+
     private StudyPageReadDto convertStudyPageToStudyPageReadDto(StudyPage studyPage) {
         return new StudyPageReadDto(
                 studyPage.getId(),
@@ -92,17 +98,8 @@ public class StudyPageService {
 
     // Update
     public boolean updateStudyPage(Long studyPageId, UpdateStudyPageRequestDto dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid StudyPage ID"));;
         StudyPage studyPage = studyPageRepository.findById(studyPageId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid StudyPage ID"));
-
-        StudyPageUser studyPageUser = studyPageUserRepository.findByMemberAndStudyPage(user, studyPage)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid StudyPage ID"));;
-
-        if (!studyPageUser.isOwnerFlag()) {
-            return false;
-        }
+                .orElseThrow(() -> new EntityNotFoundException("No StudyPage found for Study ID: " + studyPageId));
 
         studyPage = StudyPage.builder()
                 .id(studyPage.getId())
@@ -131,4 +128,5 @@ public class StudyPageService {
         studyRemindRepository.deleteByStudyPage(studyPage);
         studyPageRepository.delete(studyPage);
     }
+
 }
