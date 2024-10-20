@@ -5,6 +5,7 @@ import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.service.S3FileService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -27,14 +28,14 @@ public class S3FileController {
 
     private final S3FileService s3FileService;
 
-    @PostMapping("/{userId}")
+    @PostMapping
     public ResponseEntity<ResponseFileDto> uploadFile(
         @RequestParam MultipartFile file,
         @RequestParam Long targetId,
         @RequestParam TargetType targetType,
-        @PathVariable Long userId) {
+        Principal principal) {
         return ResponseEntity.status(HttpStatus.CREATED)
-            .body(s3FileService.uploadFile(file, targetId, targetType, userId));
+            .body(s3FileService.uploadFile(file, targetId, targetType, principal.getName()));
     }
 
     @DeleteMapping("/{storedFileName}")
