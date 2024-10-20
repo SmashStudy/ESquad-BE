@@ -139,8 +139,8 @@ public class QuestionServiceTest {
         // 기존 bookQnaBoard가 null이 아니도록 ensure
         assertNotNull(bookQnaBoard);
 
-        // 업데이트 메서드 실행
-        QnaBoardResponseDTO result = questionService.updateQuestion(qnaRequestDTO);
+        // 업데이트 메서드 실행 (id를 추가로 전달)
+        QnaBoardResponseDTO result = questionService.updateQuestion(1L, qnaRequestDTO);
 
         // 업데이트가 성공적으로 되었는지 확인
         assertNotNull(result);
@@ -150,7 +150,6 @@ public class QuestionServiceTest {
         // bookQnaBoard가 저장되었는지 확인
         verify(questionRepository, times(1)).save(Mockito.any(BookQnaBoard.class));
     }
-
 
     @Test
     public void testBoardLike_AddLike() {
