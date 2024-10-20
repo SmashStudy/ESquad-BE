@@ -12,7 +12,6 @@ import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import com.esquad.esquadbe.streaming.entity.StreamingParticipant;
 import com.esquad.esquadbe.streaming.entity.StreamingSession;
 import com.esquad.esquadbe.studypage.entity.StudyPageUser;
-import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import com.esquad.esquadbe.user.dto.ResponseDTO;
 
 import jakarta.persistence.Column;
@@ -24,15 +23,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -55,8 +47,6 @@ public class User extends BasicEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "USERNAME", nullable = false, unique = true, length = 20)
-    private String username;
     @Column(nullable = false, unique = true, length = 20)
     @Pattern(
             regexp = "^[a-zA-Z0-9]{6,12}$",
@@ -73,7 +63,6 @@ public class User extends BasicEntity {
 //    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?=.*[!~&+@]).*$", message = "비밀번호는 대소문자와 특수문자(!~&+@)를 포함해야 합니다.")
     private String password;
 
-    @Column(name = "EMAIL", nullable = false, length = 25)
     @Column(nullable = false, length = 25)
     private String email;
 
