@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.time.LocalDate;
 
 @Getter
@@ -18,5 +17,6 @@ public class ChatMessage {
     private String type;
     private String messageId;
     private String status;
+    private String fileUrl;
     private LocalDate timestamp;
 }

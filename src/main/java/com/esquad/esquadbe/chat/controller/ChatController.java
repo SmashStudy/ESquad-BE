@@ -67,12 +67,17 @@ public class ChatController {
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         Map<String, Object> message = (Map<String, Object>) child.getValue();
-                        message.put("id", child.getKey());
-                        messages.add(message);
+                        if (message != null) {
+                            message.put("id", child.getKey());
+                            messages.add(message);
+                        }
                     }
+                    response.put("messages", messages);
+                    response.put("status", "success");
+                } else {
+                    response.put("messages", new ArrayList<>());
+                    response.put("status", "success");
                 }
-                response.put("messages", messages);
-                response.put("status", "success");
                 futureResponse.complete(ResponseEntity.ok(response));
             }
 
@@ -83,8 +88,10 @@ public class ChatController {
                 futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
             }
         });
+
         return futureResponse;
     }
+
 
     @PutMapping("/edit/{roomId}/{messageId}")
     public CompletableFuture<ResponseEntity<Map<String, String>>> updateMessage(
@@ -101,7 +108,6 @@ public class ChatController {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String originalUserId = dataSnapshot.getValue(String.class);
-
                 if (originalUserId != null && originalUserId.equals(request.getUserId())) {
                     messageRef.child("message").setValue(request.getNewMessage(), (error, ref) -> {
                         if (error != null) {
@@ -131,7 +137,7 @@ public class ChatController {
     }
 
     @DeleteMapping("/delete/{roomId}/{messageId}")
-    public ResponseEntity<Map<String, String>> deleteMessage(
+    public CompletableFuture<ResponseEntity<Map<String, String>>> deleteMessage(
             @PathVariable String roomId,
             @PathVariable String messageId,
             @RequestBody Map<String, String> request) {
@@ -139,7 +145,6 @@ public class ChatController {
         String userId = request.get("userId");
 
         DatabaseReference messageRef = firebaseService.getReference("MESSAGES/" + roomId + "/" + messageId);
-
         CompletableFuture<ResponseEntity<Map<String, String>>> futureResponse = new CompletableFuture<>();
         Map<String, String> response = new HashMap<>();
 
@@ -149,16 +154,9 @@ public class ChatController {
                 String originalUserId = dataSnapshot.getValue(String.class);
 
                 if (originalUserId != null && originalUserId.equals(userId)) {
-                    messageRef.removeValue((error, ref) -> {
-                        if (error != null) {
-                            response.put("status", "error");
-                            response.put("message", error.getMessage());
-                            futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
-                        } else {
-                            response.put("status", "success");
-                            futureResponse.complete(ResponseEntity.ok(response));
-                        }
-                    });
+                    firebaseService.deleteMessage(roomId, messageId); // 메시지 삭제
+                    response.put("status", "success");
+                    futureResponse.complete(ResponseEntity.ok(response));
                 } else {
                     response.put("status", "error");
                     response.put("message", "Unauthorized");
@@ -173,6 +171,6 @@ public class ChatController {
                 futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
             }
         });
-        return futureResponse.join();
+        return futureResponse;
     }
 }
