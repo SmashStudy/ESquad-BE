@@ -1,6 +1,22 @@
 package com.esquad.esquadbe.team.service;
 
+import com.esquad.esquadbe.team.dto.TeamSpaceCreateRequestDTO;
+import com.esquad.esquadbe.team.dto.TeamSpaceRequestDTO;
+import com.esquad.esquadbe.team.dto.TeamSpaceResponseDTO;
+import com.esquad.esquadbe.team.dto.TeamSpaceUserResponseDTO;
+import com.esquad.esquadbe.team.entity.TeamSpace;
+import jakarta.validation.Valid;
+
+import java.util.List;
+import java.util.Optional;
+
 public interface TeamService {
 
-    public boolean verifyTeamName(String teamName);
+    void verifyTeamName(String teamName);
+    TeamSpace createTeam(TeamSpaceCreateRequestDTO teamDTO);
+    TeamSpaceResponseDTO updateProfile(@Valid TeamSpaceRequestDTO teamSpaceRequestDTO);
+    List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId);
+    List<TeamSpaceUserResponseDTO> getCrewRole(Long teamId);
+    Optional<TeamSpaceResponseDTO> getTeamProfile(Long teamSpaceRequestDTO);
+    void deleteTeamSpace(Long teamId);
 }
