@@ -3,22 +3,17 @@ package com.esquad.esquadbe.team.entity;
 import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.user.entity.User;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "TEAM_SPACE_USERS")
 @Getter
+@ToString
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,19 +23,20 @@ public class TeamSpaceUser extends BasicEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ToString.Exclude
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "TEAM_SPACE_ID")
     private TeamSpace teamSpace;
 
-    @ManyToOne
-    @JoinColumn(name = "USERNAME")
+    @ToString.Exclude
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "USER_ID")
     private User member;
 
     @Column(length = 20, nullable = false)
     private String role;
 
-    public void setTeamSpace(TeamSpace teamSpace) {
+    public void joinTeamSpace(TeamSpace teamSpace) {
         this.teamSpace = teamSpace;
-        teamSpace.getMembers().add(this);
     }
 }
