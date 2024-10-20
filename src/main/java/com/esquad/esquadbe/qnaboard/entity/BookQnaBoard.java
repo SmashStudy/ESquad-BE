@@ -7,13 +7,11 @@ import com.esquad.esquadbe.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 
 @SuperBuilder
 @Getter
-@Setter
 @Table(name = "BOOK_QNA_BOARD")
 @Entity
 @NoArgsConstructor
