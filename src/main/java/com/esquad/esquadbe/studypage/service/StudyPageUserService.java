@@ -27,14 +27,11 @@ public class StudyPageUserService {
     }
 
     public void createStudyPageUser(Long studyPageId, List<Long> ids) {
-        //스터디 정보
         StudyPage studyPage = studyPageRepository.findById(studyPageId).orElseThrow(()-> new IllegalArgumentException("Invalid studyPageID"));
         log.info(String.valueOf(ids.get(0)));
 
-        // 1차 기능 - 모든 유저가 사용할 수 있음 : 팀 전체 -> 개별 설정
         List<User> allUsers = userRepository.findAll();
 
-        //스터디 유저에 정보 저장
         for (User user : allUsers) {
             StudyPageUser studyPageUser = StudyPageUser.builder()
                     .studyPage(studyPage) // 스터디 정보

@@ -47,7 +47,6 @@ public class StudyPageController {
         Long bookId = bookService.createBookInfo(dto.getBookDto());
         Long studyPageId = studyPageService.createStudyPage(teamId, bookId, dto.getStudyInfoDto());
 
-        // Create study reminds and assign users to the study page
         studyRemindService.createRemind(studyPageId, dto.getReminds());
         studyPageUserService.createStudyPageUser(studyPageId, dto.getUserIds());
 
@@ -69,7 +68,6 @@ public class StudyPageController {
         log.info("Fetching study page info: teamId = {}, studyId = {}", teamId, studyId);
 
         try {
-            // 서비스에서 스터디 페이지 정보 가져오기
             StudyInfoDto studyInfoDto= studyPageService.readStudyPageInfo(studyId);
             return ResponseEntity.ok(studyInfoDto);
 
@@ -97,7 +95,7 @@ public class StudyPageController {
             @PathVariable("studyId") Long studyId,
             @RequestBody UpdateStudyPageRequestDto request) {
 
-        log.info("Updating study page with studyId: {} for userId: {}", studyId);
+        log.info("Updating study page with studyId: {}", studyId);
 
         boolean isUpdated = studyPageService.updateStudyPage(studyId, request);
 
@@ -111,16 +109,14 @@ public class StudyPageController {
     // Delete
     @DeleteMapping("/{teamId}/study-pages/{studyId}")
     public ResponseEntity<String> deleteStudyPage(
-            @PathVariable("teamId") Long teamId,
             @PathVariable("studyId") Long studyId,
             @RequestParam("name") String studyPageName) {
 
         log.info("Attempting to delete study page with ID: {} and name: {}", studyId, studyPageName);
 
         try {
-
-            studyPageService.deleteStudyPage(studyId, studyPageName);
             log.info("Successfully deleted study page with ID: {}", studyId);
+            studyPageService.deleteStudyPage(studyId, studyPageName);
             return ResponseEntity.status(HttpStatus.OK).body("Study page deleted successfully.");
         } catch (EntityNotFoundException e) {
             log.warn("Study page not found: {}", e.getMessage());

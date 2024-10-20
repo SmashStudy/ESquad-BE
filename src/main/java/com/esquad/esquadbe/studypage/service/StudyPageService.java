@@ -68,15 +68,12 @@ public class StudyPageService {
 
     // Read
     public List<StudyPageReadDto> readStudyPages(Long teamId) {
-        // teamId로 TeamSpace 찾기
         TeamSpace teamSpace = teamSpaceRepository.findById(teamId)
                 .orElseThrow(() -> new EntityNotFoundException("TeamSpace not found with ID: " + teamId));
 
-        // teamSpace에 속한 StudyPages 조회
         List<StudyPage> studyPages = studyPageRepository.findAllByTeamSpace(teamSpace)
                 .orElseThrow(() -> new EntityNotFoundException("No StudyPages found for TeamSpace ID: " + teamId));
 
-        // StudyPage 엔티티를 StudyPageReadDto로 변환하여 리스트 반환
         return studyPages.stream()
                 .map(this::convertStudyPageToStudyPageReadDto)
                 .collect(Collectors.toList());

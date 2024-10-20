@@ -23,13 +23,11 @@ public class StudyRemindService {
     }
 
     public void createRemind(Long studyPageId, List<StudyRemindDto> remindDtos) {
-        // 스터디 정보
         StudyPage studyPage = studyPageRepository.findById(studyPageId).orElseThrow(()-> new IllegalArgumentException("Invalid studyPageID"));
 
-        //리마인더 정보
         for (StudyRemindDto remindDto : remindDtos) {
             StudyRemind remind = StudyRemind.builder()
-                    .studyPage(studyPage) // 스터디 정보
+                    .studyPage(studyPage)
                     .dayType(remindDto.getDayType())
                     .timeAt(remindDto.getTimeAt())
                     .description(remindDto.getDescription())
