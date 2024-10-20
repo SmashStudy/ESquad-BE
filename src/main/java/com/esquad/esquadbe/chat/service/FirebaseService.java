@@ -6,50 +6,49 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.FirebaseDatabase;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@Slf4j
 @Service
 public class FirebaseService {
 
-    private final FirebaseDatabase firebaseDatabase;
+    private final DatabaseReference databaseReference;
 
     @Autowired
     public FirebaseService(FirebaseDatabase firebaseDatabase) {
-        this.firebaseDatabase = firebaseDatabase;
+        this.databaseReference = FirebaseDatabase.getInstance().getReference();
     }
-
     public DatabaseReference getReference(String path) {
-        return firebaseDatabase.getReference(path);
+        return databaseReference.child(path);
     }
 
-    public void updateMessage(String roomId, String messageId, String userId, String newMessage, FirebaseCallback callback) {
-        DatabaseReference messageRef = getReference("MESSAGES/" + roomId + "/" + messageId);
-        messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String originalUserId = dataSnapshot.getValue(String.class);
+    public void sendMessage(String teamId, String roomId, String userId, String messageId, String messageContent, long timestamp) {
+        DatabaseReference messageRef = getReference("CHAT_ROOMS/" + teamId + "/" + roomId + "/messages/" + messageId);
+        Map<String, Object> message = new HashMap<>();
+        message.put("userId", userId);
+        message.put("messageId", messageId);
+        message.put("messageContent", messageContent);
+        message.put("timestamp", timestamp);
 
-                if (originalUserId != null && originalUserId.equals(userId)) {
-                    messageRef.child("message").setValue(newMessage, (databaseError, databaseReference) -> {
-                        if (databaseError != null) {
-                            callback.onFailure(databaseError.toException());
-                        } else {
-                            callback.onSuccess();
-                        }
-                    });
-                } else {
-                    callback.onFailure(new Exception("Unauthorized"));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                callback.onFailure(databaseError.toException());
-            }
-        });
+        messageRef.setValueAsync(message);
     }
+    public void receiveMessage(String teamId, String roomId, String messageId, ValueEventListener listener) {
+        DatabaseReference messageRef = getReference("CHAT_ROOMS/" + teamId + "/" + roomId + "/messages/" + messageId);
+        messageRef.addListenerForSingleValueEvent(listener);
+    }
+    public void editMessage(String teamId, String roomId, String userId, String messageId, String newMessageContent, long newTimestamp) {
+        DatabaseReference messageRef = getReference("CHAT_ROOMS/" + teamId + "/" + roomId + "/messages/" + messageId);
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("messageContent", newMessageContent);
+        updates.put("timestamp", newTimestamp);
 
+        messageRef.updateChildrenAsync(updates);
+    }
     public void deleteMessage(String roomId, String messageId) {
         DatabaseReference messageRef = getReference("MESSAGES/" + roomId + "/" + messageId);
         messageRef.removeValue((databaseError, databaseReference) -> {

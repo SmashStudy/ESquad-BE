@@ -1,7 +1,9 @@
 package com.esquad.esquadbe.team.entity.repository;
 
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface TeamSpaceRepository extends JpaRepository<TeamSpace , Long> {
+@Repository
+public interface TeamSpaceRepository extends CrudRepository<TeamSpace, Long> {
 }

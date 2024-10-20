@@ -35,7 +35,7 @@ public class S3FileService {
 
     @Transactional
     public ResponseFileDto uploadFile(MultipartFile multipartFile, Long targetId, TargetType targetType,
-        Long userId) {
+        String userId) {
         if (multipartFile.isEmpty()) {
             throw new IllegalArgumentException("업로드할 파일이 비어있습니다.");
         }
@@ -50,8 +50,7 @@ public class S3FileService {
         } catch (IOException e) {
             throw new IllegalArgumentException("파일 업로드에 실패하였습니다: " + e.getMessage());
         }
-        User user = userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(()-> new IllegalArgumentException("유저를 찾을 수 없습니다."));
 
         StoredFile storedFile = StoredFile.builder()
             .fileInfo(fileInfo)

@@ -32,7 +32,7 @@ class S3FileServiceTest {
         final TargetType targetType = TargetType.QNA;
 
         // Then
-        assertDoesNotThrow(() -> s3FileService.uploadFile(mockFile, targetId, targetType, 1L));
+        assertDoesNotThrow(() -> s3FileService.uploadFile(mockFile, targetId, targetType, "1"));
     }
 
     @Test
@@ -48,7 +48,7 @@ class S3FileServiceTest {
         final TargetType targetType = TargetType.QNA;
 
         ResponseFileDto uploadedFileInfo = s3FileService.uploadFile(mockFile, targetId, targetType,
-            1L);
+            "1");
         String storedFileName = uploadedFileInfo.getStoredFileName();
 
         // When
@@ -69,7 +69,7 @@ class S3FileServiceTest {
         final Long targetId = 1L;
         final TargetType targetType = TargetType.QNA;
 
-        final String fileKey = s3FileService.uploadFile(mockFile, targetId, targetType, 1L)
+        final String fileKey = s3FileService.uploadFile(mockFile, targetId, targetType, "1")
             .getStoredFileName();
 
         // Then
@@ -86,7 +86,7 @@ class S3FileServiceTest {
         final TargetType targetType = TargetType.QNA;
 
         // When
-        ResponseFileDto fileInfo = s3FileService.uploadFile(mockFile, targetId, targetType, 1L);
+        ResponseFileDto fileInfo = s3FileService.uploadFile(mockFile, targetId, targetType, "1");
 
         // Then
         assertTrue(
@@ -101,7 +101,7 @@ class S3FileServiceTest {
             "test content".getBytes());
         final Long targetId = 1L;
         final TargetType targetType = TargetType.QNA;
-        final String fileKey = s3FileService.uploadFile(mockFile, targetId, targetType, 1L)
+        final String fileKey = s3FileService.uploadFile(mockFile, targetId, targetType, "1")
             .getStoredFileName();
 
         // When
