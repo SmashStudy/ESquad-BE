@@ -1,11 +1,9 @@
-package com.esquad.esquadbe.studypage.repository;
+package com.esquad.esquadbe.team.entity.repository;
 
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
+@Repository
 public interface TeamSpaceRepository extends CrudRepository<TeamSpace, Long> {
-
-    Optional<TeamSpace> findById(Long teamId);
 }

@@ -1,7 +1,6 @@
 package com.esquad.esquadbe.studypage.dto;
 
 import com.esquad.esquadbe.notification.entity.AlertDayType;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

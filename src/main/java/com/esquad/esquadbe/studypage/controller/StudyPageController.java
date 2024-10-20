@@ -4,7 +4,6 @@ import com.esquad.esquadbe.studypage.dto.StudyInfoDto;
 import com.esquad.esquadbe.studypage.dto.StudyPageCreateDto;
 import com.esquad.esquadbe.studypage.dto.StudyPageReadDto;
 import com.esquad.esquadbe.studypage.dto.UpdateStudyPageRequestDto;
-import com.esquad.esquadbe.studypage.entity.StudyPage;
 import com.esquad.esquadbe.studypage.service.BookService;
 import com.esquad.esquadbe.studypage.service.StudyPageService;
 import com.esquad.esquadbe.studypage.service.StudyPageUserService;
@@ -20,7 +19,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/{teamId}/study-pages")
 public class StudyPageController {
 
     private final BookService bookService;
@@ -37,9 +36,9 @@ public class StudyPageController {
     }
 
     // Create
-    @PostMapping("/{team-id}/study-page")
+    @PostMapping("/")
     public ResponseEntity<String> createStudyPage(
-            @PathVariable("team-id") Long teamId,
+            @PathVariable("teamId") Long teamId,
             @RequestBody StudyPageCreateDto dto) {
 
         log.info("Creating a new study page for teamId: {}", teamId);
@@ -54,14 +53,14 @@ public class StudyPageController {
     }
 
     // Read List
-    @GetMapping("/{team-id}/study-page")
+    @GetMapping("/")
     public ResponseEntity<List<StudyPageReadDto>> getStudyPages(@PathVariable("teamId") Long teamId) {
         log.info("Fetching study pages for teamId: {}", teamId);
         List<StudyPageReadDto> studyPages = studyPageService.readStudyPages(teamId);
         return ResponseEntity.status(HttpStatus.OK).body(studyPages);
     }
 
-    @GetMapping("/{team-id}/study-page/{study-id}")
+    @GetMapping("/{studyId}")
     public ResponseEntity<StudyInfoDto> getStudyPageInfo(
             @PathVariable("teamId") Long teamId,
             @PathVariable("studyId") Long studyId) {
@@ -89,10 +88,10 @@ public class StudyPageController {
     }
 
     // Update
-    @PostMapping("/{team-id}/study-page/{study-id}")
+    @PostMapping("/{studyId}")
     public ResponseEntity<String> updateStudyPage(
-            @PathVariable("team-id") Long teamId,
-            @PathVariable("study-id") Long studyId,
+            @PathVariable("teamId") Long teamId,
+            @PathVariable("studyId") Long studyId,
             @RequestBody UpdateStudyPageRequestDto request) {
 
         log.info("Updating study page with studyId: {}", studyId);
@@ -107,9 +106,9 @@ public class StudyPageController {
     }
 
     // Delete
-    @DeleteMapping("/{team-id}/study-page/{study-id}")
+    @DeleteMapping("/{studyId}")
     public ResponseEntity<String> deleteStudyPage(
-            @PathVariable("study-id") Long studyId,
+            @PathVariable("studyId") Long studyId,
             @RequestParam("name") String studyPageName) {
 
         log.info("Attempting to delete study page with ID: {} and name: {}", studyId, studyPageName);
@@ -118,12 +117,15 @@ public class StudyPageController {
             log.info("Successfully deleted study page with ID: {}", studyId);
             studyPageService.deleteStudyPage(studyId, studyPageName);
             return ResponseEntity.status(HttpStatus.OK).body("Study page deleted successfully.");
+
         } catch (EntityNotFoundException e) {
             log.warn("Study page not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
         } catch (IllegalArgumentException e) {
             log.error("Invalid argument: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+
         } catch (Exception e) {
             log.error("Error occurred while deleting study page: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the study page.");

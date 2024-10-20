@@ -34,7 +34,7 @@ public class StudyPageUserService {
 
         for (User user : allUsers) {
             StudyPageUser studyPageUser = StudyPageUser.builder()
-                    .studyPage(studyPage) // 스터디 정보
+                    .studyPage(studyPage)
                     .member(user)
                     .build();
 

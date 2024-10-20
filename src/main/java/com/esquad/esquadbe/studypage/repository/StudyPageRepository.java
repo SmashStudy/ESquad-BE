@@ -11,6 +11,4 @@ import java.util.Optional;
 @Repository
 public interface StudyPageRepository  extends CrudRepository< StudyPage, Long> {
   Optional<List<StudyPage>> findAllByTeamSpace(TeamSpace teamSpace);
-
-  Optional<StudyPage> findById(Long id);
 }

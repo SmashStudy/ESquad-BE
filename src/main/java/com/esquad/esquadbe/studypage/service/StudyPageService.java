@@ -5,11 +5,9 @@ import com.esquad.esquadbe.studypage.dto.StudyPageReadDto;
 import com.esquad.esquadbe.studypage.dto.UpdateStudyPageRequestDto;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
-import com.esquad.esquadbe.studypage.entity.StudyPageUser;
 import com.esquad.esquadbe.studypage.repository.*;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.user.entity.User;
-import com.esquad.esquadbe.user.repository.UserRepository;
+import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -27,19 +25,16 @@ public class StudyPageService {
     private final StudyPageUserRepository studyPageUserRepository;
     private final BookRepository bookRepository;
     private final StudyPageRepository studyPageRepository;
-    private final UserRepository userRepository;
     private final StudyRemindRepository studyRemindRepository;
-    private StudyRemindRepository studyRemindService;
 
     @Autowired
     public StudyPageService(TeamSpaceRepository teamSpaceRepository, StudyPageUserRepository studyPageUserRepository,
                             BookRepository bookRepository, StudyPageRepository studyPageRepository,
-                            UserRepository userRepository, StudyRemindRepository studyRemindRepository) {
+                            StudyRemindRepository studyRemindRepository) {
         this.teamSpaceRepository = teamSpaceRepository;
         this.studyPageUserRepository = studyPageUserRepository;
         this.bookRepository = bookRepository;
         this.studyPageRepository = studyPageRepository;
-        this.userRepository = userRepository;
         this.studyRemindRepository = studyRemindRepository;
     }
 
@@ -125,5 +120,4 @@ public class StudyPageService {
         studyRemindRepository.deleteByStudyPage(studyPage);
         studyPageRepository.delete(studyPage);
     }
-
 }

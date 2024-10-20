@@ -36,8 +36,4 @@ public class StudyRemindService {
             studyRemindRepository.save(remind);
         }
     }
-
-    public void deleteRemind(Long id) {
-        studyRemindRepository.deleteById(id);
-    }
 }
