@@ -36,14 +36,16 @@ public class ChatFileService {
             String fileUrl = "https://" + bucketName + ".s3.amazonaws.com/" + storedFileName; // S3 URL 설정
 
             ChatS3FileDto s3FileDto = new ChatS3FileDto(
+                    null,
                     username,
                     file.getOriginalFilename(),
                     storedFileName,
-                    fileUrl, // fileUrl 추가
+                    fileUrl,
                     LocalDate.now()
             );
 
             ChatS3FileEntity fileEntity = new ChatS3FileEntity(
+                    s3FileDto.getFileId(),
                     s3FileDto.getUserName(),
                     s3FileDto.getOriginalFileName(),
                     s3FileDto.getFileName(),

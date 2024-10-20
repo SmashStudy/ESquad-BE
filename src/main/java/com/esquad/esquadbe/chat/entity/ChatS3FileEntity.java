@@ -1,10 +1,7 @@
 package com.esquad.esquadbe.chat.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatS3FileEntity extends BasicEntity {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID")
+    private Long fileId;
+
     @Column(name = "USERNAME" , nullable = false, length = 20)
     private String userName;
 

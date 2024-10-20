@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -22,7 +21,8 @@ public class ChatS3FileController {
     private final ChatFileService fileService;
 
     @PostMapping("/upload")
-    public ResponseEntity<?> fileUpload(@RequestPart(value = "file", required = false) MultipartFile multipartFile,
+    public ResponseEntity<?> fileUpload(@RequestPart(value = "file", required = false)
+                                            MultipartFile multipartFile,
                                         @RequestParam("username") String username) {
 
         return fileService.uploadFile(multipartFile, username);
