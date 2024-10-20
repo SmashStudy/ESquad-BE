@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 
 @Builder
 @Getter
-@Setter
 public class QnaBoardResponseDTO  {
     private Long id;
     private String title;
@@ -43,5 +42,7 @@ public class QnaBoardResponseDTO  {
                 .likes(bookQnaBoard.getLikes())
                 .build();
     }
+
+
 
 }

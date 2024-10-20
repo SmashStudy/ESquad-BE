@@ -1,7 +1,9 @@
 package com.esquad.esquadbe.qnaboard.controller;
 
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
+import com.esquad.esquadbe.qnaboard.dto.QnaRequestDTO;
 import com.esquad.esquadbe.qnaboard.service.QuestionService;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,13 +36,9 @@ public class QnaBoardController {
     // 새로운 질문 생성
     @PostMapping
     public QnaBoardResponseDTO createQuestion(
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam("userId") Long userId,
-            @RequestParam("bookId") Long bookId,
-            @RequestParam("teamSpaceId") Long teamSpaceId,
+            @RequestBody QnaRequestDTO qnaForm,
             @RequestParam(required = false) MultipartFile file) {
-        return questionService.createQuestion(title, content, userId, bookId, teamSpaceId, file);
+        return questionService.createQuestion(qnaForm, file);
     }
 
 
@@ -66,14 +64,9 @@ public class QnaBoardController {
 
     // 게시글 수정
     @PutMapping("/{id}")
-    public QnaBoardResponseDTO updateQuestion(
-            @PathVariable Long id,
-            @RequestParam("userId") Long userId,       // User ID로 받아서 User 객체로 조회
-            @RequestParam("title") String title,
-            @RequestParam("content") String content,
-            @RequestParam(value = "bookId", required = false) Long bookId) {     // Book ID로 책 조회
+    public QnaBoardResponseDTO updateQuestion(@RequestBody QnaRequestDTO updateForm) {     // Book ID로 책 조회
 
-        return questionService.updateQuestion(id, userId, title, content, bookId);
+        return questionService.updateQuestion(updateForm);
 
     }
 
@@ -90,7 +83,6 @@ public class QnaBoardController {
         String result = questionService.boardLike(boardId, userId);
         return ResponseEntity.ok(result);
     }
-
 
 }
 

@@ -5,16 +5,17 @@ import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.user.entity.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
-
-@SuperBuilder
+@Builder
 @Getter
 @Table(name = "BOOK_QNA_BOARD")
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 public class BookQnaBoard extends BasicEntity {
 
     @Id
