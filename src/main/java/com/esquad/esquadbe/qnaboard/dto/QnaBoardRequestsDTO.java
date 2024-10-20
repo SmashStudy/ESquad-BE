@@ -25,7 +25,6 @@ public class QnaBoardRequestsDTO {
                 .id(bookQnaBoard.getId())
                 .writer(bookQnaBoard.getWriter())
                 .title(bookQnaBoard.getTitle())
-                .studyPage(bookQnaBoard.getStudyPage())
                 .book(bookQnaBoard.getBook())
                 .content(bookQnaBoard.getContent())
                 .likes(bookQnaBoard.getLikes())
