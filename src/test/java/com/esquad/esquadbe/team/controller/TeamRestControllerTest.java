@@ -3,6 +3,7 @@ package com.esquad.esquadbe.team.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.esquad.esquadbe.global.exception.custom.DuplicateTeamException;
 import com.esquad.esquadbe.user.dto.ResponseDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -26,8 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.esquad.esquadbe.global.handle.DuplicateNameException;
-import com.esquad.esquadbe.global.handle.ErrorCode;
 import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.team.service.TeamServiceImpl;
 import com.esquad.esquadbe.user.repository.UserRepository;
@@ -66,12 +65,12 @@ class TeamRestControllerTest {
 
     @Test
     @DisplayName("팀 스페이스명의 유효성을 검사한다. DB에 있는 이름과 중복될 경우 에러를 던진다.")
-    @ExceptionHandler(DuplicateNameException.class)
+    @ExceptionHandler(DuplicateTeamException.class)
     public void shouldOccurErrorWhenDuplicateName() throws Exception {
 
         // given
-        final String givenName = "스메시";
-        given(teamService.verifyTeamName(givenName)).willThrow(new DuplicateNameException(ErrorCode.DUPLICATE_NAME));
+        // final String givenName = "스메시";
+        // given(teamService.verifyTeamName(givenName)).willThrow(new DuplicateTeamException(ErrorCode.DUPLICATE_NAME));
 
         // when-then
         MvcResult result = mockmvc.perform(get("/team/new/{teamName}", givenName)
@@ -89,7 +88,7 @@ class TeamRestControllerTest {
     public void shouldStatusIsOkWhenUniqueName() throws Exception {
 
         final String givenName = "gilgili";
-        given(teamService.verifyTeamName(givenName)).willReturn(false);
+        // given(teamService.verifyTeamName(givenName)).willReturn(false);
         int actual = HttpStatus.OK.value();
         
         MvcResult result = mockmvc.perform(get("/team/new/{teamName}", givenName)
