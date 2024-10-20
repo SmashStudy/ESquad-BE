@@ -30,10 +30,4 @@ public class StudyPageUser extends BasicEntity {
 
     @Column(name = "OWNER_FLAG", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean ownerFlag = false;
-
-    public void setStudyPage(StudyPage studyPage) {
-        this.studyPage = studyPage;
-        studyPage.getStudyPageUsers().add(this);
-    }
-
 }

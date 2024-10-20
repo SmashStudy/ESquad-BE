@@ -5,18 +5,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDate;
+
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class BookSearchResultItemDto {
+public class UpdateStudyPageRequestDto {
     private String title;
-    private String link;
-    private String image;
-    private String author;
-    private String discount;
-    private String publisher;
-    private String isbn;
     private String description;
-    private String pubdate;
-};
+    private LocalDate startDate;
+    private LocalDate endDate;
+}
