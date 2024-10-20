@@ -37,9 +37,9 @@ public class StudyPageController {
     }
 
     // Create
-    @PostMapping("/{teamId}/study-pages")
+    @PostMapping("/{team-id}/study-page")
     public ResponseEntity<String> createStudyPage(
-            @PathVariable("teamId") Long teamId,
+            @PathVariable("team-id") Long teamId,
             @RequestBody StudyPageCreateDto dto) {
 
         log.info("Creating a new study page for teamId: {}", teamId);
@@ -54,14 +54,14 @@ public class StudyPageController {
     }
 
     // Read List
-    @GetMapping("/{teamId}/study-pages")
+    @GetMapping("/{team-id}/study-page")
     public ResponseEntity<List<StudyPageReadDto>> getStudyPages(@PathVariable("teamId") Long teamId) {
         log.info("Fetching study pages for teamId: {}", teamId);
         List<StudyPageReadDto> studyPages = studyPageService.readStudyPages(teamId);
         return ResponseEntity.status(HttpStatus.OK).body(studyPages);
     }
 
-    @GetMapping("/{teamId}/study-pages/{studyId}")
+    @GetMapping("/{team-id}/study-page/{study-id}")
     public ResponseEntity<StudyInfoDto> getStudyPageInfo(
             @PathVariable("teamId") Long teamId,
             @PathVariable("studyId") Long studyId) {
@@ -89,10 +89,10 @@ public class StudyPageController {
     }
 
     // Update
-    @PostMapping("/{teamId}/study-pages/{studyId}")
+    @PostMapping("/{team-id}/study-page/{study-id}")
     public ResponseEntity<String> updateStudyPage(
-            @PathVariable("teamId") Long teamId,
-            @PathVariable("studyId") Long studyId,
+            @PathVariable("team-id") Long teamId,
+            @PathVariable("study-id") Long studyId,
             @RequestBody UpdateStudyPageRequestDto request) {
 
         log.info("Updating study page with studyId: {}", studyId);
@@ -107,9 +107,9 @@ public class StudyPageController {
     }
 
     // Delete
-    @DeleteMapping("/{teamId}/study-pages/{studyId}")
+    @DeleteMapping("/{team-id}/study-page/{study-id}")
     public ResponseEntity<String> deleteStudyPage(
-            @PathVariable("studyId") Long studyId,
+            @PathVariable("study-id") Long studyId,
             @RequestParam("name") String studyPageName) {
 
         log.info("Attempting to delete study page with ID: {} and name: {}", studyId, studyPageName);
