@@ -19,10 +19,10 @@ public class ChatS3FileEntity extends BasicEntity {
     private Long fileId;
 
     @Column(name = "USERNAME" , nullable = false, length = 20)
-    private String userName;
+    private String username;
 
     @Column(name = "ORIGINAL_FILENAME", nullable = false, length = 100)
-    private String originalFilename;
+    private String originalFileName;
 
     @Column(name = "FILENAME", nullable = false, length = 100)
     private String fileName;

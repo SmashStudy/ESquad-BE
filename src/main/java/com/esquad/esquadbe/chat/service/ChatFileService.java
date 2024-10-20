@@ -74,7 +74,7 @@ public class ChatFileService {
         byte[] fileData = s3FileService.downloadFile(s3FileEntity.getFileName());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + s3FileEntity.getOriginalFilename());
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + s3FileEntity.getOriginalFileName());
         headers.setContentLength(fileData.length);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         return new ResponseEntity<>(fileData, headers, HttpStatus.OK);
