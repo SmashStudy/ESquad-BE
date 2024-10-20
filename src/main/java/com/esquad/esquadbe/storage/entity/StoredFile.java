@@ -2,6 +2,7 @@ package com.esquad.esquadbe.storage.entity;
 
 import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.user.entity.User;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -37,17 +38,6 @@ public class StoredFile extends BasicEntity {
     @JoinColumn(name = "USER_ID", nullable = false)
     private User user;
 
-    private String originFileName;
-
-    private String storedFileName;
-
-    private String filePath;
-
-    @Enumerated(EnumType.STRING)
-    private FileType fileType;
-
-    private Integer fileSize;
-
-
-
+    @Embedded
+    private FileInfo fileInfo;
 }
