@@ -34,7 +34,6 @@ public class S3FileController {
         @RequestParam Long targetId,
         @RequestParam TargetType targetType,
         Principal principal) {
-        System.out.println("principal is " + principal.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(s3FileService.uploadFile(file, targetId, targetType, principal.getName()));
     }
