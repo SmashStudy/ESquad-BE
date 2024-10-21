@@ -44,12 +44,11 @@ class QuestionServiceTest {
         // User 객체 생성
         User writer = User.builder()
                 .id(1L)
-                .userId("wnsgud0310")
+                .username("wnsgud0310")
                 .nickname("박준형")
                 .password("wnsgud0310")
-                .userName("Test User")
                 .email("ffjjo0310@gmail.com")
-                .phoneNo("01094987919")
+                .phoneNumber("01094987919")
                 .birthDay(LocalDate.of(2000, 3, 10))
                 .address("부산해운대구좌동")
                 .build();

@@ -1,5 +1,6 @@
 package com.esquad.esquadbe.user.service;
 
+import com.esquad.esquadbe.user.Impl.UserGetServiceImpl;
 import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserException;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.*;
 class UserGetTest {
 
     @InjectMocks
-    private UserGetService userGetService;
+    private UserGetServiceImpl userGetService;
 
     @Mock
     private UserRepository userRepository;

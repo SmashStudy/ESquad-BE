@@ -20,7 +20,6 @@ public class MailController {
     public String emailSend(@RequestBody MailDTO mailDTO) throws MessagingException {
         String email = mailService.sendIdResetMail(mailDTO.getEmail());
         return email;
-
     }
 
     @PostMapping("/verify-username")

@@ -1,5 +1,6 @@
 package com.esquad.esquadbe.user.service;
 
+import com.esquad.esquadbe.user.Impl.UserPasswordServiceImpl;
 import com.esquad.esquadbe.user.dto.UserUpdatePasswordDTO;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserNotFoundException;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.*;
 class UserPasswordUpdateTest {
 
     @InjectMocks
-    private UserPasswordService userPasswordService;
+    private UserPasswordServiceImpl userPasswordService;
 
     @Mock
     private UserRepository userRepository;

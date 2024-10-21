@@ -2,6 +2,8 @@ package com.esquad.esquadbe.user.service;
 
 import com.esquad.esquadbe.redis.RedisUtil;
 import com.esquad.esquadbe.security.jwt.JwtProvider;
+import com.esquad.esquadbe.user.Impl.UserGetServiceImpl;
+import com.esquad.esquadbe.user.Impl.UserLoginServiceImpl;
 import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
 import com.esquad.esquadbe.user.dto.UserLoginRequestDTO;
 import com.esquad.esquadbe.user.dto.UserLoginResponseDTO;
@@ -23,10 +25,10 @@ import static org.mockito.Mockito.*;
 class UserLoginTest {
 
     @InjectMocks
-    private UserLoginService userLoginService;
+    private UserLoginServiceImpl userLoginService;
 
     @Mock
-    private UserGetService userGetService;
+    private UserGetServiceImpl userGetService;
 
     @Mock
     private BCryptPasswordEncoder bCryptPasswordEncoder;

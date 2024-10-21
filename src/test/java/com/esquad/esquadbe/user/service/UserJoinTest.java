@@ -1,5 +1,6 @@
 package com.esquad.esquadbe.user.service;
 
+import com.esquad.esquadbe.user.Impl.UserJoinServiceImpl;
 import com.esquad.esquadbe.user.exception.UserIdException;
 import com.esquad.esquadbe.user.exception.UserNicknameException;
 import com.esquad.esquadbe.user.dto.UserJoinDTO;
@@ -24,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 class UserJoinTest {
 
     @Autowired
-    private UserJoinService userJoinService;
+    private UserJoinServiceImpl userJoinService;
 
     @MockBean
     private UserRepository userRepository;

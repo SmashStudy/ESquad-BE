@@ -1,6 +1,6 @@
 package com.esquad.esquadbe.security.jwt;
 
-import com.esquad.esquadbe.user.service.UserGetService;
+import com.esquad.esquadbe.user.Impl.UserGetServiceImpl;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -25,7 +25,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
 
-    private final UserGetService userGetService;
+    private final UserGetServiceImpl userGetService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
