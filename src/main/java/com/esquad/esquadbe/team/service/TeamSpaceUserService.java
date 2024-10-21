@@ -1,13 +1,13 @@
 package com.esquad.esquadbe.team.service;
 
-import com.esquad.esquadbe.global.exception.custom.team.TeamNotFoundException;
-import com.esquad.esquadbe.global.exception.custom.team.TeamUserRolePermissionException;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
+import com.esquad.esquadbe.team.exception.TeamUserRolePermissionException;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.team.repository.TeamSpaceUserRepository;
 import com.esquad.esquadbe.user.dto.UserResponseDTO;
-import com.esquad.esquadbe.global.exception.custom.user.UserNotFoundException;
+import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 

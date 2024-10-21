@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.global.exception.response;
+package com.esquad.esquadbe.global.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

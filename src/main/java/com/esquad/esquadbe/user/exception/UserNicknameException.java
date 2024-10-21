@@ -1,7 +1,7 @@
 package com.esquad.esquadbe.user.exception;
 
-public class UserNicknameException extends RuntimeException {
-    public UserNicknameException(String message) {
-        super(message);
-    }
+import com.esquad.esquadbe.global.exception.RestApiException;
+
+public class UserNicknameException extends RestApiException {
+    public UserNicknameException() { super(UserErrorCode.USER_NOT_FOUND_ERROR);}
 }

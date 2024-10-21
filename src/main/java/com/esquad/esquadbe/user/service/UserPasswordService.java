@@ -1,6 +1,5 @@
 package com.esquad.esquadbe.user.service;
 
-import com.esquad.esquadbe.user.dto.UserUpdateDTO;
 import com.esquad.esquadbe.user.dto.UserUpdatePasswordDTO;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserNotFoundException;
@@ -16,7 +15,7 @@ public class UserPasswordService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public User updateUser(Long userId, UserUpdatePasswordDTO userUpdatePasswordDTO) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         if (!bCryptPasswordEncoder.matches(userUpdatePasswordDTO.getCurrentPassword(), user.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
