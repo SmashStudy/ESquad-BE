@@ -4,6 +4,7 @@ import com.esquad.esquadbe.user.exception.UserIdException;
 import com.esquad.esquadbe.user.exception.UserNicknameException;
 import com.esquad.esquadbe.user.dto.UserJoinDTO;
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,11 +18,11 @@ public class UserJoinService {
 
     public void joinProcess(UserJoinDTO userJoinDTO) {
         if (userRepository.existsByUsername(userJoinDTO.getUsername())) {
-            throw new UserIdException("이미 존재하는 아이디입니다.");
+            throw new UserUsernameException();
         }
 
         if (userRepository.existsByNickname(userJoinDTO.getNickname())) {
-            throw new UserNicknameException("이미 존재하는 닉네임입니다.");
+            throw new UserNicknameException();
         }
 
         if(userJoinDTO.getNickname().isEmpty()) {

@@ -1,8 +1,7 @@
 package com.esquad.esquadbe.user.service;
 
 import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
-import com.esquad.esquadbe.user.exception.UserException;
-import com.esquad.esquadbe.user.exception.UserExceptionResult;
+import com.esquad.esquadbe.user.exception.UserInquiryException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class UserGetService {
     public UserGetResponseDTO getUserById(final long id) {
         return userRepository.findById(id)
                 .map(UserGetResponseDTO::of)
-                .orElseThrow(() -> new UserException(UserExceptionResult.NOT_EXISTS));
+                .orElseThrow(UserInquiryException::new);
     }
 
     /**
@@ -38,6 +37,6 @@ public class UserGetService {
     public UserGetResponseDTO getUserByUserId(final String username) {
         return userRepository.findByUsername(username)
                 .map(UserGetResponseDTO::of)
-                .orElseThrow(() -> new UserException(UserExceptionResult.NOT_EXISTS));
+                .orElseThrow(UserInquiryException::new);
     }
 }

@@ -7,10 +7,9 @@ import com.esquad.esquadbe.user.dto.LoginResponseDTO;
 import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
 
 
-import com.esquad.esquadbe.user.exception.LoginException;
-import com.esquad.esquadbe.user.exception.LoginExceptionResult;
 import com.esquad.esquadbe.security.jwt.JwtProvider;
 
+import com.esquad.esquadbe.user.exception.UserLoginException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,7 @@ public class LoginService {
 
         // password 일치 여부 체크
         if(!bCryptPasswordEncoder.matches(loginRequestDTO.getPassword(), userInfo.password()))
-            throw new LoginException(LoginExceptionResult.NOT_CORRECT);
+            throw new UserLoginException();
 
         // jwt 토큰 생성
         String accessToken = jwtProvider.generateAccessToken(userInfo.id());

@@ -1,6 +1,5 @@
-package com.esquad.esquadbe.global.exception.custom;
+package com.esquad.esquadbe.global.exception;
 
-import com.esquad.esquadbe.global.exception.response.ErrorCode;
 import lombok.Getter;
 
 @Getter
