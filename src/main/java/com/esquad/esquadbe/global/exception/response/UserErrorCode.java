@@ -8,10 +8,9 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum UserErrorCode implements ErrorCode {
 
-   USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, 404, "존재하지 않는 유저입니다.", "UE0001");
+   USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "User not exists", "USER-0001");
 
    private final HttpStatus httpStatus;
-   private final int statusCode;
    private final String message;
    private final String code;
 
