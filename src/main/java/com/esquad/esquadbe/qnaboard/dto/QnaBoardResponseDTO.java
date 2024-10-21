@@ -3,7 +3,6 @@ package com.esquad.esquadbe.qnaboard.dto;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.time.format.DateTimeFormatter;
 
