@@ -1,6 +1,5 @@
 package com.esquad.esquadbe.team.controller;
 
-import com.esquad.esquadbe.global.exception.custom.BusinessBaseException;
 import com.esquad.esquadbe.global.exception.response.UserErrorCode;
 import com.esquad.esquadbe.team.dto.TeamSpaceCreateRequestDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceRequestDTO;
