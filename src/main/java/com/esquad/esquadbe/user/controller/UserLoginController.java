@@ -1,11 +1,11 @@
 package com.esquad.esquadbe.user.controller;
 
-import com.esquad.esquadbe.user.dto.LoginRequestDTO;
+import com.esquad.esquadbe.user.dto.UserLoginRequestDTO;
 import com.esquad.esquadbe.security.dto.RefreshTokenRequestDTO;
 import com.esquad.esquadbe.global.api.ApiResponseEntity;
 import com.esquad.esquadbe.security.jwt.JwtUtil;
 import com.esquad.esquadbe.security.jwt.RefreshTokenService;
-import com.esquad.esquadbe.user.service.LoginService;
+import com.esquad.esquadbe.user.service.UserLoginService;
 import com.esquad.esquadbe.user.service.UserGetService;
 
 import jakarta.validation.Valid;
@@ -26,15 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
-public class LoginController {
+public class UserLoginController {
 
-    private final LoginService loginService;
+    private final UserLoginService loginService;
     private final UserGetService userGetService;
     private final RefreshTokenService refreshTokenService;
 
 
     @PostMapping("login")
-    public ResponseEntity<ApiResponseEntity> login(@RequestBody @Valid LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<ApiResponseEntity> login(@RequestBody @Valid UserLoginRequestDTO loginRequestDTO) {
         // login 체크 후 token 생성
         var loginInfo = loginService.login(loginRequestDTO);
 

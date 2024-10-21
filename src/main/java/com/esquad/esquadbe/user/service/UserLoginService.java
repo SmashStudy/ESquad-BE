@@ -1,8 +1,8 @@
 package com.esquad.esquadbe.user.service;
 
 import com.esquad.esquadbe.redis.RedisUtil;
-import com.esquad.esquadbe.user.dto.LoginRequestDTO;
-import com.esquad.esquadbe.user.dto.LoginResponseDTO;
+import com.esquad.esquadbe.user.dto.UserLoginRequestDTO;
+import com.esquad.esquadbe.user.dto.UserLoginResponseDTO;
 
 import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
 
@@ -20,7 +20,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
-public class LoginService {
+public class UserLoginService {
 
     private final UserGetService userGetService;
 
@@ -34,7 +34,7 @@ public class LoginService {
 
 
     @Transactional
-    public LoginResponseDTO login(final LoginRequestDTO loginRequestDTO) {
+    public UserLoginResponseDTO login(final UserLoginRequestDTO loginRequestDTO) {
         // 사용자 정보 조회
         UserGetResponseDTO userInfo = userGetService.getUserByUserId(loginRequestDTO.getUsername());
 
@@ -54,7 +54,7 @@ public class LoginService {
         // refresh token 생성 후 저장
         String refreshToken = jwtProvider.generateRefreshToken(userInfo.id());
         redisUtil.set(REFRESH_TOKEN_PREFIX + refreshToken, userInfo.id(), 60 * 24 * 7);
-        return LoginResponseDTO.builder()
+        return UserLoginResponseDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

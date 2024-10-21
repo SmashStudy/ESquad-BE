@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class LoginRequestDTO {
+public class UserLoginRequestDTO {
 
     @NotNull
     @NotEmpty
