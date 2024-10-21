@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum UserErrorCode implements ErrorCode {
+public enum TeamSpaceUserErrorCode implements ErrorCode {
 
-   USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "User not exists", "USER-0001");
+   TEAM_USER_ROLE_PERMIT_EXCEPTION(HttpStatus.UNAUTHORIZED, "Improper authority", "TEAMUSER-0001");
 
    private final HttpStatus httpStatus;
    private final String message;
