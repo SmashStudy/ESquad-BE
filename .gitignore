@@ -42,3 +42,6 @@ src/main/resources/fb.json
 src/main/resources/samples/qna.sql
 src/main/resources/samples/user.sql
 src/main/resources/fb.json
+
+### Mac OS ###
+.DS_Store
