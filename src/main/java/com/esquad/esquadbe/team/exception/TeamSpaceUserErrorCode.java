@@ -1,5 +1,6 @@
-package com.esquad.esquadbe.global.exception.response;
+package com.esquad.esquadbe.team.exception;
 
+import com.esquad.esquadbe.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
