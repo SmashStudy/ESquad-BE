@@ -3,12 +3,7 @@ package com.esquad.esquadbe.qnaboard.entity;
 import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.List;
+import lombok.*;
 
 
 @NoArgsConstructor
@@ -16,6 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 @Entity
+@Builder
 @Table(name = "BOOK_QNA_REPLY")
 public class BookQnaReply extends BasicEntity {
 
@@ -54,6 +50,6 @@ public class BookQnaReply extends BasicEntity {
     @Column(name = "DELETED_FLAG", columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean deletedFlag;
 
-    @OneToMany(mappedBy = "parentReply", orphanRemoval = true)
-    private List<BookQnaReply> childReplies;
+//    @OneToMany(mappedBy = "parentReply", orphanRemoval = true)
+//    private List<BookQnaReply> childReplies;
 }
