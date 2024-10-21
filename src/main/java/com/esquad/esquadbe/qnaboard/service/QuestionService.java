@@ -82,8 +82,9 @@ public class QuestionService {
 
         // 파일이 있을 경우에만 파일 업로드
         if (file != null && !file.isEmpty()) {
-            s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, qnaForm.userId());
+            s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, String.valueOf(qnaForm.userId()));  // userId를 String으로 변환
         }
+
 
         return QnaBoardResponseDTO.from(savedQuestion);
     }
