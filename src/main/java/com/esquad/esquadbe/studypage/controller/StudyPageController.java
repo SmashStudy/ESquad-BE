@@ -8,7 +8,6 @@ import com.esquad.esquadbe.studypage.service.BookService;
 import com.esquad.esquadbe.studypage.service.StudyPageService;
 import com.esquad.esquadbe.studypage.service.StudyPageUserService;
 import com.esquad.esquadbe.studypage.service.StudyRemindService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,7 +41,6 @@ public class StudyPageController {
             @RequestBody StudyPageCreateDto dto) {
 
         log.info("Creating a new study page for teamId: {}", teamId);
-
         Long bookId = bookService.createBookInfo(dto.getBookDto());
         Long studyPageId = studyPageService.createStudyPage(teamId, bookId, dto.getStudyInfoDto());
 
@@ -57,7 +55,7 @@ public class StudyPageController {
     public ResponseEntity<List<StudyPageReadDto>> getStudyPages(@PathVariable("teamId") Long teamId) {
         log.info("Fetching study pages for teamId: {}", teamId);
         List<StudyPageReadDto> studyPages = studyPageService.readStudyPages(teamId);
-        return ResponseEntity.status(HttpStatus.OK).body(studyPages);
+        return ResponseEntity.ok(studyPages);
     }
 
     @GetMapping("/{studyId}")
@@ -66,25 +64,8 @@ public class StudyPageController {
             @PathVariable("studyId") Long studyId) {
         log.info("Fetching study page info: teamId = {}, studyId = {}", teamId, studyId);
 
-        try {
-            StudyInfoDto studyInfoDto= studyPageService.readStudyPageInfo(studyId);
-            return ResponseEntity.ok(studyInfoDto);
-
-        } catch (EntityNotFoundException ex) {
-            log.error("Study page not found: studyId = {}, teamId = {}", studyId, teamId, ex);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(null);
-
-        } catch (IllegalArgumentException ex) {
-            log.error("Invalid argument provided for teamId = {} or studyId = {}", teamId, studyId, ex);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);
-
-        } catch (Exception ex) {
-            log.error("Unexpected error while fetching study page: studyId = {}, teamId = {}", studyId, teamId, ex);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
-        }
+        StudyInfoDto studyInfoDto = studyPageService.readStudyPageInfo(studyId);
+        return ResponseEntity.ok(studyInfoDto);
     }
 
     // Update
@@ -99,7 +80,7 @@ public class StudyPageController {
         boolean isUpdated = studyPageService.updateStudyPage(studyId, request);
 
         if (isUpdated) {
-            return ResponseEntity.status(HttpStatus.OK).body("Study page updated successfully.");
+            return ResponseEntity.ok("Study page updated successfully.");
         } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have authorization to update this study page.");
         }
@@ -113,22 +94,7 @@ public class StudyPageController {
 
         log.info("Attempting to delete study page with ID: {} and name: {}", studyId, studyPageName);
 
-        try {
-            log.info("Successfully deleted study page with ID: {}", studyId);
-            studyPageService.deleteStudyPage(studyId, studyPageName);
-            return ResponseEntity.status(HttpStatus.OK).body("Study page deleted successfully.");
-
-        } catch (EntityNotFoundException e) {
-            log.warn("Study page not found: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-
-        } catch (IllegalArgumentException e) {
-            log.error("Invalid argument: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-
-        } catch (Exception e) {
-            log.error("Error occurred while deleting study page: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the study page.");
-        }
+        studyPageService.deleteStudyPage(studyId, studyPageName);
+        return ResponseEntity.ok("Study page deleted successfully.");
     }
 }

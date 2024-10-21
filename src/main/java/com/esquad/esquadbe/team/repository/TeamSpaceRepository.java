@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.team.entity.repository;
+package com.esquad.esquadbe.team.repository;
 
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import org.springframework.data.repository.CrudRepository;
