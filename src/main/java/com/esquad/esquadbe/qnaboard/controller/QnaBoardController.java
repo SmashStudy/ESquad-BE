@@ -56,7 +56,7 @@ public class QnaBoardController {
     // 특정 작성자의 게시글 조회
     @GetMapping("/by-writer")
     public Page<QnaBoardResponseDTO> getQuestionsByWriter(
-            @RequestParam("username") Principal principal,
+            Principal principal,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
         return questionService.getQuestionsByWriter(principal.getName(), page, size);
