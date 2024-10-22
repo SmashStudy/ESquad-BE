@@ -35,9 +35,9 @@ public class QuestionService {
     private final TeamSpaceRepository teamSpaceRepository;
     private final S3FileService s3FileService;
 
-    private User getUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+    private User getUser(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
     }
 
     private Book getBook(Long bookId) {
@@ -68,7 +68,7 @@ public class QuestionService {
     @Transactional
     public QnaBoardResponseDTO createQuestion(QnaRequestDTO qnaForm, MultipartFile file) {
 
-        User user = getUser(qnaForm.userId());
+        User user = getUser(qnaForm.username());
         Book book = getBook(qnaForm.bookId());
         TeamSpace teamSpace = getTeamspace(qnaForm.teamSpaceId());
 
@@ -79,7 +79,7 @@ public class QuestionService {
 
         // 파일이 있을 경우에만 파일 업로드
         if (file != null && !file.isEmpty()) {
-            s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, String.valueOf(qnaForm.userId()));  // userId를 String으로 변환
+            s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, String.valueOf(qnaForm.username()));  // userId를 String으로 변환
         }
 
 
@@ -94,8 +94,8 @@ public class QuestionService {
     }
 
     // 특정 작성자의 게시글 조회
-    public Page<QnaBoardResponseDTO> getQuestionsByWriter(Long userId, int page, int size) {
-        User user = getUser(userId);
+    public Page<QnaBoardResponseDTO> getQuestionsByWriter(String username, int page, int size) {
+        User user = getUser(username);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return questionRepository.findByWriter(user, pageable)
                 .map(QnaBoardResponseDTO::from);
@@ -108,7 +108,7 @@ public class QuestionService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
 
         // 작성자 확인
-        if (!existBoard.getWriter().getId().equals(qnaForm.userId())) {
+        if (!existBoard.getWriter().getUsername().equals(qnaForm.username())) {
             throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
         }
 
