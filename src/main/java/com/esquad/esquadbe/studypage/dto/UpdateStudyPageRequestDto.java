@@ -1,5 +1,6 @@
 package com.esquad.esquadbe.studypage.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +13,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 public class UpdateStudyPageRequestDto {
+    @NotBlank
     private String title;
-    private String description;
+    @NotBlank
     private LocalDate startDate;
+    @NotBlank
     private LocalDate endDate;
+
+    private String description;
 }
