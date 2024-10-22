@@ -3,7 +3,6 @@ package com.esquad.esquadbe.user.controller;
 import com.esquad.esquadbe.global.api.ApiResponseEntity;
 import com.esquad.esquadbe.security.jwt.JwtUtil;
 import com.esquad.esquadbe.user.dto.UserUpdateDTO;
-import com.esquad.esquadbe.user.repository.UserRepository;
 import com.esquad.esquadbe.user.service.UserUpdateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

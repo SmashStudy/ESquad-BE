@@ -2,6 +2,8 @@ package com.esquad.esquadbe.chat.controller;
 
 import com.esquad.esquadbe.chat.dto.ChatEditMessage;
 import com.esquad.esquadbe.chat.dto.ChatMessage;
+import com.esquad.esquadbe.chat.exception.ChatAccessException;
+import com.esquad.esquadbe.chat.exception.ChatException;
 import com.esquad.esquadbe.chat.service.FirebaseService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -11,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +31,7 @@ public class ChatController {
         Map<String, String> response = new HashMap<>();
         try {
             DatabaseReference roomRef = firebaseService.getReference("MESSAGES/" + chatMsg.getRoomId());
-            DatabaseReference messageRef = roomRef.push();  // Firebase에서 메시지 ID 자동 생성
+            DatabaseReference messageRef = roomRef.push();
             String newMessageId = messageRef.getKey();
             chatMsg.setMessageId(newMessageId);
 
@@ -48,9 +50,7 @@ public class ChatController {
             future.join();
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new ChatException();
         }
     }
 
@@ -83,32 +83,31 @@ public class ChatController {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                response.put("status", "error");
-                response.put("message", databaseError.getMessage());
-                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+                throw new ChatException();
             }
         });
-
         return futureResponse;
     }
 
-
-    @PutMapping("/edit/{roomId}/{messageId}")
+    @PutMapping("/{roomId}/{messageId}")
     public CompletableFuture<ResponseEntity<Map<String, String>>> updateMessage(
             @PathVariable String roomId,
             @PathVariable String messageId,
-            @RequestBody ChatEditMessage request) {
+            @RequestBody ChatEditMessage request,
+            Principal principal) {
 
         Map<String, String> response = new HashMap<>();
         CompletableFuture<ResponseEntity<Map<String, String>>> futureResponse = new CompletableFuture<>();
 
         DatabaseReference messageRef = firebaseService.getReference("MESSAGES/" + roomId + "/" + messageId);
+        String userId = principal.getName();
 
         messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String originalUserId = dataSnapshot.getValue(String.class);
-                if (originalUserId != null && originalUserId.equals(request.getUserId())) {
+
+                if (originalUserId != null && originalUserId.equals(userId)) {
                     messageRef.child("message").setValue(request.getNewMessage(), (error, ref) -> {
                         if (error != null) {
                             response.put("status", "error");
@@ -120,33 +119,28 @@ public class ChatController {
                         }
                     });
                 } else {
-                    response.put("status", "error");
-                    response.put("message", "Unauthorized");
-                    futureResponse.complete(ResponseEntity.status(HttpStatus.FORBIDDEN).body(response));
+                    throw new ChatAccessException();
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                response.put("status", "error");
-                response.put("message", databaseError.getMessage());
-                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+               throw new ChatException();
             }
         });
         return futureResponse;
     }
 
-    @DeleteMapping("/delete/{roomId}/{messageId}")
+    @DeleteMapping("/{roomId}/{messageId}")
     public CompletableFuture<ResponseEntity<Map<String, String>>> deleteMessage(
             @PathVariable String roomId,
             @PathVariable String messageId,
-            @RequestBody Map<String, String> request) {
-
-        String userId = request.get("userId");
+            Principal principal) {
 
         DatabaseReference messageRef = firebaseService.getReference("MESSAGES/" + roomId + "/" + messageId);
         CompletableFuture<ResponseEntity<Map<String, String>>> futureResponse = new CompletableFuture<>();
         Map<String, String> response = new HashMap<>();
+
+        String userId = principal.getName();
 
         messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -166,9 +160,7 @@ public class ChatController {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                response.put("status", "error");
-                response.put("message", databaseError.getMessage());
-                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+                throw new ChatAccessException();
             }
         });
         return futureResponse;

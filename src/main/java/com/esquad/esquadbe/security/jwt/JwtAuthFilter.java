@@ -1,7 +1,7 @@
 package com.esquad.esquadbe.security.jwt;
 
-import com.esquad.esquadbe.user.service.UserGetService;
 
+import com.esquad.esquadbe.user.service.UserGetService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
