@@ -8,6 +8,7 @@ import com.esquad.esquadbe.studypage.service.BookService;
 import com.esquad.esquadbe.studypage.service.StudyPageService;
 import com.esquad.esquadbe.studypage.service.StudyPageUserService;
 import com.esquad.esquadbe.studypage.service.StudyRemindService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class StudyPageController {
     @PostMapping("/")
     public ResponseEntity<String> createStudyPage(
             @PathVariable("teamId") Long teamId,
-            @RequestBody StudyPageCreateDto dto) {
+            @RequestBody @Valid StudyPageCreateDto dto) {
 
         log.info("Creating a new study page for teamId: {}", teamId);
         Long bookId = bookService.createBookInfo(dto.getBookDto());
@@ -73,7 +74,7 @@ public class StudyPageController {
     public ResponseEntity<String> updateStudyPage(
             @PathVariable("teamId") Long teamId,
             @PathVariable("studyId") Long studyId,
-            @RequestBody UpdateStudyPageRequestDto request) {
+            @RequestBody @Valid UpdateStudyPageRequestDto request) {
 
         log.info("Updating study page with studyId: {}", studyId);
 
