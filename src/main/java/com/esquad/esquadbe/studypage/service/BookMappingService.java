@@ -2,6 +2,7 @@ package com.esquad.esquadbe.studypage.service;
 
 import com.esquad.esquadbe.studypage.dto.BookSearchResultItemDto;
 import com.esquad.esquadbe.studypage.dto.BookSearchResultListDto;
+import com.esquad.esquadbe.studypage.exception.BookMappingException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +25,11 @@ public class BookMappingService {
         if(res == null || res.isEmpty()) {
             return Collections.emptyList();
         }
+
         try {
-            BookSearchResultListDto dto = objectMapper.readValue(res, BookSearchResultListDto.class);
-            return dto.getItems();
+            return objectMapper.readValue(res, BookSearchResultListDto.class).getItems();
         } catch (JsonProcessingException e) {
-            log.error("JSON 처리 오류: 응답 처리 중 문제가 발생했습니다.", e);
-            return Collections.emptyList();
+            throw new BookMappingException();
         }
     }
 }

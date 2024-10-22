@@ -5,12 +5,16 @@ import com.esquad.esquadbe.studypage.dto.StudyPageReadDto;
 import com.esquad.esquadbe.studypage.dto.UpdateStudyPageRequestDto;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
-import com.esquad.esquadbe.studypage.exception.StudyPageException;
+import com.esquad.esquadbe.studypage.exception.BookNotFoundException;
+import com.esquad.esquadbe.studypage.exception.BookJsonProcessingException;
+import com.esquad.esquadbe.studypage.exception.StudyPageNameNotEqualException;
 import com.esquad.esquadbe.studypage.repository.*;
 import com.esquad.esquadbe.team.entity.TeamSpace;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
 import com.esquad.esquadbe.team.repository.TeamSpaceRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+
+import static com.esquad.esquadbe.studypage.dto.StudyInfoDto.to;
 
 @Slf4j
 @Service
@@ -44,49 +50,19 @@ public class StudyPageService {
     }
 
     // StudyPage 생성
-    public Long createStudyPage(Long teamId, Long bookId, StudyInfoDto dto) {
+    public Long createStudyPage(Long teamId, Long bookId, @Valid StudyInfoDto dto) {
         log.info("Creating StudyPage with teamId: {}, bookId: {}, dto: {}", teamId, bookId, dto);
-
-        validateStudyInfoDto(dto);
 
         // 팀 스페이스 및 도서 조회
         TeamSpace teamSpace = teamSpaceRepository.findById(teamId)
-                .orElseThrow(() -> new StudyPageException("Invalid TeamSpace ID: " + teamId));
+                .orElseThrow(TeamNotFoundException::new);
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new StudyPageException("Invalid Book ID: " + bookId));
+                .orElseThrow(BookNotFoundException::new);
 
-        // StudyPage 객체 생성
-        StudyPage studyPage = StudyPage.builder()
-                .teamSpace(teamSpace)
-                .book(book)
-                .studyPageName(dto.getStudyPageName())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
-                .description(dto.getDescription())
-                .build();
+        StudyPage studyPage = dto.from(teamSpace, book);
 
         // StudyPage 저장 및 ID 반환
         return studyPageRepository.save(studyPage).getId();
-    }
-
-    // StudyInfoDto 유효성 검사
-    private void validateStudyInfoDto(StudyInfoDto dto) {
-        // DTO 검증
-        if (dto == null) {
-            throw new StudyPageException("StudyInfoDto cannot be null.");
-        }
-        if (dto.getStudyPageName() == null || dto.getStudyPageName().isEmpty()) {
-            throw new StudyPageException("Study Page Name cannot be null or empty.");
-        }
-        if (dto.getStartDate() == null) {
-            throw new StudyPageException("Start Date cannot be null.");
-        }
-        if (dto.getEndDate() == null) {
-            throw new StudyPageException("End Date cannot be null.");
-        }
-        if (dto.getEndDate().isBefore(dto.getStartDate())) {
-            throw new StudyPageException("End Date cannot be before Start Date.");
-        }
     }
 
     // StudyPage 목록 조회
@@ -103,13 +79,10 @@ public class StudyPageService {
             return Collections.emptyList();
         }
 
+        StudyPageReadDto studyPageReadDto = new StudyPageReadDto();
         // DTO 변환 및 반환
         return studyPages.stream()
-                .map(studyPage -> new StudyPageReadDto(
-                        studyPage.getId(),
-                        studyPage.getBook().getImgPath(),
-                        studyPage.getStudyPageName()
-                ))
+                .map(studyPageReadDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -117,25 +90,15 @@ public class StudyPageService {
     public StudyInfoDto readStudyPageInfo(Long id) {
         StudyPage studyPage = studyPageRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No StudyPage found for Study ID: " + id));
-        return new StudyInfoDto(studyPage.getStudyPageName(), studyPage.getStartDate(),
-                studyPage.getEndDate(), studyPage.getDescription());
+        return to(studyPage);
     }
 
     // StudyPage 업데이트
-    public boolean updateStudyPage(Long studyPageId, UpdateStudyPageRequestDto dto) {
+    public boolean updateStudyPage(Long studyPageId, @Valid UpdateStudyPageRequestDto dto) {
         StudyPage studyPage = studyPageRepository.findById(studyPageId)
-                .orElseThrow(() -> new EntityNotFoundException("No StudyPage found for Study ID: " + studyPageId));
+                .orElseThrow(BookJsonProcessingException::new);
 
-        // StudyPage 객체 업데이트
-        studyPage = StudyPage.builder()
-                .id(studyPage.getId())
-                .teamSpace(studyPage.getTeamSpace())
-                .book(studyPage.getBook())
-                .studyPageName(dto.getTitle())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
-                .description(dto.getDescription())
-                .build();
+        studyPage = dto.from(studyPage);
 
         // StudyPage 저장
         studyPageRepository.save(studyPage);
@@ -147,11 +110,11 @@ public class StudyPageService {
     public void deleteStudyPage(Long id, String name) {
         // StudyPage 조회
         StudyPage studyPage = studyPageRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("StudyPage not found with ID: " + id));
+                .orElseThrow(BookJsonProcessingException::new);
 
         // StudyPage 이름 검증
-        if (studyPage.getStudyPageName() == null || !studyPage.getStudyPageName().equals(name)) {
-            throw new StudyPageException("StudyPage name does not match or is null for ID: " + studyPage.getId());
+        if (!studyPage.getStudyPageName().equals(name)) {
+            throw new StudyPageNameNotEqualException();
         }
 
         // 연관된 엔티티 삭제

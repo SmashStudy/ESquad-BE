@@ -46,7 +46,7 @@ public class StudyPageController {
         Long studyPageId = studyPageService.createStudyPage(teamId, bookId, dto.getStudyInfoDto());
 
         studyRemindService.createRemind(studyPageId, dto.getReminds());
-        studyPageUserService.createStudyPageUser(studyPageId, dto.getUserIds());
+        studyPageUserService.createStudyPageUser(teamId, studyPageId, dto.getUserIds());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("Study page created successfully.");
     }

@@ -27,6 +27,7 @@ public class BookService {
     }
 
     public List<BookSearchResultItemDto> resultList(String query) {
+        //레디스 로직 추가
         URI uri = BookUriService.buildUriForSearch("/v1/search/book.json", query);
         String res = bookUriService.fetchData(uri);
 
@@ -34,17 +35,7 @@ public class BookService {
     }
 
     public Long createBookInfo(@Valid BookSearchResultItemDto bookDto) {
-        //책 정보
-        Book book = Book.builder()
-                .title(bookDto.getTitle())
-                .imgPath(bookDto.getImage())
-                .author(bookDto.getAuthor())
-                .publisher(bookDto.getPublisher())
-                .isbn(bookDto.getIsbn())
-                .description(bookDto.getDescription())
-                .pubDate(bookDto.getPubdate())
-                .build();
-
+        Book book = bookDto.to();
         Book savedBook = bookRepository.save(book);
         return savedBook.getId();
     }
