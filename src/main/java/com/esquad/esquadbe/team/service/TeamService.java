@@ -8,7 +8,6 @@ import com.esquad.esquadbe.team.entity.TeamSpace;
 import jakarta.validation.Valid;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface TeamService {
 
@@ -17,6 +16,6 @@ public interface TeamService {
     TeamSpaceResponseDTO updateProfile(@Valid TeamSpaceRequestDTO teamSpaceRequestDTO);
     List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId);
     List<TeamSpaceUserResponseDTO> getCrewRole(Long teamId);
-    Optional<TeamSpaceResponseDTO> getTeamProfile(Long teamSpaceRequestDTO);
+    TeamSpaceResponseDTO getTeamProfile(Long teamSpaceRequestDTO);
     void deleteTeamSpace(Long teamId);
 }

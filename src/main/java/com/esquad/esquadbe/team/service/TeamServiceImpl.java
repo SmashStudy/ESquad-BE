@@ -1,8 +1,9 @@
 package com.esquad.esquadbe.team.service;
 
-import com.esquad.esquadbe.global.exception.custom.BusinessBaseException;
-import com.esquad.esquadbe.global.exception.custom.DuplicateTeamException;
-import com.esquad.esquadbe.global.exception.response.CommonErrorCode;
+import com.esquad.esquadbe.global.exception.RestApiException;
+import com.esquad.esquadbe.team.exception.DuplicateTeamException;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
+import com.esquad.esquadbe.global.exception.CommonErrorCode;
 import com.esquad.esquadbe.notification.entity.NotificationType;
 import com.esquad.esquadbe.notification.service.NotificationService;
 import com.esquad.esquadbe.team.dto.TeamSpaceCreateRequestDTO;
@@ -34,7 +35,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public void verifyTeamName(String name) {
-        if(!teamRepository.existsByTeamName(name)) {
+        if(teamRepository.existsByTeamName(name)) {
             throw new DuplicateTeamException();
         }
     }
@@ -57,15 +58,16 @@ public class TeamServiceImpl implements TeamService {
                             , "[ " + saved.getTeamName() + "] 의 크루로 초대되었습니다"
                             , NotificationType.JOIN));
             return saved;
-        } catch (BusinessBaseException e) {
-            throw new BusinessBaseException(e.getMessage(), CommonErrorCode.INTERNAL_SERVER_ERROR);
+        } catch (RestApiException e) {
+            throw new RestApiException(e.getMessage(), CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public Optional<TeamSpaceResponseDTO> getTeamProfile(Long id) {
+    public TeamSpaceResponseDTO getTeamProfile(Long id) {
         return teamRepository.findById(id)
-                .map(TeamSpaceResponseDTO::from); // Optional 에서 안전하게 변환
+                .map(TeamSpaceResponseDTO::from)
+                .orElseThrow(TeamNotFoundException::new);
     }
 
     @Override

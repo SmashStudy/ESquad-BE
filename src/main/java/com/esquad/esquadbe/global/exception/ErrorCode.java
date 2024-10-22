@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.global.exception.response;
+package com.esquad.esquadbe.global.exception;
 
 import org.springframework.http.HttpStatus;
 
@@ -6,7 +6,7 @@ public interface ErrorCode {
 
     String name();
     HttpStatus getHttpStatus();
-    int getStatusCode();
+    String getCode();
     String getMessage();
 }
 

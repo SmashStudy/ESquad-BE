@@ -1,10 +1,13 @@
 package com.esquad.esquadbe.team.service;
 
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
+import com.esquad.esquadbe.team.exception.TeamUserRolePermissionException;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.team.repository.TeamSpaceUserRepository;
 import com.esquad.esquadbe.user.dto.UserResponseDTO;
+import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -24,15 +27,23 @@ public class TeamSpaceUserService {
    private final UserRepository userRepository;
    private final TeamSpaceUserRepository teamSpaceUserRepository;
 
-   public Optional<UserResponseDTO> searchUser(final String username) {
-      Optional<User> user = userRepository.findByUsername(username);
-      return user.map(UserResponseDTO::from);
+   public UserResponseDTO searchUser(final String username) {
+      return userRepository.findByUsername(username)
+              .map(UserResponseDTO::from)
+              .orElseThrow(UserNotFoundException::new);
    }
 
-   public Optional<String> checkRole(Long teamId, String username) {
-      Optional<User> user = userRepository.findByUsername(username);
-      Optional<TeamSpace> teamSpace = teamRepository.findById(teamId);
-      Optional<TeamSpaceUser> teamUser = teamSpaceUserRepository.findByMemberAndTeamSpace(user, teamSpace);
-      return teamUser.map(TeamSpaceUser::getRole);
+   public void checkRole(Long teamId, String username) {
+      User user = userRepository.findByUsername(username)
+              .orElseThrow(UserNotFoundException::new);
+      TeamSpace teamSpace = teamRepository.findById(teamId)
+              .orElseThrow(TeamNotFoundException::new);
+      Optional<TeamSpaceUser> teamUser = teamSpaceUserRepository.findByMemberAndTeamSpace(Optional.ofNullable(user), Optional.ofNullable(teamSpace));
+
+      teamUser
+              .flatMap(teamSpaceUser -> Optional.ofNullable(teamSpaceUser.getRole())) // getRole이 null일 수 있으므로 감쌈
+              .filter(role -> "Manager".equals(role)) // 역할이 Manager가 맞는지 확인
+              .orElseThrow(TeamUserRolePermissionException::new); // 예외 던짐
    }
+
 }
