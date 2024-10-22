@@ -1,8 +1,8 @@
 package com.esquad.esquadbe.user.service;
 
+import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import com.esquad.esquadbe.user.dto.UserUpdatePasswordDTO;
 import com.esquad.esquadbe.user.entity.User;
-import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,10 +10,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserPasswordService {
+public class UserPasswordUpdateServiceImpl implements UserPasswordUpdateService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @Override
     public User updateUser(Long userId, UserUpdatePasswordDTO userUpdatePasswordDTO) {
         User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 

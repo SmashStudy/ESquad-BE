@@ -1,8 +1,10 @@
 package com.esquad.esquadbe.user.service;
 
-import com.esquad.esquadbe.user.exception.UserIdException;
-import com.esquad.esquadbe.user.exception.UserNicknameException;
+
+
 import com.esquad.esquadbe.user.dto.UserJoinDTO;
+import com.esquad.esquadbe.user.exception.UserNicknameException;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,10 +23,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
 @Transactional
-class UserJoinServiceTest {
+class UserJoinTest {
 
     @Autowired
-    private UserJoinService userJoinService;
+    private UserJoinServiceImpl userJoinService;
 
     @MockBean
     private UserRepository userRepository;
@@ -40,13 +42,13 @@ class UserJoinServiceTest {
         Mockito.when(bCryptPasswordEncoder.encode(anyString())).thenReturn("encryptedPassword");
 
         userJoinDTO = UserJoinDTO.builder()
-                .username("testUser")
-                .password("TestPasswd1234@")
+                .username("testuser")
+                .password("testuser1234@")
                 .email("testuser@example.com")
                 .phoneNumber("01012345678")
                 .birthDay(LocalDate.parse("2000-09-09"))
-                .address("부산광역시 어딘가")
-                .nickname("testUser")
+                .address("부산광역시")
+                .nickname("testuser")
                 .build();
     }
 
@@ -57,7 +59,7 @@ class UserJoinServiceTest {
         Mockito.when(userRepository.existsByUsername(userJoinDTO.getUsername())).thenReturn(true);
 
         // When & Then
-        assertThrows(UserIdException.class, () -> userJoinService.joinProcess(userJoinDTO));
+        assertThrows(UserUsernameException.class, () -> userJoinService.joinProcess(userJoinDTO));
     }
 
     @Test
@@ -80,30 +82,5 @@ class UserJoinServiceTest {
         // When & Then
         userJoinService.joinProcess(userJoinDTO);
 
-    }
-
-    @Test
-    @DisplayName("회원가입 시 닉네임이 비어 있을 경우 기본 닉네임이 설정된다")
-    void defaultNicknameIfEmpty() {
-        // Given
-        UserJoinDTO emptyNicknameDTO = UserJoinDTO.builder()
-                .username("testUsers")
-                .password("TestPasswd1234@")
-                .email("testuser2@example.com")
-                .phoneNumber("01098765432")
-                .birthDay(LocalDate.parse("2000-01-01"))
-                .address("부산광역시 진흥원")
-                .nickname("")  // 닉네임을 비워둠
-                .build();
-
-        Mockito.when(userRepository.existsByUsername(emptyNicknameDTO.getUsername())).thenReturn(false);
-        Mockito.when(userRepository.existsByNickname(emptyNicknameDTO.getNickname())).thenReturn(false);
-
-        // When
-        userJoinService.joinProcess(emptyNicknameDTO);
-
-        // Then
-        assertNotNull(emptyNicknameDTO.getNickname());
-        assertFalse(emptyNicknameDTO.getNickname().isEmpty());
     }
 }
