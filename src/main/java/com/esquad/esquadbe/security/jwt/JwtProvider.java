@@ -47,6 +47,7 @@ public class JwtProvider {
      * @return token Username
      */
     public String getUsernameFromToken(final String token) {
+        System.out.println(token);
         return getClaimFromToken(token, Claims::getId);
     }
 
