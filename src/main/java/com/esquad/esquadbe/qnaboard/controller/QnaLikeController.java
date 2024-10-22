@@ -14,17 +14,14 @@ public class QnaLikeController {
 
     private final QuestionLikeService questionLikeService;
 
-    // 좋아요 토글 (추가/취소)
+    // 좋아요 (추가/취소)
     @PostMapping("/{boardId}/like")
     public ResponseEntity<String> toggleLike(@AuthenticationPrincipal User user, @PathVariable Long boardId) {
         boolean isLiked = questionLikeService.toggleLike(user, boardId);
 
         // 좋아요 상태에 따라 다른 메시지를 반환
-        if (isLiked) {
-            return ResponseEntity.ok("좋아요가 추가되었습니다.");
-        } else {
-            return ResponseEntity.ok("좋아요가 취소되었습니다.");
-        }
+        return isLiked ? ResponseEntity.ok("좋아요가 추가되었습니다.") :
+                ResponseEntity.ok("좋아요가 취소되었습니다.");
     }
 
     // 특정 게시글의 좋아요 개수 조회
