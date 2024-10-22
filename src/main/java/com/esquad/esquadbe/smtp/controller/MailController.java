@@ -3,6 +3,9 @@ package com.esquad.esquadbe.smtp.controller;
 
 import com.esquad.esquadbe.smtp.dto.MailDTO;
 import com.esquad.esquadbe.smtp.service.MailService;
+import com.esquad.esquadbe.user.exception.UserNumberException;
+import com.esquad.esquadbe.user.exception.UserPasswordException;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,10 +34,10 @@ public class MailController {
             if (maskedId != null) {
                 return maskedId;
             } else {
-                return "사용자 아이디를 찾을 수 없습니다.";
+                throw new UserUsernameException();
             }
         } else {
-            return "인증번호가 일치하지 않습니다.";
+            throw new UserNumberException();
         }
     }
 
@@ -47,8 +50,8 @@ public class MailController {
 
     // 비밀번호 재설정 처리
     @PostMapping("/verify-password")
-    public String confirmPasswordReset(@RequestBody MailDTO mailDTO) throws MessagingException {
-        mailService.resetPassword(mailDTO.getEmail(), mailDTO.getNumber(), mailDTO.getNewPassword(), mailDTO.getConfirmPassword());
-        return "비밀번호가 성공적으로 재설정되었습니다.";
+    public String confirmPasswordReset(@RequestBody MailDTO mailDTO) throws UserPasswordException {
+        String email = mailService.resetPassword(mailDTO.getEmail(), mailDTO.getNumber(), mailDTO.getNewPassword(), mailDTO.getConfirmPassword());
+        return email;
     }
 }

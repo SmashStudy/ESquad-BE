@@ -1,6 +1,9 @@
 package com.esquad.esquadbe.smtp.service;
 
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserEmailException;
+import com.esquad.esquadbe.user.exception.UserNumberException;
+import com.esquad.esquadbe.user.exception.UserPasswordException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -106,7 +109,7 @@ public class MailService {
     public String sendPasswordResetMail(String email, String username) throws MessagingException {
         User user = userRepository.findByEmailAndUsername(email, username);
         if (user == null) {
-            throw new IllegalArgumentException("해당 이메일로 등록된 사용자를 찾을 수 없습니다.");
+            throw new UserEmailException();
         }
 
         String number = createNumber();
@@ -119,16 +122,16 @@ public class MailService {
 
 
     // 비밀번호 재설정
-    public void resetPassword(String email, String number, String newPassword, String confirmPassword) {
+    public String resetPassword(String email, String number, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
-            throw new IllegalArgumentException("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+            throw new UserPasswordException();
         }
         if (!checkVerificationNumber(email, number)) {
-            throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+            throw new UserNumberException();
         }
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new IllegalArgumentException("해당 이메일로 등록된 사용자를 찾을 수 없습니다.");
+            throw new UserEmailException();
         }
 
         String encordedPassword = bCryptPasswordEncoder.encode(newPassword);
@@ -146,5 +149,6 @@ public class MailService {
                 .build();
 
         userRepository.save(user);
+        return encordedPassword;
     }
 }
