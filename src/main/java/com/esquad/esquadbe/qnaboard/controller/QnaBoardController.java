@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/questions")
@@ -54,10 +56,10 @@ public class QnaBoardController {
     // 특정 작성자의 게시글 조회
     @GetMapping("/by-writer")
     public Page<QnaBoardResponseDTO> getQuestionsByWriter(
-            @RequestParam("userId") Long userId,
+            @RequestParam("username") Principal principal,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return questionService.getQuestionsByWriter(userId, page, size);
+        return questionService.getQuestionsByWriter(principal.getName(), page, size);
     }
 
     // 게시글 수정
