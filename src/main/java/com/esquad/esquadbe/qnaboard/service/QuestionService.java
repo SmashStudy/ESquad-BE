@@ -132,9 +132,21 @@ public class QuestionService {
 
     // 게시글 삭제
     @Transactional
-    public void deleteQuestion(Long id) {
-        BookQnaBoard question = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
+    public void deleteQuestion(Long questionId, String username) {
+        // 현재 사용자 조회
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 사용자를 찾을 수 없습니다: " + username));
+
+        // 게시글 찾기
+        BookQnaBoard question = questionRepository.findById(questionId)
+                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + questionId));
+
+        // 작성자가 아닌 경우 예외 발생
+        if (!question.getWriter().getId().equals(user.getId())) {
+            throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
+        }
+
+        // 게시글 삭제
         questionRepository.delete(question);
     }
 }
