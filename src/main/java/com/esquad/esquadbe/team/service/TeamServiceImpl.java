@@ -1,10 +1,9 @@
 package com.esquad.esquadbe.team.service;
 
-import com.esquad.esquadbe.global.exception.custom.RestApiException;
-import com.esquad.esquadbe.global.exception.custom.team.DuplicateTeamException;
-import com.esquad.esquadbe.global.exception.custom.team.TeamNotFoundException;
-import com.esquad.esquadbe.global.exception.response.CommonErrorCode;
-import com.esquad.esquadbe.global.exception.response.TeamSpaceErrorCode;
+import com.esquad.esquadbe.global.exception.RestApiException;
+import com.esquad.esquadbe.team.exception.DuplicateTeamException;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
+import com.esquad.esquadbe.global.exception.CommonErrorCode;
 import com.esquad.esquadbe.notification.entity.NotificationType;
 import com.esquad.esquadbe.notification.service.NotificationService;
 import com.esquad.esquadbe.team.dto.TeamSpaceCreateRequestDTO;
