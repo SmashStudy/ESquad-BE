@@ -8,7 +8,7 @@ import com.esquad.esquadbe.studypage.exception.StudyPageException;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.studypage.repository.StudyPageRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.repository.TeamSpaceRepository;
+import com.esquad.esquadbe.team.repository.TeamRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ public class StudyPageCreateServiceTest {
     private StudyPageService studyPageService;
 
     @Mock
-    private TeamSpaceRepository teamSpaceRepository;
+    private TeamRepository teamRepository;
 
     @Mock
     private BookRepository bookRepository;
@@ -79,7 +79,7 @@ public class StudyPageCreateServiceTest {
     @DisplayName("AllInputsAreValid")
     public void shouldCreateStudyPageWhenAllInputsAreValid() {
         // Given
-        when(teamSpaceRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
+        when(teamRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
         when(bookRepository.findById(any(Long.class))).thenReturn(Optional.of(book));
         when(studyPageRepository.save(any(StudyPage.class))).thenAnswer(invocation -> {
             StudyPage savedStudyPage = invocation.getArgument(0);
@@ -104,7 +104,7 @@ public class StudyPageCreateServiceTest {
     @DisplayName("TeamSpaceIsNotFound")
     public void shouldThrowExceptionWhenTeamSpaceIsNotFound() {
         // Given
-        when(teamSpaceRepository.findById(100L)).thenReturn(Optional.empty());
+        when(teamRepository.findById(100L)).thenReturn(Optional.empty());
 
         // When & Then
         assertThrows(StudyPageException.class, () -> {
@@ -116,7 +116,7 @@ public class StudyPageCreateServiceTest {
     @DisplayName("BookIsNotFound")
     public void shouldThrowExceptionWhenBookIsNotFound() {
         // Given
-        when(teamSpaceRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
+        when(teamRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
         when(bookRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(StudyPageException.class, () -> {
@@ -187,7 +187,7 @@ public class StudyPageCreateServiceTest {
     public void shouldNotThrowExceptionWhenDtoIsValid() {
         // Given
 //        StudyInfoDto dto = new StudyInfoDto("Study Test", LocalDate.now(), LocalDate.now().plusDays(1), "description");
-        when(teamSpaceRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
+        when(teamRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
         when(bookRepository.findById(any(Long.class))).thenReturn(Optional.of(book));
 
         when(studyPageRepository.save(any(StudyPage.class))).thenAnswer(invocation -> {
@@ -232,7 +232,7 @@ public class StudyPageCreateServiceTest {
     void shouldThrowExceptionWhenTeamSpaceNotFound() {
         // Given
         Long teamId = 100L;
-        when(teamSpaceRepository.findById(teamId)).thenReturn(Optional.empty());
+        when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
@@ -246,7 +246,7 @@ public class StudyPageCreateServiceTest {
     void shouldReturnEmptyListWhenNoStudyPagesFound() {
         // Given
         Long teamId = 100L;
-        when(teamSpaceRepository.findById(teamId)).thenReturn(Optional.of(teamSpace));
+        when(teamRepository.findById(teamId)).thenReturn(Optional.of(teamSpace));
         when(studyPageRepository.findAllByTeamSpace(teamSpace)).thenReturn(Optional.of(Collections.emptyList()));
 
         // When

@@ -13,7 +13,7 @@ import com.esquad.esquadbe.storage.service.S3FileService;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
+import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final BookRepository bookRepository;
-    private final TeamSpaceRepository teamSpaceRepository;
+    private final TeamRepository teamSpaceRepository;
     private final BookQnaLikeRepository likeRepository;
     private final S3FileService s3FileService;
 
