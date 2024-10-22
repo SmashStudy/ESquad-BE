@@ -1,5 +1,10 @@
 package com.esquad.esquadbe.global.exception;
 
+import com.esquad.esquadbe.storage.exception.FileDeleteFailureException;
+import com.esquad.esquadbe.storage.exception.FileDownloadFailureException;
+import com.esquad.esquadbe.storage.exception.FileIsEmptyException;
+import com.esquad.esquadbe.storage.exception.FileNotExistsException;
+import com.esquad.esquadbe.storage.exception.FileUploadFailureException;
 import com.esquad.esquadbe.team.exception.DuplicateTeamException;
 import com.esquad.esquadbe.team.exception.TeamNotFoundException;
 import com.esquad.esquadbe.team.exception.TeamUserRolePermissionException;
@@ -83,6 +88,41 @@ public class ExceptionHandlerAdvice {
     @ExceptionHandler(TeamUserRolePermissionException.class)
     public ResponseEntity<?> handleTeamUserRolePermissionException(TeamUserRolePermissionException e) {
         log.error("[TeamUserRolePermissionException] message: {}", e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileDeleteFailureException.class)
+    public ResponseEntity<?> handleFileDeleteFailureException(FileDeleteFailureException e) {
+        log.error("[FileDeleteFailureException] message: {}", e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileDownloadFailureException.class)
+    public ResponseEntity<?> handleFileDownloadFailureException(FileDownloadFailureException e) {
+        log.error("[FileDownloadFailureException] message: {}", e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileIsEmptyException.class)
+    public ResponseEntity<?> handleFileIsEmptyException(FileIsEmptyException e) {
+        log.error("[FileIsEmptyException] message: {}", e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileNotExistsException.class)
+    public ResponseEntity<?> handleFileException(FileNotExistsException e) {
+        log.error("[FileNotExistsException] message: {}", e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileUploadFailureException.class)
+    public ResponseEntity<?> handleFileException(FileUploadFailureException e) {
+        log.error("[FileUploadFailureException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
