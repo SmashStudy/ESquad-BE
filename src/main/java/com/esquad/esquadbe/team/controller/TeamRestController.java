@@ -4,6 +4,7 @@ import com.esquad.esquadbe.team.dto.TeamSpaceCreateRequestDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceRequestDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceResponseDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceUserResponseDTO;
+import com.esquad.esquadbe.team.exception.InvalidTeamNameException;
 import com.esquad.esquadbe.user.dto.UserResponseDTO;
 import com.esquad.esquadbe.user.service.UserService;
 import com.esquad.esquadbe.team.service.TeamSpaceUserService;
@@ -46,8 +47,11 @@ public class TeamRestController {
             description = "유저가 새로운 팀스페이스를 생성할 때, 이름을 검사하기 위한 요청")
     @GetMapping("/new/{teamName}")
     public ResponseEntity<String> verifyTeamName(@PathVariable String teamName) {
+        if (teamName.length() < 2 || teamName.length() > 20)
+            throw new InvalidTeamNameException();
+
         teamService.verifyTeamName(teamName);
-        return ResponseEntity.status(HttpStatus.OK).body("사용 가능한 팀 스페이스명입니다");
+        return ResponseEntity.ok("사용 가능한 팀 스페이스명입니다");
     }
 
     @Operation(summary = "팀스페이스 생성 시, 멤버 조회 요청",
@@ -60,7 +64,7 @@ public class TeamRestController {
     @Operation(summary = "팀스페이스 생성 요청",
             description = "유저가 새로운 팀스페이스를 생성하기 위한 요청")
     @PostMapping("/new")
-    public ResponseEntity<String> createTeam(@RequestBody TeamSpaceCreateRequestDTO teamSpaceRequestDTO) {
+    public ResponseEntity<String> createTeam(@RequestBody @Valid TeamSpaceCreateRequestDTO teamSpaceRequestDTO) {
         teamService.createTeam(teamSpaceRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body("팀 스페이스가 생성되었습니다.");
     }
@@ -93,11 +97,7 @@ public class TeamRestController {
     @GetMapping("/settings/crew/profile/{id}")
     public ResponseEntity<List<TeamSpaceUserResponseDTO>> getCrewProfile(@PathVariable("id") Long teamId, Principal principal) {
         teamSpaceUserService.checkRole(teamId, principal.getName());
-        List<TeamSpaceUserResponseDTO> crewResponses = teamService.getCrewProfile(teamId);
-        return !crewResponses.isEmpty() ?
-                    ResponseEntity.status(HttpStatus.OK).body(crewResponses) :
-                    ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-
+        return ResponseEntity.status(HttpStatus.OK).body(teamService.getCrewProfile(teamId));
     }
 
     @Operation(summary = "팀스페이스 삭제 처리",

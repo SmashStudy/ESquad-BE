@@ -25,64 +25,64 @@ public class ExceptionHandlerAdvice {
 
     // 사용자 정의 예외
     @ExceptionHandler(UserInquiryException.class)
-    public ResponseEntity<?> handleUserInquiryException(RestApiException e) {
-        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+    public ResponseEntity<?> handleUserInquiryException(UserInquiryException e) {
+        log.error("[UserInquiryException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(UserLoginException.class)
-    public ResponseEntity<?> handleUserLoginException(RestApiException e) {
-        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+    public ResponseEntity<?> handleUserLoginException(UserLoginException e) {
+        log.error("[UserLoginException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(UserUsernameException.class)
-    public ResponseEntity<?> handleUserUsernameException(RestApiException e) {
-        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+    public ResponseEntity<?> handleUserUsernameException(UserUsernameException e) {
+        log.error("[UserUsernameException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(UserNicknameException.class)
-    public ResponseEntity<?> handleUserNicknameException(RestApiException e) {
-        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+    public ResponseEntity<?> handleUserNicknameException(UserNicknameException e) {
+        log.error("[UserNicknameException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<?> handleUserNotFoundException(RestApiException e) {
-        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+    public ResponseEntity<?> handleUserNotFoundException(UserNotFoundException e) {
+        log.error("[UserNotFoundException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(UserRefreshTokenException.class)
-    public ResponseEntity<?> handleUserRefreshTokenException(RestApiException e) {
-        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+    public ResponseEntity<?> handleUserRefreshTokenException(UserRefreshTokenException e) {
+        log.error("[UserRefreshTokenException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(DuplicateTeamException.class)
     public ResponseEntity<?> handleDuplicateTeamException(DuplicateTeamException e) {
-        log.error("[DuplicateTeamException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[DuplicateTeamException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(TeamNotFoundException.class)
     public ResponseEntity<?> handleTeamNotFoundException(TeamNotFoundException e) {
-        log.error("[DuplicateTeamException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[TeamNotFoundException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(TeamUserRolePermissionException.class)
     public ResponseEntity<?> handleTeamUserRolePermissionException(TeamUserRolePermissionException e) {
-        log.error("[DuplicateTeamException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[TeamUserRolePermissionException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
@@ -97,7 +97,7 @@ public class ExceptionHandlerAdvice {
     // 자주 발생하는 예외 사항
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointerException(NullPointerException e) {
-        log.error("[NullPointerException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[NullPointerException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.NULL_POINTER_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
@@ -105,49 +105,49 @@ public class ExceptionHandlerAdvice {
     // 메서드가 잘못되었거나 부적합한 인수를 전달한 경우
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgumentException(IllegalArgumentException e) {
-        log.error("[IllegalArgumentException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[IllegalArgumentException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.ILLEGAL_ARGUMENT_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException e) {
-        log.error("[EntityNotFoundException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[EntityNotFoundException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.ENTITY_NOT_FOUND_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        log.error("[DataIntegrityViolationException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[DataIntegrityViolationException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.DATA_INTEGRITY_VIOLATION_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
 
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<?> handleTransactionSystemException(TransactionSystemException e) {
-        log.error("[TransactionSystemException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[TransactionSystemException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.TRANSACTION_SYSTEM_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        log.error("[HttpRequestMethodNotSupportedException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[HttpRequestMethodNotSupportedException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.METHOD_NOT_SUPPORTED_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
-        log.error("[ConstraintViolationException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[ConstraintViolationException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.CONSTRAINT_VIOLATION_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<?> handleNoSuchElementException(NoSuchElementException e) {
-        log.error("[NoSuchElementException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[NoSuchElementException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.NO_SUCH_ELEMENT_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
@@ -155,14 +155,14 @@ public class ExceptionHandlerAdvice {
     // @Valid 유효성 검사에서 예외가 발생했을 때 (requestbody에 잘못 들어온 경우)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("[MethodArgumentNotValidException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[MethodArgumentNotValidException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.METHOD_ARGUMENT_NOT_VALID_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
-        log.error("[MissingServletRequestParameterException] cause: {}, message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[MissingServletRequestParameterException] message: {}", e.getMessage());
         ErrorCode errorCode = CommonErrorCode.MISSING_REQUEST_PARAMETER_ERROR;
         return handelInternalException(errorCode, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
     }

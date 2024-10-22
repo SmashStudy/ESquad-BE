@@ -3,6 +3,7 @@ package com.esquad.esquadbe.team.dto;
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import com.esquad.esquadbe.user.dto.UserResponseDTO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 
 @Builder
