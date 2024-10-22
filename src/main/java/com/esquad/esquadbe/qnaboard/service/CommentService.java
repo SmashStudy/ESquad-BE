@@ -1,11 +1,12 @@
 package com.esquad.esquadbe.qnaboard.service;
 
-import com.esquad.esquadbe.exception.ResourceNotFoundException;
-import com.esquad.esquadbe.exception.UnauthorizedException;
+
 import com.esquad.esquadbe.qnaboard.dto.CommentDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaReply;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaReplyLike;
+import com.esquad.esquadbe.qnaboard.exception.ResourceNotFoundException;
+import com.esquad.esquadbe.qnaboard.exception.UnauthorizedException;
 import com.esquad.esquadbe.qnaboard.repository.CommentLikeRepository;
 import com.esquad.esquadbe.qnaboard.repository.CommentRepository;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
