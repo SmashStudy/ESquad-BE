@@ -1,5 +1,7 @@
 package com.esquad.esquadbe.global.exception;
 
+import com.esquad.esquadbe.chat.exception.ChatAccessException;
+import com.esquad.esquadbe.chat.exception.ChatException;
 import com.esquad.esquadbe.storage.exception.FileDeleteFailureException;
 import com.esquad.esquadbe.storage.exception.FileDownloadFailureException;
 import com.esquad.esquadbe.storage.exception.FileIsEmptyException;
@@ -21,12 +23,27 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.NoSuchElementException;
 
 @Slf4j
 @RestControllerAdvice
 public class ExceptionHandlerAdvice {
+
+    @ExceptionHandler(ChatException.class)
+    public ResponseEntity<?> handleChatException(ChatException e) {
+        log.error("[ChatException] message: {}", e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(ChatAccessException.class)
+    public ResponseEntity<?> handleChatAccessException(ChatAccessException e) {
+        log.error("[ChatAccessException] message: {}", e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
 
     // 사용자 정의 예외
     @ExceptionHandler(UserInquiryException.class)
@@ -134,6 +151,7 @@ public class ExceptionHandlerAdvice {
         return handelInternalException(errorCode);
     }
 
+
     // 자주 발생하는 예외 사항
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<?> handleNullPointerException(NullPointerException e) {
@@ -227,5 +245,4 @@ public class ExceptionHandlerAdvice {
         );
         return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
     }
-
 }

@@ -100,14 +100,14 @@ public class ChatController {
         CompletableFuture<ResponseEntity<Map<String, String>>> futureResponse = new CompletableFuture<>();
 
         DatabaseReference messageRef = firebaseService.getReference("MESSAGES/" + roomId + "/" + messageId);
-        String username = principal.getName();
+        String userId = principal.getName();
 
         messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String originalUsername = dataSnapshot.getValue(String.class);
+                String originalUserId = dataSnapshot.getValue(String.class);
 
-                if (originalUsername != null && originalUsername.equals(username)) {
+                if (originalUserId != null && originalUserId.equals(userId)) {
                     messageRef.child("message").setValue(request.getNewMessage(), (error, ref) -> {
                         if (error != null) {
                             response.put("status", "error");
@@ -140,14 +140,14 @@ public class ChatController {
         CompletableFuture<ResponseEntity<Map<String, String>>> futureResponse = new CompletableFuture<>();
         Map<String, String> response = new HashMap<>();
 
-        String username = principal.getName();
+        String userId = principal.getName();
 
         messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String originalUsername = dataSnapshot.getValue(String.class);
+                String originalUserId = dataSnapshot.getValue(String.class);
 
-                if (originalUsername != null && originalUsername.equals(username)) {
+                if (originalUserId != null && originalUserId.equals(userId)) {
                     firebaseService.deleteMessage(roomId, messageId); // 메시지 삭제
                     response.put("status", "success");
                     futureResponse.complete(ResponseEntity.ok(response));

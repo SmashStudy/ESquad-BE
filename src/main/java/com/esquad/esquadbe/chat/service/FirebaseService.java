@@ -27,9 +27,9 @@ public class FirebaseService {
 
     public void sendMessage(String teamId, String roomId, Principal principal , String messageId, String messageContent, long timestamp) {
         DatabaseReference messageRef = getReference("CHAT_ROOMS/" + teamId + "/" + roomId + "/messages/" + messageId);
-        String username = principal.getName();
+        String userId = principal.getName();
         Map<String, Object> message = new HashMap<>();
-        message.put("userId", username);
+        message.put("userId", userId);
         message.put("messageId", messageId);
         message.put("messageContent", messageContent);
         message.put("timestamp", timestamp);
@@ -44,7 +44,7 @@ public class FirebaseService {
 
     public void editMessage(String teamId, String roomId, Principal principal, String messageId, String newMessageContent, long newTimestamp) {
         DatabaseReference messageRef = getReference("CHAT_ROOMS/" + teamId + "/" + roomId + "/messages/" + messageId);
-        String username = principal.getName();
+        String userId = principal.getName();
         Map<String, Object> updates = new HashMap<>();
         updates.put("messageContent", newMessageContent);
         updates.put("timestamp", newTimestamp);
