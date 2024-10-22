@@ -4,8 +4,14 @@ import com.esquad.esquadbe.storage.dto.ResponseFileDto;
 import com.esquad.esquadbe.storage.entity.FileInfo;
 import com.esquad.esquadbe.storage.entity.StoredFile;
 import com.esquad.esquadbe.storage.entity.TargetType;
+import com.esquad.esquadbe.storage.exception.FileDeleteFailureException;
+import com.esquad.esquadbe.storage.exception.FileDownloadFailureException;
+import com.esquad.esquadbe.storage.exception.FileIsEmptyException;
+import com.esquad.esquadbe.storage.exception.FileNotExistsException;
+import com.esquad.esquadbe.storage.exception.FileUploadFailureException;
 import com.esquad.esquadbe.storage.repository.StoredFileRepository;
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import java.io.IOException;
 import java.util.List;
@@ -34,23 +40,25 @@ public class S3FileService {
     private String bucket;
 
     @Transactional
-    public ResponseFileDto uploadFile(MultipartFile multipartFile, Long targetId, TargetType targetType,
+    public ResponseFileDto uploadFile(MultipartFile multipartFile, Long targetId,
+        TargetType targetType,
         String userId) {
         if (multipartFile.isEmpty()) {
-            throw new IllegalArgumentException("업로드할 파일이 비어있습니다.");
+            throw new FileIsEmptyException();
         }
 
         FileInfo fileInfo = FileInfo.of(multipartFile.getOriginalFilename(), multipartFile);
 
         try {
             final var putObjectRequest = getPutObjectRequest(multipartFile,
-                fileInfo.getStoredFileName());
+                fileInfo.getStoredFileName(), urlConverter(targetType));
             final RequestBody requestBody = RequestBody.fromBytes(multipartFile.getBytes());
             s3Client.putObject(putObjectRequest, requestBody);
         } catch (IOException e) {
-            throw new IllegalArgumentException("파일 업로드에 실패하였습니다: " + e.getMessage());
+            throw new FileUploadFailureException();
         }
-        User user = userRepository.findById(Long.valueOf(userId)).orElseThrow(()-> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+        User user = userRepository.findById(Long.valueOf(userId))
+            .orElseThrow(UserNotFoundException::new);
 
         StoredFile storedFile = StoredFile.builder()
             .fileInfo(fileInfo)
@@ -66,16 +74,15 @@ public class S3FileService {
 
     @Transactional
     public void deleteFile(String storedFileName) {
-        StoredFile storedFile = storedFileRepository.findByFileInfo_StoredFileName(storedFileName)
-            .orElseThrow(() -> new IllegalArgumentException("해당 파일이 존재하지 않습니다: " + storedFileName));
+        StoredFile storedFile = getFile(storedFileName);
 
         try {
             s3Client.deleteObject(DeleteObjectRequest.builder()
                 .bucket(bucket)
-                .key(storedFileName)
+                .key(urlConverter(storedFile.getTargetType())+storedFileName)
                 .build());
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("파일 삭제에 실패했습니다: " + e.getMessage());
+            throw new FileDeleteFailureException();
         }
 
         storedFileRepository.delete(storedFile);
@@ -85,29 +92,44 @@ public class S3FileService {
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                 .bucket(bucket)
-                .key(storedFileName)
+                .key(urlConverter(getFile(storedFileName).getTargetType())+storedFileName)
                 .build();
 
             ResponseBytes<GetObjectResponse> s3Object = s3Client.getObjectAsBytes(getObjectRequest);
             return s3Object.asByteArray();
 
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("파일 다운로드에 실패하였습니다: " + e.getMessage());
+            throw new FileDownloadFailureException();
         }
     }
 
     private PutObjectRequest getPutObjectRequest(MultipartFile multipartFile,
-        final String fileName) {
+        final String fileName, String url) {
         return PutObjectRequest.builder()
             .bucket(bucket)
             .contentType(multipartFile.getContentType())
             .contentLength(multipartFile.getSize())
-            .key(fileName)
+            .key(url+fileName)
             .build();
     }
 
     public List<ResponseFileDto> getFileList(Long targetId, TargetType targetType) {
         return storedFileRepository.findAllByTargetIdAndTargetType(targetId, targetType).stream()
             .map(ResponseFileDto::from).toList();
+    }
+
+    private String urlConverter(TargetType targetType) {
+        return switch (targetType) {
+            case QNA -> "qna/";
+            case CHAT -> "chat/";
+            case TEAM -> "team/";
+            case USER -> "user/";
+            case STUDY_PAGE -> "study-page/";
+        };
+    }
+
+    private StoredFile getFile(String storedFileName) {
+        return storedFileRepository.findByFileInfo_StoredFileName(storedFileName)
+            .orElseThrow(FileNotExistsException::new);
     }
 }

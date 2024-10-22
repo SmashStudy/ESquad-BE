@@ -7,6 +7,7 @@ import lombok.*;
 
 @Builder
 public record TeamSpaceUserRequestDTO (
+        @NotBlank
         Long id,
         @NotBlank TeamSpaceCreateRequestDTO teamSpace,
         @NotBlank UserResponseDTO member,
