@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.esquad.esquadbe.storage.dto.ResponseFileDto;
 import com.esquad.esquadbe.storage.entity.TargetType;
+import com.esquad.esquadbe.storage.exception.FileDownloadFailureException;
+import com.esquad.esquadbe.storage.exception.FileNotExistsException;
 import com.esquad.esquadbe.storage.repository.StoredFileRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -118,7 +120,7 @@ class S3FileServiceTest {
         final String nonExistentFileName = "non-existent-file.txt";
 
         // Then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(FileDownloadFailureException.class,
             () -> s3FileService.downloadFile(nonExistentFileName));
     }
 
@@ -129,7 +131,7 @@ class S3FileServiceTest {
         final String nonExistentFileName = "non-existent-file.txt";
 
         // Then
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(FileNotExistsException.class,
             () -> s3FileService.deleteFile(nonExistentFileName));
     }
 }
