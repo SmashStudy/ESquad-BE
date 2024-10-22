@@ -94,40 +94,38 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(FileDeleteFailureException.class)
     public ResponseEntity<?> handleFileDeleteFailureException(FileDeleteFailureException e) {
-        log.error("[FileDeleteFailureException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[FileDeleteFailureException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(FileDownloadFailureException.class)
     public ResponseEntity<?> handleFileDownloadFailureException(FileDownloadFailureException e) {
-        log.error("[FileDownloadFailureException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[FileDownloadFailureException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(FileIsEmptyException.class)
     public ResponseEntity<?> handleFileIsEmptyException(FileIsEmptyException e) {
-        log.error("[FileIsEmptyException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[FileIsEmptyException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(FileNotExistsException.class)
     public ResponseEntity<?> handleFileException(FileNotExistsException e) {
-        log.error("[FileNotExistsException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[FileNotExistsException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
 
     @ExceptionHandler(FileUploadFailureException.class)
     public ResponseEntity<?> handleFileException(FileUploadFailureException e) {
-        log.error("[FileUploadFailureException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        log.error("[FileUploadFailureException] message: {}", e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
-
-
 
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<?> handleSystemException(RestApiException e) {
