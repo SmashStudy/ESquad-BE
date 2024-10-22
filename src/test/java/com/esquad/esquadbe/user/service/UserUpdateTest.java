@@ -2,76 +2,52 @@ package com.esquad.esquadbe.user.service;
 
 import com.esquad.esquadbe.user.dto.UserUpdateDTO;
 import com.esquad.esquadbe.user.entity.User;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.time.LocalDate;
 
-@SpringBootTest
-@AutoConfigureMockMvc // MockMvc를 자동으로 설정하여 사용 가능하게 함
-public class UserUpdateTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    @Autowired
-    private MockMvc mockMvc;  // MockMvc는 자동 설정을 통해 주입됩니다.
+class UserUpdateTest {
 
-    @MockBean
-    private UserUpdateService userService;
-
-    @MockBean
-    private Authentication authentication;  // 인증도 MockBean으로 주입
-
-    @Autowired
-    private ObjectMapper objectMapper;  // JSON 직렬화를 위한 ObjectMapper
-
-    private UserUpdateDTO updateDTO;
-    private User updatedUser;
+    private User existingUser;
+    private UserUpdateDTO userUpdateDTO;
 
     @BeforeEach
     void setUp() {
-        updateDTO = UserUpdateDTO.builder()
-                .username("newUsername")
-                .email("newEmail@example.com")
-                .address("newAddress")
+        // 기존 User 엔티티 생성 (원본 데이터)
+        existingUser = User.builder()
+                .id(1L)
+                .email("testuser@example.com")
+                .address("부산광역시 부산산업진흥원")
                 .phoneNumber("010-1234-5678")
-                .nickname("newNickname")
+                .nickname("testuser")
+                .username("testuser")
+                .birthDay(LocalDate.parse("2000-01-01"))
+                .password("test1234@")
                 .build();
 
-        updatedUser = User.builder()
-                .id(1L)
-                .username("newUsername")
-                .email("newEmail@example.com")
-                .address("newAddress")
-                .phoneNumber("010-1234-5678")
-                .nickname("newNickname")
+        // 업데이트할 데이터가 담긴 DTO 생성
+        userUpdateDTO = UserUpdateDTO.builder()
+                .email("test@example.com")  // 이메일만 변경
+                .nickname("test")  // 닉네임만 변경
                 .build();
     }
 
     @Test
-    void testUpdateUser() throws Exception {
-        // Mock the authentication and service layer
-        Mockito.when(authentication.getName()).thenReturn("1");
-        Mockito.when(userService.updateUser(anyLong(), any(UserUpdateDTO.class))).thenReturn(updatedUser);
+    void testToEntity_Success() {
+        // when: 기존 유저와 DTO 데이터를 병합하여 새 엔티티 생성
+        User updatedUser = userUpdateDTO.toEntity(userUpdateDTO, existingUser);
 
-        mockMvc.perform(put("/api/users/update")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateDTO))
-                        .principal(authentication)) // Pass mock authentication
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("newUsername")) // adjust path if needed
-                .andExpect(jsonPath("$.email").value("newEmail@example.com"));
+        // then: 업데이트된 필드와 유지된 필드를 검증
+        assertThat(updatedUser.getId()).isEqualTo(existingUser.getId());
+        assertThat(updatedUser.getEmail()).isEqualTo("test@example.com");  // 이메일이 업데이트됨
+        assertThat(updatedUser.getNickname()).isEqualTo("test");  // 닉네임이 업데이트됨
+        assertThat(updatedUser.getAddress()).isEqualTo(existingUser.getAddress());  // 주소는 유지됨
+        assertThat(updatedUser.getPhoneNumber()).isEqualTo(existingUser.getPhoneNumber());  // 전화번호 유지
+        assertThat(updatedUser.getBirthDay()).isEqualTo(existingUser.getBirthDay());  // 생일 유지
+        assertThat(updatedUser.getPassword()).isEqualTo(existingUser.getPassword());  // 비밀번호 유지
+        assertThat(updatedUser.getUsername()).isEqualTo(existingUser.getUsername());  // 유저명 유지
     }
 }

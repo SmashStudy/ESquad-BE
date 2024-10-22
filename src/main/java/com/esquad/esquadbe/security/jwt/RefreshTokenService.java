@@ -4,8 +4,7 @@ package com.esquad.esquadbe.security.jwt;
 import com.esquad.esquadbe.redis.RedisUtil;
 
 import com.esquad.esquadbe.security.dto.RefreshTokenResponseDTO;
-import com.esquad.esquadbe.security.exception.RefreshTokenException;
-import com.esquad.esquadbe.security.exception.RefreshTokenExceptionResult;
+import com.esquad.esquadbe.global.exception.custom.user.UserRefreshTokenException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +35,7 @@ public class RefreshTokenService {
         // Redis에서 refresh token으로 사용자 id 조회
         Long id = (Long) redisUtil.get(REFRESH_TOKEN_PREFIX + refreshToken);
         if (id == null) {
-            throw new RefreshTokenException(RefreshTokenExceptionResult.NOT_EXIST);
+            throw new UserRefreshTokenException();
         }
 
         // 새로운 access token 생성
@@ -63,7 +62,7 @@ public class RefreshTokenService {
      */
     private void checkRefreshToken(final String refreshToken) {
         if (Boolean.FALSE.equals(jwtProvider.validateToken(refreshToken))) {
-            throw new RefreshTokenException(RefreshTokenExceptionResult.INVALID);
+            throw new UserRefreshTokenException();
         }
     }
 }
