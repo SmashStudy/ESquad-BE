@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/questions/like")
+@RequestMapping("/api/questions")
 public class QnaLikeController {
 
     private final QnaLikeService qnaLikeService;
 
     // 좋아요 토글 (추가/취소)
-    @PostMapping("/{boardId}")
+    @PostMapping("/{boardId}/like")
     public ResponseEntity<String> toggleLike(@AuthenticationPrincipal User user, @PathVariable Long boardId) {
         boolean isLiked = qnaLikeService.toggleLike(user, boardId);
 
@@ -28,7 +28,7 @@ public class QnaLikeController {
     }
 
     // 특정 게시글의 좋아요 개수 조회
-    @GetMapping("/count/{boardId}")
+    @GetMapping("/{boardId}/likes")
     public ResponseEntity<Long> getLikeCount(@PathVariable Long boardId) {
         Long likeCount = qnaLikeService.getLikeCount(boardId);
         return ResponseEntity.ok(likeCount);
