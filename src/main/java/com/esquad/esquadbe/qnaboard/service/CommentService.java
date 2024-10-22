@@ -4,10 +4,8 @@ package com.esquad.esquadbe.qnaboard.service;
 import com.esquad.esquadbe.qnaboard.dto.CommentDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaReply;
-import com.esquad.esquadbe.qnaboard.entity.BookQnaReplyLike;
 import com.esquad.esquadbe.qnaboard.exception.ResourceNotFoundException;
 import com.esquad.esquadbe.qnaboard.exception.UnauthorizedException;
-import com.esquad.esquadbe.qnaboard.repository.CommentLikeRepository;
 import com.esquad.esquadbe.qnaboard.repository.CommentRepository;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.user.entity.User;
@@ -28,7 +26,6 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
-    private final CommentLikeRepository commentLikeRepository;
 
     // 댓글 생성
     public CommentDTO createComment(Long boardId, Long writerId, String content, boolean replyFlag) {
@@ -51,8 +48,6 @@ public class CommentService {
         BookQnaReply savedReply = commentRepository.save(reply);
         return CommentDTO.from(savedReply);
     }
-
-
 
 
     // 댓글 수정
@@ -94,29 +89,5 @@ public class CommentService {
         // BookQnaReply 리스트를 CommentDTO 리스트로 변환
         return replies.stream().map(CommentDTO::from).collect(Collectors.toList());
     }
-
-    // 댓글 좋아요 추가/취소
-    public String likeComment(Long commentId, Long userId) {
-        BookQnaReply reply = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다: " + commentId));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다: " + userId));
-
-        BookQnaReplyLike existingLike = commentLikeRepository.findByUserAndReply(user, reply);
-
-        if (existingLike != null) {
-            // 이미 좋아요를 눌렀다면 취소
-            commentLikeRepository.delete(existingLike);
-            reply.setLikes(reply.getLikes() - 1);
-            commentRepository.save(reply);
-            return "좋아요 취소";
-        } else {
-            // 좋아요가 없으면 추가
-            BookQnaReplyLike newLike = new BookQnaReplyLike(null, user, reply);
-            commentLikeRepository.save(newLike);
-            reply.setLikes(reply.getLikes() + 1);
-            commentRepository.save(reply);
-            return "좋아요 추가";
-        }
-    }
 }
+
