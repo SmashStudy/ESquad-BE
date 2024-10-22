@@ -4,8 +4,14 @@ import com.esquad.esquadbe.storage.dto.ResponseFileDto;
 import com.esquad.esquadbe.storage.entity.FileInfo;
 import com.esquad.esquadbe.storage.entity.StoredFile;
 import com.esquad.esquadbe.storage.entity.TargetType;
+import com.esquad.esquadbe.storage.exception.FileDeleteFailureException;
+import com.esquad.esquadbe.storage.exception.FileDownloadFailureException;
+import com.esquad.esquadbe.storage.exception.FileIsEmptyException;
+import com.esquad.esquadbe.storage.exception.FileNotExistsException;
+import com.esquad.esquadbe.storage.exception.FileUploadFailureException;
 import com.esquad.esquadbe.storage.repository.StoredFileRepository;
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +44,7 @@ public class S3FileService {
         TargetType targetType,
         String userId) {
         if (multipartFile.isEmpty()) {
-            throw new IllegalArgumentException("업로드할 파일이 비어있습니다.");
+            throw new FileIsEmptyException();
         }
 
         FileInfo fileInfo = FileInfo.of(multipartFile.getOriginalFilename(), multipartFile);
@@ -49,10 +55,10 @@ public class S3FileService {
             final RequestBody requestBody = RequestBody.fromBytes(multipartFile.getBytes());
             s3Client.putObject(putObjectRequest, requestBody);
         } catch (IOException e) {
-            throw new IllegalArgumentException("파일 업로드에 실패하였습니다: " + e.getMessage());
+            throw new FileUploadFailureException();
         }
         User user = userRepository.findById(Long.valueOf(userId))
-            .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다."));
+            .orElseThrow(UserNotFoundException::new);
 
         StoredFile storedFile = StoredFile.builder()
             .fileInfo(fileInfo)
@@ -76,7 +82,7 @@ public class S3FileService {
                 .key(urlConverter(storedFile.getTargetType())+storedFileName)
                 .build());
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("파일 삭제에 실패했습니다: " + e.getMessage());
+            throw new FileDeleteFailureException();
         }
 
         storedFileRepository.delete(storedFile);
@@ -93,7 +99,7 @@ public class S3FileService {
             return s3Object.asByteArray();
 
         } catch (RuntimeException e) {
-            throw new IllegalArgumentException("파일 다운로드에 실패하였습니다: " + e.getMessage());
+            throw new FileDownloadFailureException();
         }
     }
 
@@ -124,6 +130,6 @@ public class S3FileService {
 
     private StoredFile getFile(String storedFileName) {
         return storedFileRepository.findByFileInfo_StoredFileName(storedFileName)
-            .orElseThrow(() -> new IllegalArgumentException("해당 파일이 존재하지 않습니다: " + storedFileName));
+            .orElseThrow(FileNotExistsException::new);
     }
 }

@@ -1,5 +1,10 @@
 package com.esquad.esquadbe.global.exception;
 
+import com.esquad.esquadbe.storage.exception.FileDeleteFailureException;
+import com.esquad.esquadbe.storage.exception.FileDownloadFailureException;
+import com.esquad.esquadbe.storage.exception.FileIsEmptyException;
+import com.esquad.esquadbe.storage.exception.FileNotExistsException;
+import com.esquad.esquadbe.storage.exception.FileUploadFailureException;
 import com.esquad.esquadbe.team.exception.DuplicateTeamException;
 import com.esquad.esquadbe.team.exception.TeamNotFoundException;
 import com.esquad.esquadbe.team.exception.TeamUserRolePermissionException;
@@ -86,6 +91,43 @@ public class ExceptionHandlerAdvice {
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);
     }
+
+    @ExceptionHandler(FileDeleteFailureException.class)
+    public ResponseEntity<?> handleFileDeleteFailureException(FileDeleteFailureException e) {
+        log.error("[FileDeleteFailureException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileDownloadFailureException.class)
+    public ResponseEntity<?> handleFileDownloadFailureException(FileDownloadFailureException e) {
+        log.error("[FileDownloadFailureException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileIsEmptyException.class)
+    public ResponseEntity<?> handleFileIsEmptyException(FileIsEmptyException e) {
+        log.error("[FileIsEmptyException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileNotExistsException.class)
+    public ResponseEntity<?> handleFileException(FileNotExistsException e) {
+        log.error("[FileNotExistsException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(FileUploadFailureException.class)
+    public ResponseEntity<?> handleFileException(FileUploadFailureException e) {
+        log.error("[FileUploadFailureException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+
 
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<?> handleSystemException(RestApiException e) {
