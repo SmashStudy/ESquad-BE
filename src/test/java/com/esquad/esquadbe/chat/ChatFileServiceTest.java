@@ -1,10 +1,5 @@
 package com.esquad.esquadbe.chat;
 
-import com.esquad.esquadbe.chat.dto.ChatS3FileDto;
-import com.esquad.esquadbe.chat.entity.ChatS3FileEntity;
-import com.esquad.esquadbe.chat.repository.ChatS3FileRepository;
-import com.esquad.esquadbe.chat.service.ChatFileService;
-import com.esquad.esquadbe.chat.service.ChatS3FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
 

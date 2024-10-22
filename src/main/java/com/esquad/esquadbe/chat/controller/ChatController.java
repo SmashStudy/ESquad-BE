@@ -54,7 +54,7 @@ public class ChatController {
             });
             future.join();
             return ResponseEntity.ok(response);
-        } catch (ChatException e) {
+        } catch (Exception e) {
             response.put("status", "error");
             response.put("message", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
