@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.smtp;
+package com.esquad.esquadbe.smtp.dto;
 
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;

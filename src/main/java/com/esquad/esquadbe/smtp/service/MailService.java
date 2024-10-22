@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.smtp;
+package com.esquad.esquadbe.smtp.service;
 
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.repository.UserRepository;
@@ -25,7 +25,8 @@ public class MailService {
     private final Map<String, String> verificationNumber = new HashMap<>();
 
     private final JavaMailSender javaMailSender;
-    private static final String senderEmail = "jeongmin0046@gmail.com";
+
+    private static final String senderEmail = "E-squad@megazon.com";
 
     public String createNumber() {
         Random random = new Random();
@@ -41,7 +42,8 @@ public class MailService {
     public MimeMessage createIdMimeMail(String mail, String number) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
 
-        String senderName = "jeongmin0046@gmail.com";
+
+        String senderName = "E-squad";
         String senderNameWithEmail = String.format(senderEmail, senderName);
 
         message.setFrom(new InternetAddress(senderNameWithEmail));
@@ -89,7 +91,7 @@ public class MailService {
     public MimeMessage createPasswdMimeMail(String email, String number) throws MessagingException {
         MimeMessage message = javaMailSender.createMimeMessage();
 
-        String senderName = "jeongmin0046@gmail.com";
+        String senderName = "E-squad";
         String senderNameWithEmail = String.format(senderEmail, senderName);
 
         message.setFrom(new InternetAddress(senderNameWithEmail));

@@ -1,6 +1,8 @@
-package com.esquad.esquadbe.smtp;
+package com.esquad.esquadbe.smtp.controller;
 
 
+import com.esquad.esquadbe.smtp.dto.MailDTO;
+import com.esquad.esquadbe.smtp.service.MailService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
