@@ -13,7 +13,7 @@ public class UserUpdateService {
     private final UserRepository userRepository;
 
     public User updateUser(Long userId, UserUpdateDTO userUpdateDTO) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("사용자를 찾을 수 없습니다."));
+        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 
         user = userUpdateDTO.toEntity(userUpdateDTO,user);
 

@@ -1,8 +1,9 @@
 package com.esquad.esquadbe.team.service;
 
-import com.esquad.esquadbe.global.exception.custom.BusinessBaseException;
-import com.esquad.esquadbe.global.exception.custom.DuplicateTeamException;
-import com.esquad.esquadbe.global.exception.response.CommonErrorCode;
+import com.esquad.esquadbe.global.exception.RestApiException;
+import com.esquad.esquadbe.team.exception.DuplicateTeamException;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
+import com.esquad.esquadbe.global.exception.CommonErrorCode;
 import com.esquad.esquadbe.notification.entity.NotificationType;
 import com.esquad.esquadbe.notification.service.NotificationService;
 import com.esquad.esquadbe.team.dto.TeamSpaceCreateRequestDTO;
@@ -10,7 +11,6 @@ import com.esquad.esquadbe.team.dto.TeamSpaceRequestDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceResponseDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceUserResponseDTO;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,9 +20,7 @@ import com.esquad.esquadbe.team.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,7 +32,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public void verifyTeamName(String name) {
-        if(!teamRepository.existsByTeamName(name)) {
+        if(teamRepository.existsByTeamName(name)) {
             throw new DuplicateTeamException();
         }
     }
@@ -57,15 +55,16 @@ public class TeamServiceImpl implements TeamService {
                             , "[ " + saved.getTeamName() + "] 의 크루로 초대되었습니다"
                             , NotificationType.JOIN));
             return saved;
-        } catch (BusinessBaseException e) {
-            throw new BusinessBaseException(e.getMessage(), CommonErrorCode.INTERNAL_SERVER_ERROR);
+        } catch (RestApiException e) {
+            throw new RestApiException(e.getMessage(), CommonErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
-    public Optional<TeamSpaceResponseDTO> getTeamProfile(Long id) {
+    public TeamSpaceResponseDTO getTeamProfile(Long id) {
         return teamRepository.findById(id)
-                .map(TeamSpaceResponseDTO::from); // Optional 에서 안전하게 변환
+                .map(TeamSpaceResponseDTO::from)
+                .orElseThrow(TeamNotFoundException::new);
     }
 
     @Override
@@ -82,26 +81,13 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId) {
-         List<TeamSpaceUserResponseDTO> crewProfiles = new ArrayList<>();
-         Optional<TeamSpace> teamSpace = teamRepository.findById(teamId);
-         if(teamSpace.isPresent()) {
-             // Optional<List<TeamSpaceUser>> teamSpaceUsers = teamSpaceUserRepository.findAllByTeamSpace(teamSpace);
-             List<TeamSpaceUser> teamSpaceUsers = teamSpace.get().getMembers();
-
-             teamSpaceUsers
-                     .stream()
-                     .map(teamUser -> crewProfiles.add(TeamSpaceUserResponseDTO.from(teamUser)))
-                     .toList();
-         }
-         return crewProfiles;
+        return teamRepository.findById(teamId)
+                .map(TeamSpace::getMembers)
+                .orElseThrow(TeamNotFoundException::new)
+                .stream()
+                .map(TeamSpaceUserResponseDTO::from)
+                .toList();
     }
-
-    @Override
-    public List<TeamSpaceUserResponseDTO> getCrewRole(Long teamId) {
-
-        return List.of();
-    }
-
 
 
 }
