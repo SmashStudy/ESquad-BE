@@ -3,6 +3,12 @@ package com.esquad.esquadbe.global.exception.handler;
 import com.esquad.esquadbe.global.exception.custom.team.DuplicateTeamException;
 import com.esquad.esquadbe.global.exception.custom.team.TeamNotFoundException;
 import com.esquad.esquadbe.global.exception.custom.team.TeamUserRolePermissionException;
+import com.esquad.esquadbe.global.exception.custom.user.UserInquiryException;
+import com.esquad.esquadbe.global.exception.custom.user.UserLoginException;
+import com.esquad.esquadbe.global.exception.custom.user.UserNicknameException;
+import com.esquad.esquadbe.global.exception.custom.user.UserNotFoundException;
+import com.esquad.esquadbe.global.exception.custom.user.UserRefreshTokenException;
+import com.esquad.esquadbe.global.exception.custom.user.UserUsernameException;
 import com.esquad.esquadbe.global.exception.response.CommonErrorCode;
 import com.esquad.esquadbe.global.exception.response.ErrorCode;
 import com.esquad.esquadbe.global.exception.response.ErrorResponse;
@@ -50,6 +56,48 @@ public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(RestApiException.class)
     public ResponseEntity<?> handleSystemException(RestApiException e) {
+        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(UserInquiryException.class)
+    public ResponseEntity<?> handleUserInquiryException(RestApiException e) {
+        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(UserLoginException.class)
+    public ResponseEntity<?> handleUserLoginException(RestApiException e) {
+        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(UserUsernameException.class)
+    public ResponseEntity<?> handleUserUsernameException(RestApiException e) {
+        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(UserNicknameException.class)
+    public ResponseEntity<?> handleUserNicknameException(RestApiException e) {
+        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<?> handleUserNotFoundException(RestApiException e) {
+        log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        return handelInternalException(errorCode);
+    }
+
+    @ExceptionHandler(UserRefreshTokenException.class)
+    public ResponseEntity<?> handleUserRefreshTokenException(RestApiException e) {
         log.error("[RestApiException] cause: {} , message: {}", NestedExceptionUtils.getMostSpecificCause(e), e.getMessage());
         ErrorCode errorCode = e.getErrorCode();
         return handelInternalException(errorCode);

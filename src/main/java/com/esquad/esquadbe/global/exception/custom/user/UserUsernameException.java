@@ -3,9 +3,8 @@ package com.esquad.esquadbe.global.exception.custom.user;
 import com.esquad.esquadbe.global.exception.custom.RestApiException;
 import com.esquad.esquadbe.global.exception.response.UserErrorCode;
 
-public class UserNotFoundException extends RestApiException {
-
-    public UserNotFoundException() {
+public class UserUsernameException extends RestApiException {
+    public UserUsernameException() {
         super(UserErrorCode.USER_NOT_FOUND_ERROR);
     }
 }
