@@ -1,7 +1,7 @@
 package com.esquad.esquadbe.qnaboard.service;
 
 import com.esquad.esquadbe.qnaboard.entity.BookQnaLike;
-import com.esquad.esquadbe.qnaboard.repository.LikeRepository;
+import com.esquad.esquadbe.qnaboard.repository.QuestionLikeRepository;
 import com.esquad.esquadbe.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,16 +11,16 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class QnaLikeService {
+public class QuestionLikeService {
 
-    private final LikeRepository likeRepository;
+    private final QuestionLikeRepository questionLikeRepository;
     @Transactional
     public boolean toggleLike(User user, Long boardId) {
-        Optional<BookQnaLike> existingLike = likeRepository.findByUserIdAndBoardId(user.getId(), boardId);
+        Optional<BookQnaLike> existingLike = questionLikeRepository.findByUserIdAndBoardId(user.getId(), boardId);
 
         // 이미 좋아요가 눌린 상태라면 좋아요를 취소
         if (existingLike.isPresent()) {
-            likeRepository.delete(existingLike.get());
+            questionLikeRepository.delete(existingLike.get());
             return false;
         }
 
@@ -29,11 +29,11 @@ public class QnaLikeService {
                 .user(user)
                 .id(boardId)
                 .build();
-        likeRepository.save(like);
+        questionLikeRepository.save(like);
         return true; // 좋아요 추가
     }
 
     public Long getLikeCount(Long boardId) {
-        return likeRepository.countByBoardId(boardId);
+        return questionLikeRepository.countByBoardId(boardId);
     }
 }
