@@ -13,6 +13,7 @@ import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +36,10 @@ public class QuestionService {
     private final TeamSpaceRepository teamSpaceRepository;
     private final S3FileService s3FileService;
 
+
     private User getUser(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private Book getBook(Long bookId) {
@@ -50,13 +52,11 @@ public class QuestionService {
                 .orElseThrow(() -> new ResourceNotFoundException("TeamSpace not found with id: " + teamSpaceId));
     }
 
-
     public Page<QnaBoardResponseDTO> getAllQuestions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<BookQnaBoard> questionPage = questionRepository.findAll(pageable);
         return questionPage.map(QnaBoardResponseDTO::from);
     }
-
 
     public QnaBoardResponseDTO getQuestionById(Long id) {
         return questionRepository.findById(id)
@@ -64,35 +64,27 @@ public class QuestionService {
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
     }
 
-
     @Transactional
     public QnaBoardResponseDTO createQuestion(QnaRequestDTO qnaForm, MultipartFile file) {
-
         User user = getUser(qnaForm.username());
         Book book = getBook(qnaForm.bookId());
         TeamSpace teamSpace = getTeamspace(qnaForm.teamSpaceId());
 
         BookQnaBoard newBoard = qnaForm.to(user, book, teamSpace);
-
-
         BookQnaBoard savedQuestion = questionRepository.save(newBoard);
-
 
         if (file != null && !file.isEmpty()) {
             s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, String.valueOf(qnaForm.username()));  // userId를 String으로 변환
         }
 
-
         return QnaBoardResponseDTO.from(savedQuestion);
     }
-
 
     public Page<QnaBoardResponseDTO> getQuestionsByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return questionRepository.findByTitleContaining(title, pageable)
                 .map(QnaBoardResponseDTO::from);
     }
-
 
     public Page<QnaBoardResponseDTO> getQuestionsByWriter(String username, int page, int size) {
         User user = getUser(username);
@@ -103,18 +95,14 @@ public class QuestionService {
 
     @Transactional
     public QnaBoardResponseDTO updateQuestion(Long id, QnaRequestDTO qnaForm) {
-
         BookQnaBoard existBoard = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
-
 
         if (!existBoard.getWriter().getUsername().equals(qnaForm.username())) {
             throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
         }
 
-
         Book updatedBook = qnaForm.bookId() != null ? getBook(qnaForm.bookId()) : existBoard.getBook();
-
 
         BookQnaBoard updatedBoard = BookQnaBoard.builder()
                 .id(existBoard.getId())
@@ -126,26 +114,20 @@ public class QuestionService {
                 .likes(existBoard.getLikes())
                 .build();
 
-
         return QnaBoardResponseDTO.from(questionRepository.save(updatedBoard));
     }
-
 
     @Transactional
     public void deleteQuestion(Long questionId, String username) {
 
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 사용자를 찾을 수 없습니다: " + username));
-
+        User user = getUser(username);
 
         BookQnaBoard question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + questionId));
 
-
         if (!question.getWriter().getId().equals(user.getId())) {
             throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
         }
-
 
         questionRepository.delete(question);
     }
