@@ -71,10 +71,9 @@ public class QnaBoardController {
 
     // 게시글 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteQuestion(@PathVariable Long id) {
-        questionService.deleteQuestion(id);
+    public ResponseEntity<String> deleteQuestion(@PathVariable Long id, Principal principal) {
+        // 현재 로그인한 사용자의 ID를 서비스로 전달
+        questionService.deleteQuestion(id, principal.getName());
         return ResponseEntity.ok("게시글이 삭제되었습니다");
     }
-
 }
-
