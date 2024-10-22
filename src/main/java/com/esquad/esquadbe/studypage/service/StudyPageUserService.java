@@ -30,7 +30,7 @@ public class StudyPageUserService {
         StudyPage studyPage = studyPageRepository.findById(studyPageId).orElseThrow(()-> new IllegalArgumentException("Invalid studyPageID"));
         log.info(String.valueOf(ids.get(0)));
 
-        List<User> allUsers = userRepository.findAll();
+        List<User> allUsers = (List<User>) userRepository.findAll();
 
         for (User user : allUsers) {
             StudyPageUser studyPageUser = StudyPageUser.builder()
