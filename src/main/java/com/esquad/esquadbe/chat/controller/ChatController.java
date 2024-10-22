@@ -2,21 +2,17 @@ package com.esquad.esquadbe.chat.controller;
 
 import com.esquad.esquadbe.chat.dto.ChatEditMessage;
 import com.esquad.esquadbe.chat.dto.ChatMessage;
+import com.esquad.esquadbe.chat.exception.ChatAccessException;
 import com.esquad.esquadbe.chat.exception.ChatException;
 import com.esquad.esquadbe.chat.service.FirebaseService;
-import com.esquad.esquadbe.user.repository.UserRepository;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.crypto.interfaces.PBEKey;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +23,6 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequestMapping("/api/chat")
 public class ChatController {
-    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
     @Autowired
     private FirebaseService firebaseService;
 
@@ -55,9 +50,7 @@ public class ChatController {
             future.join();
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new ChatException();
         }
     }
 
@@ -90,9 +83,7 @@ public class ChatController {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                response.put("status", "error");
-                response.put("message", databaseError.getMessage());
-                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+                throw new ChatException();
             }
         });
         return futureResponse;
@@ -114,9 +105,9 @@ public class ChatController {
         messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String originalUserId = dataSnapshot.getValue(String.class);
+                String originalUsername = dataSnapshot.getValue(String.class);
 
-                if (originalUserId != null && originalUserId.equals(username)) {
+                if (originalUsername != null && originalUsername.equals(username)) {
                     messageRef.child("message").setValue(request.getNewMessage(), (error, ref) -> {
                         if (error != null) {
                             response.put("status", "error");
@@ -128,16 +119,12 @@ public class ChatController {
                         }
                     });
                 } else {
-                    response.put("status", "error");
-                    response.put("message", "Unauthorized");
-                    futureResponse.complete(ResponseEntity.status(HttpStatus.FORBIDDEN).body(response));
+                    throw new ChatAccessException();
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                response.put("status", "error");
-                response.put("message", databaseError.getMessage());
-                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+               throw new ChatException();
             }
         });
         return futureResponse;
@@ -158,9 +145,9 @@ public class ChatController {
         messageRef.child("userId").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String originalUserId = dataSnapshot.getValue(String.class);
+                String originalUsername = dataSnapshot.getValue(String.class);
 
-                if (originalUserId != null && originalUserId.equals(username)) {
+                if (originalUsername != null && originalUsername.equals(username)) {
                     firebaseService.deleteMessage(roomId, messageId); // 메시지 삭제
                     response.put("status", "success");
                     futureResponse.complete(ResponseEntity.ok(response));
@@ -173,9 +160,7 @@ public class ChatController {
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                response.put("status", "error");
-                response.put("message", databaseError.getMessage());
-                futureResponse.complete(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response));
+                throw new ChatAccessException();
             }
         });
         return futureResponse;

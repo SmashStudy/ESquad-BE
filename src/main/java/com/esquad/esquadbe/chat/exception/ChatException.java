@@ -4,6 +4,6 @@ import com.esquad.esquadbe.global.exception.RestApiException;
 
 public class ChatException extends RestApiException {
     public ChatException() {
-        super(ChatErrorCode.CHAT_NOT_CORRECT_ID);
+        super(ChatErrorCode.CHAT_NOT_FOUND);
     }
 }

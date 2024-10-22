@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ChatErrorCode implements ErrorCode{
 
-    CHAT_FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "Chat File not exists", "CHAT-0001"),
-    CHAT_NOT_CORRECT_ID(HttpStatus.BAD_REQUEST, "Chat not correct id", "CHAT-0002");
+    CHAT_NOT_FOUND(HttpStatus.NOT_FOUND, "Chat Data not exists", "CHAT-0001"),
+    CHAT_NOT_CORRECT_ID(HttpStatus.FORBIDDEN, "Chat not correct id", "CHAT-0002"),;
 
     private final HttpStatus httpStatus;
     private final String message;
