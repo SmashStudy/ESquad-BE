@@ -11,7 +11,6 @@ import com.esquad.esquadbe.team.dto.TeamSpaceRequestDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceResponseDTO;
 import com.esquad.esquadbe.team.dto.TeamSpaceUserResponseDTO;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.entity.TeamSpaceUser;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,9 +20,7 @@ import com.esquad.esquadbe.team.repository.TeamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -84,26 +81,13 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId) {
-         List<TeamSpaceUserResponseDTO> crewProfiles = new ArrayList<>();
-         Optional<TeamSpace> teamSpace = teamRepository.findById(teamId);
-         if(teamSpace.isPresent()) {
-             // Optional<List<TeamSpaceUser>> teamSpaceUsers = teamSpaceUserRepository.findAllByTeamSpace(teamSpace);
-             List<TeamSpaceUser> teamSpaceUsers = teamSpace.get().getMembers();
-
-             teamSpaceUsers
-                     .stream()
-                     .map(teamUser -> crewProfiles.add(TeamSpaceUserResponseDTO.from(teamUser)))
-                     .toList();
-         }
-         return crewProfiles;
+        return teamRepository.findById(teamId)
+                .map(TeamSpace::getMembers)
+                .orElseThrow(TeamNotFoundException::new)
+                .stream()
+                .map(TeamSpaceUserResponseDTO::from)
+                .toList();
     }
-
-    @Override
-    public List<TeamSpaceUserResponseDTO> getCrewRole(Long teamId) {
-
-        return List.of();
-    }
-
 
 
 }
