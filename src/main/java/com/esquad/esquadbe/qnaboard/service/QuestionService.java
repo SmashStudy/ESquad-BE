@@ -36,10 +36,9 @@ public class QuestionService {
     private final TeamSpaceRepository teamSpaceRepository;
     private final S3FileService s3FileService;
 
-
     private User getUser(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(UserNotFoundException::new);  // 메시지 포함
     }
 
     private Book getBook(Long bookId) {
@@ -125,7 +124,7 @@ public class QuestionService {
         BookQnaBoard question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + questionId));
 
-        if (!question.getWriter().getId().equals(user.getId())) {
+        if (!question.getWriter().getUsername().equals(username)) {
             throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
         }
 
