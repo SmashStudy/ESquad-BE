@@ -10,7 +10,9 @@ import org.springframework.http.HttpStatus;
 public enum TeamSpaceErrorCode implements ErrorCode {
 
    TEAM_ALREADY_EXISTS_EXCEPTION(HttpStatus.CONFLICT, "Duplicate team name", "TEAM-0001"),
-   TEAM_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "Team doesn't exists", "TEAM-0002");
+   TEAM_NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, "Team doesn't exists", "TEAM-0002"),
+   INVALID_TEAM_NAME_EXCEPTION(HttpStatus.BAD_REQUEST, "Invalid team name", "TEAM-0003")
+   ;
 
    private final HttpStatus httpStatus;
    private final String message;
