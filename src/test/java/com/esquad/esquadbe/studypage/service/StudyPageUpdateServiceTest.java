@@ -33,7 +33,7 @@ public class StudyPageUpdateServiceTest {
     void shouldUpdateStudyPageSuccessfully() {
         // Given
         Long studyPageId = 1L;
-        UpdateStudyPageRequestDto dto = new UpdateStudyPageRequestDto("New Title", "Updated description", LocalDate.now(), LocalDate.now().plusDays(10));
+        UpdateStudyPageRequestDto dto = new UpdateStudyPageRequestDto("New Title", LocalDate.now(), LocalDate.now().plusDays(10), "Updated description");
 
         StudyPage existingStudyPage = StudyPage.builder()
                 .id(studyPageId)
@@ -61,7 +61,7 @@ public class StudyPageUpdateServiceTest {
     void shouldThrowExceptionWhenStudyPageNotFound() {
         // Given
         Long studyPageId = 2L;
-        UpdateStudyPageRequestDto dto = new UpdateStudyPageRequestDto("New Title", "Updated description", LocalDate.now(), LocalDate.now().plusDays(10));
+        UpdateStudyPageRequestDto dto = new UpdateStudyPageRequestDto("New Title", LocalDate.now(), LocalDate.now().plusDays(10),"Updated description");
 
         when(studyPageRepository.findById(studyPageId)).thenReturn(Optional.empty());
 
