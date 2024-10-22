@@ -74,12 +74,5 @@ public class QnaBoardController {
         return ResponseEntity.ok("게시글이 삭제되었습니다");
     }
 
-    // 좋아요 추가/취소
-    @PostMapping("/like/{boardId}")
-    public ResponseEntity<String> boardLike(@PathVariable Long boardId, @RequestParam Long userId) {
-        String result = questionService.boardLike(boardId, userId);
-        return ResponseEntity.ok(result);
-    }
-
 }
 
