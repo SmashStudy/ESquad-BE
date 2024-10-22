@@ -51,14 +51,5 @@ public class CommentController {
         List<CommentDTO> comments = commentService.getCommentsByBoardId(boardId);
         return ResponseEntity.ok(comments);
     }
-
-
-    // 댓글 좋아요 추가/취소
-    @PostMapping("/like/{commentId}")
-    public ResponseEntity<String> likeComment(
-            @PathVariable Long commentId,
-            @RequestParam("userId") Long userId) {
-        String result = commentService.likeComment(commentId, userId);
-        return ResponseEntity.ok(result);
-    }
 }
+
