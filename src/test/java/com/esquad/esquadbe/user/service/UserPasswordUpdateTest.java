@@ -3,7 +3,6 @@ package com.esquad.esquadbe.user.service;
 import com.esquad.esquadbe.user.dto.UserUpdatePasswordDTO;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserNotFoundException;
-import com.esquad.esquadbe.user.impl.UserPasswordUpdateServiceImpl;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

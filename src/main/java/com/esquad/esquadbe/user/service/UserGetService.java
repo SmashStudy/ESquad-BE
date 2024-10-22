@@ -5,5 +5,5 @@ import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
 public interface UserGetService {
     UserGetResponseDTO getUserById(final long id);
 
-    UserGetResponseDTO getUserByUserId(final String username);
+    UserGetResponseDTO getUsername(final String username);
 }

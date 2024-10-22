@@ -6,8 +6,6 @@ import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
 import com.esquad.esquadbe.user.dto.UserLoginRequestDTO;
 import com.esquad.esquadbe.user.dto.UserLoginResponseDTO;
 import com.esquad.esquadbe.user.exception.UserLoginException;
-import com.esquad.esquadbe.user.impl.UserGetServiceImpl;
-import com.esquad.esquadbe.user.impl.UserLoginServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

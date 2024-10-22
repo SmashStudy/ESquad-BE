@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.user.impl;
+package com.esquad.esquadbe.user.service;
 
 import com.esquad.esquadbe.redis.RedisUtil;
 import com.esquad.esquadbe.user.dto.UserLoginRequestDTO;
@@ -11,7 +11,6 @@ import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
 import com.esquad.esquadbe.security.jwt.JwtProvider;
 
 import com.esquad.esquadbe.user.exception.UserLoginException;
-import com.esquad.esquadbe.user.service.UserLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Transactional
     public UserLoginResponseDTO login(final UserLoginRequestDTO loginRequestDTO) {
         // 사용자 정보 조회
-        UserGetResponseDTO userInfo = userGetService.getUserByUserId(loginRequestDTO.getUsername());
+        UserGetResponseDTO userInfo = userGetService.getUsername(loginRequestDTO.getUsername());
 
         // password 일치 여부 체크
         if(!bCryptPasswordEncoder.matches(loginRequestDTO.getPassword(), userInfo.password()))

@@ -1,4 +1,4 @@
-package com.esquad.esquadbe.user.impl;
+package com.esquad.esquadbe.user.service;
 
 
 import com.esquad.esquadbe.user.dto.UserJoinDTO;
@@ -6,7 +6,6 @@ import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserNicknameException;
 import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
-import com.esquad.esquadbe.user.service.UserJoinService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
