@@ -48,7 +48,6 @@ public class QnaBoardController {
             @RequestParam("title") String title,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info("Searching for questions with title: " + title);
         return questionService.getQuestionsByTitle(title, page, size);
     }
 
@@ -58,7 +57,6 @@ public class QnaBoardController {
             @RequestParam("userId") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        log.info("Searching for questions by writer: " + userId);
         return questionService.getQuestionsByWriter(userId, page, size);
     }
 
