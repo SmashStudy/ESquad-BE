@@ -19,10 +19,8 @@ public class BookController {
 
     @GetMapping("/search")
     public ResponseEntity<List<BookSearchResultItemDto>> searchTitle(@RequestParam("query") String query) {
-        log.info("받은 입력 값: {}", query);
 
         List<BookSearchResultItemDto> bookList = bookService.resultList(query);
-
         return ResponseEntity.status(200).body(bookList);
     }
 }

@@ -28,7 +28,7 @@ public class StudyRemindService {
         StudyPage studyPage = studyPageRepository.findById(studyPageId).orElseThrow(BookJsonProcessingException::new);
 
         for (StudyRemindDto remindDto : remindDtos) {
-            StudyRemind remind = remindDto.to(studyPage);
+            StudyRemind remind = remindDto.from(studyPage);
             studyRemindRepository.save(remind);
         }
     }

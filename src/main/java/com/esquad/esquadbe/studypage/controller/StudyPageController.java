@@ -63,7 +63,6 @@ public class StudyPageController {
     public ResponseEntity<StudyInfoDto> getStudyPageInfo(
             @PathVariable("teamId") Long teamId,
             @PathVariable("studyId") Long studyId) {
-        log.info("Fetching study page info: teamId = {}, studyId = {}", teamId, studyId);
 
         StudyInfoDto studyInfoDto = studyPageService.readStudyPageInfo(studyId);
         return ResponseEntity.ok(studyInfoDto);
@@ -75,8 +74,6 @@ public class StudyPageController {
             @PathVariable("teamId") Long teamId,
             @PathVariable("studyId") Long studyId,
             @RequestBody @Valid UpdateStudyPageRequestDto request) {
-
-        log.info("Updating study page with studyId: {}", studyId);
 
         boolean isUpdated = studyPageService.updateStudyPage(studyId, request);
 
@@ -92,8 +89,6 @@ public class StudyPageController {
     public ResponseEntity<String> deleteStudyPage(
             @PathVariable("studyId") Long studyId,
             @RequestParam("name") String studyPageName) {
-
-        log.info("Attempting to delete study page with ID: {} and name: {}", studyId, studyPageName);
 
         studyPageService.deleteStudyPage(studyId, studyPageName);
         return ResponseEntity.ok("Study page deleted successfully.");

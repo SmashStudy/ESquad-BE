@@ -7,6 +7,7 @@ import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
 import com.esquad.esquadbe.studypage.exception.BookNotFoundException;
 import com.esquad.esquadbe.studypage.exception.BookJsonProcessingException;
+import com.esquad.esquadbe.studypage.exception.StudyNotFoundException;
 import com.esquad.esquadbe.studypage.exception.StudyPageNameNotEqualException;
 import com.esquad.esquadbe.studypage.repository.*;
 import com.esquad.esquadbe.team.entity.TeamSpace;
@@ -69,7 +70,7 @@ public class StudyPageService {
     public List<StudyPageReadDto> readStudyPages(Long teamId) {
         // 팀 정보 확인
         TeamSpace teamSpace = teamSpaceRepository.findById(teamId)
-                .orElseThrow(() -> new EntityNotFoundException("TeamSpace not found with ID: " + teamId));
+                .orElseThrow(TeamNotFoundException::new);
 
         // 팀에 속한 StudyPage들 조회
         List<StudyPage> studyPages = studyPageRepository.findAllByTeamSpace(teamSpace)
@@ -89,7 +90,7 @@ public class StudyPageService {
     // 특정 StudyPage 정보 조회
     public StudyInfoDto readStudyPageInfo(Long id) {
         StudyPage studyPage = studyPageRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No StudyPage found for Study ID: " + id));
+                .orElseThrow(StudyNotFoundException::new);
         return to(studyPage);
     }
 
