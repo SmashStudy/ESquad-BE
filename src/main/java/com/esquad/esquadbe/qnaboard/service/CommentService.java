@@ -27,7 +27,7 @@ public class CommentService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
 
-    // 댓글 생성
+
     public CommentDTO createComment(Long boardId, Long writerId, String content, boolean replyFlag) {
         BookQnaBoard board = questionRepository.findById(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + boardId));
@@ -40,8 +40,8 @@ public class CommentService {
                 .content(content)
                 .likes(0)
                 .replyFlag(replyFlag)
-                .depth(0) // 기본 댓글의 depth
-                .orderNo(0) // 기본 댓글의 order
+                .depth(0)
+                .orderNo(0)
                 .deletedFlag(false)
                 .build();
 
@@ -50,7 +50,6 @@ public class CommentService {
     }
 
 
-    // 댓글 수정
     public CommentDTO updateComment(Long commentId, Long writerId, String content) {
         BookQnaReply reply = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다: " + commentId));
@@ -66,7 +65,7 @@ public class CommentService {
         return CommentDTO.from(updatedReply);
     }
 
-    // 댓글 삭제
+
     public void deleteComment(Long commentId, Long writerId) {
         BookQnaReply reply = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다: " + commentId));
@@ -86,7 +85,7 @@ public class CommentService {
 
         List<BookQnaReply> replies = commentRepository.findByBoard(board);
 
-        // BookQnaReply 리스트를 CommentDTO 리스트로 변환
+
         return replies.stream().map(CommentDTO::from).collect(Collectors.toList());
     }
 }

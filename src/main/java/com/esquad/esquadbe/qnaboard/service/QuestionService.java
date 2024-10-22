@@ -1,10 +1,10 @@
 package com.esquad.esquadbe.qnaboard.service;
 
-import com.esquad.esquadbe.qnaboard.exception.ResourceNotFoundException;
-import com.esquad.esquadbe.qnaboard.exception.UnauthorizedException;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.dto.QnaRequestDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
+import com.esquad.esquadbe.qnaboard.exception.ResourceNotFoundException;
+import com.esquad.esquadbe.qnaboard.exception.UnauthorizedException;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.service.S3FileService;
@@ -50,21 +50,21 @@ public class QuestionService {
                 .orElseThrow(() -> new ResourceNotFoundException("TeamSpace not found with id: " + teamSpaceId));
     }
 
-    // 전체 게시글 조회
+
     public Page<QnaBoardResponseDTO> getAllQuestions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<BookQnaBoard> questionPage = questionRepository.findAll(pageable);
         return questionPage.map(QnaBoardResponseDTO::from);
     }
 
-    // 특정 ID의 게시글 조회
+
     public QnaBoardResponseDTO getQuestionById(Long id) {
         return questionRepository.findById(id)
                 .map(QnaBoardResponseDTO::from)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
     }
 
-    // 게시글 생성
+
     @Transactional
     public QnaBoardResponseDTO createQuestion(QnaRequestDTO qnaForm, MultipartFile file) {
 
@@ -74,10 +74,10 @@ public class QuestionService {
 
         BookQnaBoard newBoard = qnaForm.to(user, book, teamSpace);
 
-        // 생성된 게시글 저장
+
         BookQnaBoard savedQuestion = questionRepository.save(newBoard);
 
-        // 파일이 있을 경우에만 파일 업로드
+
         if (file != null && !file.isEmpty()) {
             s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, String.valueOf(qnaForm.username()));  // userId를 String으로 변환
         }
@@ -86,14 +86,14 @@ public class QuestionService {
         return QnaBoardResponseDTO.from(savedQuestion);
     }
 
-    // 특정 제목의 게시글 조회
+
     public Page<QnaBoardResponseDTO> getQuestionsByTitle(String title, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return questionRepository.findByTitleContaining(title, pageable)
                 .map(QnaBoardResponseDTO::from);
     }
 
-    // 특정 작성자의 게시글 조회
+
     public Page<QnaBoardResponseDTO> getQuestionsByWriter(String username, int page, int size) {
         User user = getUser(username);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
@@ -103,19 +103,19 @@ public class QuestionService {
 
     @Transactional
     public QnaBoardResponseDTO updateQuestion(Long id, QnaRequestDTO qnaForm) {
-        // 게시글 ID로 기존 게시글 조회
+
         BookQnaBoard existBoard = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
 
-        // 작성자 확인
+
         if (!existBoard.getWriter().getUsername().equals(qnaForm.username())) {
             throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
         }
 
-        // 책 정보 업데이트
+
         Book updatedBook = qnaForm.bookId() != null ? getBook(qnaForm.bookId()) : existBoard.getBook();
 
-        // 수정된 게시글 생성
+
         BookQnaBoard updatedBoard = BookQnaBoard.builder()
                 .id(existBoard.getId())
                 .title(qnaForm.title())
@@ -126,27 +126,27 @@ public class QuestionService {
                 .likes(existBoard.getLikes())
                 .build();
 
-        // 저장 후 반환
+
         return QnaBoardResponseDTO.from(questionRepository.save(updatedBoard));
     }
 
-    // 게시글 삭제
+
     @Transactional
     public void deleteQuestion(Long questionId, String username) {
-        // 현재 사용자 조회
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 사용자를 찾을 수 없습니다: " + username));
 
-        // 게시글 찾기
+
         BookQnaBoard question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + questionId));
 
-        // 작성자가 아닌 경우 예외 발생
+
         if (!question.getWriter().getId().equals(user.getId())) {
             throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
         }
 
-        // 게시글 삭제
+
         questionRepository.delete(question);
     }
 }
