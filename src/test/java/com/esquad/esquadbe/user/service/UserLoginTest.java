@@ -63,7 +63,7 @@ class UserLoginTest {
                 .birthDay(LocalDate.now())
                 .build();
 
-        when(userGetService.getUserByUserId(loginRequestDTO.getUsername())).thenReturn(userInfo);
+        when(userGetService.getUsername(loginRequestDTO.getUsername())).thenReturn(userInfo);
         when(bCryptPasswordEncoder.matches(loginRequestDTO.getPassword(), userInfo.password())).thenReturn(true);
         when(jwtProvider.generateAccessToken(userInfo.id())).thenReturn("accessToken");
         when(jwtProvider.generateRefreshToken(userInfo.id())).thenReturn("refreshToken");
@@ -94,7 +94,7 @@ class UserLoginTest {
                 .birthDay(LocalDate.now())
                 .build();
 
-        when(userGetService.getUserByUserId(loginRequestDTO.getUsername())).thenReturn(userInfo);
+        when(userGetService.getUsername(loginRequestDTO.getUsername())).thenReturn(userInfo);
         when(bCryptPasswordEncoder.matches(loginRequestDTO.getPassword(), userInfo.password())).thenReturn(false);
 
         // when & then
@@ -107,7 +107,7 @@ class UserLoginTest {
         // given
         UserLoginRequestDTO loginRequestDTO = new UserLoginRequestDTO("testtest", "wrongPassword");
 
-        when(userGetService.getUserByUserId(loginRequestDTO.getUsername())).thenThrow(new UserLoginException());
+        when(userGetService.getUsername(loginRequestDTO.getUsername())).thenThrow(new UserLoginException());
 
         // when & then
         assertThrows(UserLoginException.class, () -> userLoginService.login(loginRequestDTO));
