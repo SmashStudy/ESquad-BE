@@ -16,8 +16,6 @@ public class QnaBoardResponseDTO {
     private Long teamSpaceId;
     private String teamSpaceName;
     private String content;
-    private String createdAt;
-    private String modifiedAt;
     private Integer likes;
 
     // 정적 팩토리 메서드
