@@ -4,11 +4,9 @@ import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.format.DateTimeFormatter;
-
 @Builder
 @Getter
-public class QnaBoardResponseDTO  {
+public class QnaBoardResponseDTO {
     private Long id;
     private String title;
     private Long userId;
@@ -34,14 +32,8 @@ public class QnaBoardResponseDTO  {
                 .teamSpaceId(bookQnaBoard.getTeamSpace().getId())
                 .teamSpaceName(bookQnaBoard.getTeamSpace().getTeamName())
                 .content(bookQnaBoard.getContent())
-                .createdAt(bookQnaBoard.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                .modifiedAt(bookQnaBoard.getModifiedAt() != null
-                        ? bookQnaBoard.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                        : null)
                 .likes(bookQnaBoard.getLikes())
                 .build();
     }
-
-
 
 }
