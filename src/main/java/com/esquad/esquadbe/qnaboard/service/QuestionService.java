@@ -5,8 +5,6 @@ import com.esquad.esquadbe.qnaboard.exception.UnauthorizedException;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.dto.QnaRequestDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
-import com.esquad.esquadbe.qnaboard.entity.BookQnaLike;
-import com.esquad.esquadbe.qnaboard.repository.BookQnaLikeRepository;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.service.S3FileService;
@@ -35,20 +33,19 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final BookRepository bookRepository;
     private final TeamSpaceRepository teamSpaceRepository;
-    private final BookQnaLikeRepository likeRepository;
     private final S3FileService s3FileService;
 
-    private User findUserById(Long userId) {
+    private User getUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
     }
 
-    private Book findBookById(Long bookId) {
+    private Book getBook(Long bookId) {
         return bookRepository.findById(bookId)
                 .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
     }
 
-    private TeamSpace findTeamSpaceById(Long teamSpaceId) {
+    private TeamSpace getTeamspace(Long teamSpaceId) {
         return teamSpaceRepository.findById(teamSpaceId)
                 .orElseThrow(() -> new ResourceNotFoundException("TeamSpace not found with id: " + teamSpaceId));
     }
@@ -71,9 +68,9 @@ public class QuestionService {
     @Transactional
     public QnaBoardResponseDTO createQuestion(QnaRequestDTO qnaForm, MultipartFile file) {
 
-        User user = findUserById(qnaForm.userId());
-        Book book = findBookById(qnaForm.bookId());
-        TeamSpace teamSpace = findTeamSpaceById(qnaForm.teamSpaceId());
+        User user = getUser(qnaForm.userId());
+        Book book = getBook(qnaForm.bookId());
+        TeamSpace teamSpace = getTeamspace(qnaForm.teamSpaceId());
 
         BookQnaBoard newBoard = qnaForm.to(user, book, teamSpace);
 
@@ -98,7 +95,7 @@ public class QuestionService {
 
     // 특정 작성자의 게시글 조회
     public Page<QnaBoardResponseDTO> getQuestionsByWriter(Long userId, int page, int size) {
-        User user = findUserById(userId);
+        User user = getUser(userId);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return questionRepository.findByWriter(user, pageable)
                 .map(QnaBoardResponseDTO::from);
@@ -116,7 +113,7 @@ public class QuestionService {
         }
 
         // 책 정보 업데이트
-        Book updatedBook = qnaForm.bookId() != null ? findBookById(qnaForm.bookId()) : existBoard.getBook();
+        Book updatedBook = qnaForm.bookId() != null ? getBook(qnaForm.bookId()) : existBoard.getBook();
 
         // 수정된 게시글 생성
         BookQnaBoard updatedBoard = BookQnaBoard.builder()
@@ -139,55 +136,5 @@ public class QuestionService {
         BookQnaBoard question = questionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
         questionRepository.delete(question);
-    }
-
-    // 좋아요 처리 로직
-    @Transactional
-    public String boardLike(Long boardId, Long userId) {
-        log.info("사용자가 게시글에 좋아요 요청");
-
-        BookQnaBoard board = questionRepository.findById(boardId)
-                .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + boardId));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다: " + userId));
-
-        BookQnaLike existingLike = likeRepository.findByUserAndBoard(user, board);
-
-        if (existingLike != null) {
-            // 좋아요 취소
-            likeRepository.delete(existingLike);
-
-            // 좋아요 수 감소한 새로운 객체 생성
-            BookQnaBoard updatedBoard = BookQnaBoard.builder()
-                    .id(board.getId())
-                    .title(board.getTitle())
-                    .content(board.getContent())
-                    .writer(board.getWriter())
-                    .book(board.getBook())
-                    .teamSpace(board.getTeamSpace())
-                    .likes(board.getLikes() - 1)  // 좋아요 수 감소
-                    .build();
-
-            questionRepository.save(updatedBoard);
-            return "좋아요 취소";
-        } else {
-            // 좋아요 추가
-            BookQnaLike newLike = new BookQnaLike(null, user, board);
-            likeRepository.save(newLike);
-
-            // 좋아요 수 증가한 새로운 객체 생성
-            BookQnaBoard updatedBoard = BookQnaBoard.builder()
-                    .id(board.getId())
-                    .title(board.getTitle())
-                    .content(board.getContent())
-                    .writer(board.getWriter())
-                    .book(board.getBook())
-                    .teamSpace(board.getTeamSpace())
-                    .likes(board.getLikes() + 1)  // 좋아요 수 증가
-                    .build();
-
-            questionRepository.save(updatedBoard);
-            return "좋아요 추가";
-        }
     }
 }
