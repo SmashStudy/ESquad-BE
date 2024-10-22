@@ -1,9 +1,10 @@
 package com.esquad.esquadbe.user.impl;
 
-import com.esquad.esquadbe.global.exception.custom.user.UserUsernameException;
-import com.esquad.esquadbe.global.exception.custom.user.UserNicknameException;
+
 import com.esquad.esquadbe.user.dto.UserJoinDTO;
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserNicknameException;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import com.esquad.esquadbe.user.service.UserJoinService;
 import lombok.RequiredArgsConstructor;

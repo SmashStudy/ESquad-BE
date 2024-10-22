@@ -1,7 +1,8 @@
 package com.esquad.esquadbe.user.impl;
 
 import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
-import com.esquad.esquadbe.global.exception.custom.user.UserInquiryException;
+
+import com.esquad.esquadbe.user.exception.UserInquiryException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 
 import com.esquad.esquadbe.user.service.UserGetService;

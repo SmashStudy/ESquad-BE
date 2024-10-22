@@ -7,9 +7,10 @@ import com.esquad.esquadbe.user.dto.UserLoginResponseDTO;
 import com.esquad.esquadbe.user.dto.UserGetResponseDTO;
 
 
-import com.esquad.esquadbe.global.exception.custom.user.UserLoginException;
+
 import com.esquad.esquadbe.security.jwt.JwtProvider;
 
+import com.esquad.esquadbe.user.exception.UserLoginException;
 import com.esquad.esquadbe.user.service.UserLoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
