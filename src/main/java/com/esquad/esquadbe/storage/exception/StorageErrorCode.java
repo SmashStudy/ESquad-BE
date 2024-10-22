@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum StorageErrorCode implements ErrorCode {
 
-   //   USER_NOT_FOUND_ERROR(HttpStatus.NOT_FOUND, "User not exists", "USER-0001"),
    FILE_NOT_EXISTS_ERROR(HttpStatus.NOT_FOUND, "File not exists", "STORAGE-0001"),
    UPLOAD_FILE_EMPTY_ERROR(HttpStatus.NOT_FOUND, "File is empty", "STORAGE-0002"),
    FILE_UPLOAD_UNAVAILABLE(HttpStatus.NOT_FOUND, "File upload failed", "STORAGE-0003"),
