@@ -15,7 +15,6 @@ public interface TeamService {
     TeamSpace createTeam(TeamSpaceCreateRequestDTO teamDTO);
     TeamSpaceResponseDTO updateProfile(@Valid TeamSpaceRequestDTO teamSpaceRequestDTO);
     List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId);
-    List<TeamSpaceUserResponseDTO> getCrewRole(Long teamId);
     TeamSpaceResponseDTO getTeamProfile(Long teamSpaceRequestDTO);
     void deleteTeamSpace(Long teamId);
 }
