@@ -5,10 +5,12 @@ import com.esquad.esquadbe.global.entity.BasicEntity;
 import com.esquad.esquadbe.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
