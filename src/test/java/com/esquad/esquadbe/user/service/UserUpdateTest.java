@@ -4,11 +4,13 @@ import com.esquad.esquadbe.user.dto.UserUpdateDTO;
 import com.esquad.esquadbe.user.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringBootTest
 class UserUpdateTest {
 
     private User existingUser;
@@ -20,7 +22,7 @@ class UserUpdateTest {
         existingUser = User.builder()
                 .id(1L)
                 .email("testuser@example.com")
-                .address("부산광역시 부산산업진흥원")
+                .address("부산광역시 부산산업진행원")
                 .phoneNumber("010-1234-5678")
                 .nickname("testuser")
                 .username("testuser")
