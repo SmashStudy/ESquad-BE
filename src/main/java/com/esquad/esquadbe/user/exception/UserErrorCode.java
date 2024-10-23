@@ -15,7 +15,8 @@ public enum UserErrorCode implements ErrorCode {
    USER_REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, "User refreshToken invalid", "USER-0004"),
    USER_EMAIL_NOT_EXIST(HttpStatus.NOT_FOUND, "User email doesn't exists", "USER-0005"),
    USER_PASSWORD_NOT_MATCH(HttpStatus.NOT_FOUND, "User password doesn't match", "USER-0006"),
-   USER_NUMBER_MISMATCH(HttpStatus.NOT_FOUND, "User number mismatch", "USER-0007");
+   USER_NUMBER_MISMATCH(HttpStatus.NOT_FOUND, "User number mismatch", "USER-0007"),
+   USER_PASSWORD_PATTERN_ERROR(HttpStatus.NOT_FOUND, "Password Pattern mismatch", "USER-0008");
 
 
    private final HttpStatus httpStatus;
