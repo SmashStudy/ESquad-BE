@@ -3,7 +3,6 @@ package com.esquad.esquadbe.qnaboard.controller;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.dto.QnaRequestDTO;
 import com.esquad.esquadbe.qnaboard.service.QuestionService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
