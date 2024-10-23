@@ -38,7 +38,6 @@ class UserJoinTest {
 
     @BeforeEach
     void setUp() {
-        // Mock PasswordEncoder
         Mockito.when(bCryptPasswordEncoder.encode(anyString())).thenReturn("encryptedPassword");
 
         userJoinDTO = UserJoinDTO.builder()

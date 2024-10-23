@@ -22,7 +22,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserLoginServiceImpl implements UserLoginService {
 
-    private final UserGetServiceImpl userGetService;
+    private final UserInquiryServiceImpl userGetService;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -35,14 +35,11 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Override
     @Transactional
     public UserLoginResponseDTO login(final UserLoginRequestDTO loginRequestDTO) {
-        // 사용자 정보 조회
         UserGetResponseDTO userInfo = userGetService.getUsername(loginRequestDTO.getUsername());
 
-        // password 일치 여부 체크
         if(!bCryptPasswordEncoder.matches(loginRequestDTO.getPassword(), userInfo.password()))
             throw new UserLoginException();
 
-        // jwt 토큰 생성
         String accessToken = jwtProvider.generateAccessToken(userInfo.id());
 
         String existingRefreshToken = findRefreshTokenByUserId(userInfo.id());
@@ -51,7 +48,6 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
 
 
-        // refresh token 생성 후 저장
         String refreshToken = jwtProvider.generateRefreshToken(userInfo.id());
         redisUtil.set(REFRESH_TOKEN_PREFIX + refreshToken, userInfo.id(), 60 * 24 * 7);
         return UserLoginResponseDTO.builder()
@@ -61,18 +57,16 @@ public class UserLoginServiceImpl implements UserLoginService {
     }
 
     public String findRefreshTokenByUserId(Long userId) {
-        // 패턴을 설정 (모든 refreshToken 키 탐색)
         String pattern = "refreshToken:*";
         Set<String> keys = redisUtil.scan(pattern);
 
-        // 각 키에 대해 해당하는 값을 확인
         for (String key : keys) {
             Long storedUserId = Long.parseLong(String.valueOf(redisUtil.get(key)));
             if (storedUserId.equals(userId)) {
-                return key; // refreshToken 반환
+                return key;
             }
         }
-        return null; // 찾지 못한 경우
+        return null;
     }
 
 

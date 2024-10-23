@@ -16,15 +16,7 @@ public class MailDTO {
     private String number;
     private String username;
 
-    @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[!~&+@])[a-z\\d!~&+@]{6,16}$",
-            message = "비밀번호는 소문자, 숫자, 특수문자(!~&+@)를 포함한 6~16자여야 합니다."
-    )
     private String newPassword;
 
-    @Pattern(
-            regexp = "^(?=.*[a-z])(?=.*\\d)(?=.*[!~&+@])[a-z\\d!~&+@]{6,16}$",
-            message = "비밀번호는 소문자, 숫자, 특수문자(!~&+@)를 포함한 6~16자여야 합니다."
-    )
     private String confirmPassword;
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class UserGetServiceImpl implements UserGetService {
+public class UserInquiryServiceImpl implements UserInquiryService {
 
     private final UserRepository userRepository;
 

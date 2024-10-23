@@ -36,7 +36,6 @@ class UserPasswordUpdateTest {
 
     @BeforeEach
     void setUp() {
-        // Mock PasswordEncoder
         Mockito.when(bCryptPasswordEncoder.encode(anyString())).thenReturn("encodedNewPassword");
     }
 

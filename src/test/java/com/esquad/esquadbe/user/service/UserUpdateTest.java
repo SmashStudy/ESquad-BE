@@ -18,7 +18,6 @@ class UserUpdateTest {
 
     @BeforeEach
     void setUp() {
-        // 기존 User 엔티티 생성 (원본 데이터)
         existingUser = User.builder()
                 .id(1L)
                 .email("testuser@example.com")
@@ -30,26 +29,25 @@ class UserUpdateTest {
                 .password("test1234@")
                 .build();
 
-        // 업데이트할 데이터가 담긴 DTO 생성
         userUpdateDTO = UserUpdateDTO.builder()
-                .email("test@example.com")  // 이메일만 변경
-                .nickname("test")  // 닉네임만 변경
+                .email("test@example.com")
+                .nickname("test")
                 .build();
     }
 
     @Test
     void testToEntity_Success() {
-        // when: 기존 유저와 DTO 데이터를 병합하여 새 엔티티 생성
+        // when
         User updatedUser = userUpdateDTO.toEntity(userUpdateDTO, existingUser);
 
-        // then: 업데이트된 필드와 유지된 필드를 검증
+        // then
         assertThat(updatedUser.getId()).isEqualTo(existingUser.getId());
-        assertThat(updatedUser.getEmail()).isEqualTo("test@example.com");  // 이메일이 업데이트됨
-        assertThat(updatedUser.getNickname()).isEqualTo("test");  // 닉네임이 업데이트됨
-        assertThat(updatedUser.getAddress()).isEqualTo(existingUser.getAddress());  // 주소는 유지됨
-        assertThat(updatedUser.getPhoneNumber()).isEqualTo(existingUser.getPhoneNumber());  // 전화번호 유지
-        assertThat(updatedUser.getBirthDay()).isEqualTo(existingUser.getBirthDay());  // 생일 유지
-        assertThat(updatedUser.getPassword()).isEqualTo(existingUser.getPassword());  // 비밀번호 유지
-        assertThat(updatedUser.getUsername()).isEqualTo(existingUser.getUsername());  // 유저명 유지
+        assertThat(updatedUser.getEmail()).isEqualTo("test@example.com");
+        assertThat(updatedUser.getNickname()).isEqualTo("test");
+        assertThat(updatedUser.getAddress()).isEqualTo(existingUser.getAddress());
+        assertThat(updatedUser.getPhoneNumber()).isEqualTo(existingUser.getPhoneNumber());
+        assertThat(updatedUser.getBirthDay()).isEqualTo(existingUser.getBirthDay());
+        assertThat(updatedUser.getPassword()).isEqualTo(existingUser.getPassword());
+        assertThat(updatedUser.getUsername()).isEqualTo(existingUser.getUsername());
     }
 }

@@ -30,7 +30,7 @@ class UserLoginTest {
     private UserLoginServiceImpl userLoginService;
 
     @MockBean
-    private UserGetServiceImpl userGetService;
+    private UserInquiryServiceImpl userGetService;
 
     @MockBean
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -43,7 +43,6 @@ class UserLoginTest {
 
     @BeforeEach
     void setUp() {
-        // Mock PasswordEncoder
         Mockito.when(bCryptPasswordEncoder.encode(any())).thenReturn("encryptedPassword");
     }
 

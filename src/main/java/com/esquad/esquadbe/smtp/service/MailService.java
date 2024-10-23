@@ -4,6 +4,8 @@ import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserEmailException;
 import com.esquad.esquadbe.user.exception.UserNumberException;
 import com.esquad.esquadbe.user.exception.UserPasswordException;
+import com.esquad.esquadbe.user.exception.UserPasswordPatternException;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -30,6 +32,7 @@ public class MailService {
     private final JavaMailSender javaMailSender;
 
     private static final String senderEmail = "E-squad@megazon.com";
+    private static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*\\d)(?=.*[!~&+@])[a-z\\d!~&+@]{6,16}$";
 
     public String createNumber() {
         Random random = new Random();
@@ -105,11 +108,10 @@ public class MailService {
 
     }
 
-    // 비밀번호 재설정용 이메일 전송
     public String sendPasswordResetMail(String email, String username) throws MessagingException {
         User user = userRepository.findByEmailAndUsername(email, username);
         if (user == null) {
-            throw new UserEmailException();
+            throw new UserUsernameException();
         }
 
         String number = createNumber();
@@ -121,13 +123,18 @@ public class MailService {
     }
 
 
-    // 비밀번호 재설정
     public String resetPassword(String email, String number, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new UserPasswordException();
         }
         if (!checkVerificationNumber(email, number)) {
             throw new UserNumberException();
+        }
+        if (!newPassword.matches(PASSWORD_PATTERN)) {
+            throw new UserPasswordPatternException();
+        }
+        if (!confirmPassword.matches(PASSWORD_PATTERN)) {
+            throw new UserPasswordPatternException();
         }
         User user = userRepository.findByEmail(email);
         if (user == null) {
@@ -136,12 +143,11 @@ public class MailService {
 
         String encordedPassword = bCryptPasswordEncoder.encode(newPassword);
 
-        // 비밀번호 암호화 필요
         user = User.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .email(user.getEmail())
-                .password(encordedPassword)  // 실제 사용 시에는 비밀번호를 암호화해야 합니다.
+                .password(encordedPassword)
                 .address(user.getAddress())
                 .birthDay(user.getBirthDay())
                 .phoneNumber(user.getPhoneNumber())

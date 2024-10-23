@@ -22,7 +22,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         return userRepository.findByUsername(username)
-                .map(UserDetailsImpl::new) // 유저가 존재하면 UserDetailsImpl로 변환
+                .map(UserDetailsImpl::new)
                 .orElseThrow(() -> new UsernameNotFoundException("해당 아이디를 가진 사용자를 찾을 수 없습니다."));
     }
 

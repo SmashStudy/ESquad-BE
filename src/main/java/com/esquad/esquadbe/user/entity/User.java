@@ -59,8 +59,6 @@ public class User extends BasicEntity {
     private String nickname;
 
     @Column(nullable = false, length = 60)
-//    @Size(min = 8, max = 16, message = "비밀번호는 8~16자여야 합니다.")
-//    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?=.*[!~&+@]).*$", message = "비밀번호는 대소문자와 특수문자(!~&+@)를 포함해야 합니다.")
     private String password;
 
     @Column(nullable = false, length = 25)

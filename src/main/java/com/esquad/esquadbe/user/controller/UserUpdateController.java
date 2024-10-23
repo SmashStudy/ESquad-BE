@@ -21,10 +21,8 @@ public class UserUpdateController {
 
     @PutMapping("/update")
     public ResponseEntity<ApiResponseEntity> updateUser(Authentication authentication, @RequestBody UserUpdateDTO userUpdateDTO) {
-        // JWT에서 유저 ID를 추출
         Long userId = JwtUtil.getLoginId(authentication);
 
-        // 유저 정보 수정
         var updatedUser = userService.updateUser(userId, userUpdateDTO);
 
         return ApiResponseEntity.successResponseEntity(updatedUser);

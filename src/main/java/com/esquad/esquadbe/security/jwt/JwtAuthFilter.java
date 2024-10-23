@@ -1,7 +1,7 @@
 package com.esquad.esquadbe.security.jwt;
 
 
-import com.esquad.esquadbe.user.service.UserGetService;
+import com.esquad.esquadbe.user.service.UserInquiryService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +25,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
 
-    private final UserGetService userGetService;
+    private final UserInquiryService userInquiryService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -50,7 +50,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private UsernamePasswordAuthenticationToken getUserAuth(String username) {
-        var userInfo = userGetService.getUserById(Long.parseLong(username));
+        var userInfo = userInquiryService.getUserById(Long.parseLong(username));
 
         return new UsernamePasswordAuthenticationToken(
                 userInfo.id(),
