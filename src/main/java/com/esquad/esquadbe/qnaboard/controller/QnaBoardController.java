@@ -37,7 +37,7 @@ public class QnaBoardController {
     // 새로운 질문 생성
     @PostMapping
     public QnaBoardResponseDTO createQuestion(
-            @RequestBody QnaRequestDTO qnaForm,
+            @ModelAttribute QnaRequestDTO qnaForm,
             @RequestParam(required = false) MultipartFile file) {
         return questionService.createQuestion(qnaForm, file);
     }
