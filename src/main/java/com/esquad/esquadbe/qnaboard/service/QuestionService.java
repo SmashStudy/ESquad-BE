@@ -86,17 +86,19 @@ public class QuestionService {
 
     @Transactional
     public QnaBoardResponseDTO createQuestion(QnaRequestDTO qnaForm, MultipartFile file) {
-        User user = getUser(qnaForm.username());
+
+        String username = qnaForm.username().getName();
+        User user = getUser(username);
         Book book = getBook(qnaForm.bookId());
         TeamSpace teamSpace = getTeamspace(qnaForm.teamSpaceId());
 
         BookQnaBoard newBoard = qnaForm.to(user, book, teamSpace);
         BookQnaBoard savedQuestion = questionRepository.save(newBoard);
-        log.info("[createQuestion] new question created by user: {}", qnaForm.username());
+        log.info("[createQuestion] new question created by user: {}", username);
 
         if (file != null && !file.isEmpty()) {
             log.info("[createQuestion] file uploaded for questionId: {}", savedQuestion.getId());
-            s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, qnaForm.username());
+            s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, username);
         }
 
         return QnaBoardResponseDTO.from(savedQuestion);
@@ -125,7 +127,6 @@ public class QuestionService {
                     return new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id);
                 });
 
-
         if (!existBoard.getWriter().getUsername().equals(principal.getName())) {
             log.error("[UnauthorizedException] user: {} does not have permission to update questionId: {}", principal.getName(), id);
             throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
@@ -151,7 +152,6 @@ public class QuestionService {
     public void deleteQuestion(Long questionId, Principal principal) {
         BookQnaBoard question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + questionId));
-
 
         if (!question.getWriter().getUsername().equals(principal.getName())) {
             throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
