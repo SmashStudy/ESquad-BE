@@ -14,7 +14,7 @@ public record QnaRequestDTO(
         Long id,
         String title,
         String content,
-        Principal username,
+        String username,
         Long bookId,
         Long teamSpaceId
 ) {
