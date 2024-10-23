@@ -2,6 +2,7 @@ package com.esquad.esquadbe.qnaboard.service;
 
 import com.esquad.esquadbe.qnaboard.entity.BookQnaReply;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaReplyLike;
+import com.esquad.esquadbe.qnaboard.exception.ResourceNotFoundException;
 import com.esquad.esquadbe.qnaboard.repository.CommentLikeRepository;
 import com.esquad.esquadbe.qnaboard.repository.CommentRepository;
 import com.esquad.esquadbe.user.entity.User;
@@ -31,7 +32,7 @@ public class CommentLikeService {
 
 
         BookQnaReply reply = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFoundException("해당 댓글을 찾을 수 없습니다."));
 
 
         BookQnaReplyLike like = BookQnaReplyLike.builder()
