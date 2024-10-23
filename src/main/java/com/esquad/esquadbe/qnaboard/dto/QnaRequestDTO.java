@@ -7,8 +7,6 @@ import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.user.entity.User;
 import lombok.Builder;
 
-import java.security.Principal;
-
 @Builder
 public record QnaRequestDTO(
         Long id,
