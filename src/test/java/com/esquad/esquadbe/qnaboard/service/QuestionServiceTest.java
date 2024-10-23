@@ -19,11 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Principal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @Transactional
@@ -48,7 +46,6 @@ class QuestionServiceTest {
     private User user;
     private Book book;
     private TeamSpace teamSpace;
-    private Principal principal;
 
     @BeforeEach
     void setUp() {
@@ -89,10 +86,6 @@ class QuestionServiceTest {
                 .teamSpace(teamSpace)
                 .likes(0)
                 .build());
-
-
-        principal = mock(Principal.class);
-        when(principal.getName()).thenReturn(user.getUsername());
     }
 
     @Test
@@ -101,7 +94,7 @@ class QuestionServiceTest {
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
                 .title("Test Question")
                 .content("This is a test question content.")
-                .username(principal)
+                .username(user.getUsername())
                 .bookId(book.getId())
                 .teamSpaceId(teamSpace.getId())
                 .build();
@@ -168,13 +161,13 @@ class QuestionServiceTest {
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
                 .title("Updated Title")
                 .content("Updated Content")
-                .username(principal)  // Principal 객체 사용
+                .username(user.getUsername())
                 .bookId(book.getId())
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
         // When
-        QnaBoardResponseDTO updatedBoard = questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO, principal);
+        QnaBoardResponseDTO updatedBoard = questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO);
 
         // Then
         assertNotNull(updatedBoard);
@@ -196,20 +189,17 @@ class QuestionServiceTest {
                 .address("Other Address")
                 .build());
 
-        Principal otherPrincipal = mock(Principal.class);
-        when(otherPrincipal.getName()).thenReturn(otherUser.getUsername());
-
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
                 .title("Updated Title")
                 .content("Updated Content")
-                .username(otherPrincipal)  // 다른 사용자 ID로 설정
+                .username(otherUser.getUsername()) // 다른 사용자 ID
                 .bookId(book.getId())
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
         // When & Then: UnauthorizedException이 발생해야 함
         UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-            questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO, otherPrincipal);
+            questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO);
         });
 
         assertEquals("게시글 수정 권한이 없습니다.", exception.getMessage());
@@ -224,14 +214,14 @@ class QuestionServiceTest {
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
                 .title("Updated Title")
                 .content("Updated Content")
-                .username(principal)  // Principal 객체 사용
+                .username(user.getUsername())
                 .bookId(book.getId())
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
         // When & Then: ResourceNotFoundException이 발생해야 함
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            questionService.updateQuestion(nonExistingId, qnaRequestDTO, principal);
+            questionService.updateQuestion(nonExistingId, qnaRequestDTO);
         });
 
         assertEquals("해당 게시물을 찾을 수 없습니다: " + nonExistingId, exception.getMessage());
@@ -251,7 +241,7 @@ class QuestionServiceTest {
                         .build());
 
         // When
-        questionService.deleteQuestion(board.getId(), principal);
+        questionService.deleteQuestion(board.getId(), user.getUsername());
 
         // Then
         assertFalse(questionRepository.findById(board.getId()).isPresent());
@@ -271,12 +261,9 @@ class QuestionServiceTest {
                 .address("Other Address")
                 .build());
 
-        Principal otherPrincipal = mock(Principal.class);
-        when(otherPrincipal.getName()).thenReturn(otherUser.getUsername());
-
-
+        // When & Then: UnauthorizedException이 발생해야 함
         UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-            questionService.deleteQuestion(existingBoard.getId(), otherPrincipal);
+            questionService.deleteQuestion(existingBoard.getId(), otherUser.getUsername());
         });
 
         assertEquals("게시글 삭제 권한이 없습니다.", exception.getMessage());
