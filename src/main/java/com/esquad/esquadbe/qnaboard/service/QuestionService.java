@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -116,15 +118,16 @@ public class QuestionService {
     }
 
     @Transactional
-    public QnaBoardResponseDTO updateQuestion(Long id, QnaRequestDTO qnaForm) {
+    public QnaBoardResponseDTO updateQuestion(Long id, QnaRequestDTO qnaForm, Principal principal) {
         BookQnaBoard existBoard = questionRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("[ResourceNotFoundException] questionId: {}", id);
                     return new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id);
                 });
 
-        if (!existBoard.getWriter().getUsername().equals(qnaForm.username())) {
-            log.error("[UnauthorizedException] user: {} does not have permission to update questionId: {}", qnaForm.username(), id);
+
+        if (!existBoard.getWriter().getUsername().equals(principal.getName())) {
+            log.error("[UnauthorizedException] user: {} does not have permission to update questionId: {}", principal.getName(), id);
             throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
         }
 
@@ -140,26 +143,20 @@ public class QuestionService {
                 .likes(existBoard.getLikes())
                 .build();
 
-        log.info("[updateQuestion] questionId: {} updated by user: {}", id, qnaForm.username());
+        log.info("[updateQuestion] questionId: {} updated by user: {}", id, principal.getName());
         return QnaBoardResponseDTO.from(questionRepository.save(updatedBoard));
     }
 
     @Transactional
-    public void deleteQuestion(Long questionId, String username) {
-        User user = getUser(username);
-
+    public void deleteQuestion(Long questionId, Principal principal) {
         BookQnaBoard question = questionRepository.findById(questionId)
-                .orElseThrow(() -> {
-                    log.error("[ResourceNotFoundException] questionId: {}", questionId);
-                    return new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + questionId);
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + questionId));
 
-        if (!question.getWriter().getUsername().equals(username)) {
-            log.error("[UnauthorizedException] user: {} does not have permission to delete questionId: {}", username, questionId);
+
+        if (!question.getWriter().getUsername().equals(principal.getName())) {
             throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
         }
 
         questionRepository.delete(question);
-        log.info("[deleteQuestion] questionId: {} deleted by user: {}", questionId, username);
     }
 }
