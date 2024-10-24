@@ -1,55 +1,62 @@
 package com.esquad.esquadbe.qnaboard.controller;
 
-import com.esquad.esquadbe.qnaboard.dto.CommentDTO;
+import com.esquad.esquadbe.qnaboard.dto.CommentResponseDTO;
 import com.esquad.esquadbe.qnaboard.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api/questions/{boardId}/comments")
 public class CommentController {
 
     private final CommentService commentService;
 
-    // 댓글 생성
     @PostMapping
-    public ResponseEntity<CommentDTO> createComment(
-            @RequestParam("boardId") Long boardId,
-            @RequestParam("writerId") Long writerId,
-            @RequestParam("content") String content,
-            @RequestParam("replyFlag") boolean replyFlag) {
-        CommentDTO createdComment = commentService.createComment(boardId, writerId, content, replyFlag);
-        return ResponseEntity.ok(createdComment);
+    public ResponseEntity<String> createComment(@PathVariable Long boardId,
+                                                @RequestParam String content,
+                                                @RequestParam boolean replyFlag,
+                                                Principal principal) {
+
+
+        CommentResponseDTO createdComment = commentService.createComment(boardId, content, replyFlag, principal.getName());
+
+        String responseMessage = String.format("게시글 %d에 댓글 %d이(가) 생성되었습니다.", boardId, createdComment.getId());
+
+        return ResponseEntity.ok(responseMessage);
     }
 
-    // 댓글 수정
-    @PutMapping("/{commentId}")
-    public ResponseEntity<CommentDTO> updateComment(
-            @PathVariable Long commentId,
-            @RequestParam("writerId") Long writerId,
-            @RequestParam("content") String content) {
-        CommentDTO updatedComment = commentService.updateComment(commentId, writerId, content);
-        return ResponseEntity.ok(updatedComment);
-    }
-
-    // 댓글 삭제
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(
-            @PathVariable Long commentId,
-            @RequestParam("writerId") Long writerId) {
-        commentService.deleteComment(commentId, writerId);
-        return ResponseEntity.noContent().build();
-    }
-
-    // 댓글 조회
     @GetMapping
-    public ResponseEntity<List<CommentDTO>> getCommentsByBoardId(@RequestParam("boardId") Long boardId) {
-        List<CommentDTO> comments = commentService.getCommentsByBoardId(boardId);
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByBoard(@PathVariable Long boardId) {
+
+        List<CommentResponseDTO> comments = commentService.getCommentsByBoardId(boardId);
         return ResponseEntity.ok(comments);
     }
-}
 
+    @PutMapping("/{commentId}")
+    public ResponseEntity<String> updateComment(@PathVariable Long boardId,
+                                                @PathVariable Long commentId,
+                                                @RequestParam String content,
+                                                Principal principal) {
+
+        CommentResponseDTO updatedComment = commentService.updateComment(commentId, principal.getName(), content);
+
+        String responseMessage = String.format("게시글 %d의 댓글 %d이(가) 수정되었습니다.", boardId, updatedComment.getId());
+        return ResponseEntity.ok(responseMessage);
+    }
+
+    @DeleteMapping("/{commentId}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long boardId,
+                                                @PathVariable Long commentId,
+                                                Principal principal) {
+
+        commentService.deleteComment(commentId, principal.getName());
+
+        String responseMessage = String.format("게시글 %d의 댓글 %d이(가) 삭제되었습니다.", boardId, commentId);
+        return ResponseEntity.ok(responseMessage);
+    }
+}
