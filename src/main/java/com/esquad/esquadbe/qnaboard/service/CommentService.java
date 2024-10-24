@@ -1,14 +1,16 @@
 package com.esquad.esquadbe.qnaboard.service;
 
-
-import com.esquad.esquadbe.qnaboard.dto.CommentDTO;
+import com.esquad.esquadbe.qnaboard.dto.CommentRequestDTO;
+import com.esquad.esquadbe.qnaboard.dto.CommentResponseDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaReply;
-import com.esquad.esquadbe.qnaboard.exception.ResourceNotFoundException;
-import com.esquad.esquadbe.qnaboard.exception.UnauthorizedException;
+import com.esquad.esquadbe.qnaboard.exception.CommentNotFoundException;
+import com.esquad.esquadbe.qnaboard.exception.QuestionNotFoundException;
 import com.esquad.esquadbe.qnaboard.repository.CommentRepository;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserNotFoundException;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,76 +19,74 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-@Transactional
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class CommentService {
 
     private final CommentRepository commentRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    
+    @Transactional
+    public CommentResponseDTO createComment(Long boardId, CommentRequestDTO requestDTO, String username) {
 
+        User user = userRepository.findById(Long.parseLong(username))
+                .orElseThrow(UserNotFoundException::new);
 
-    public CommentDTO createComment(Long boardId, Long writerId, String content, boolean replyFlag) {
         BookQnaBoard board = questionRepository.findById(boardId)
-                .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + boardId));
-        User writer = userRepository.findById(writerId)
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다: " + writerId));
+                .orElseThrow(QuestionNotFoundException::new);
 
-        BookQnaReply reply = BookQnaReply.builder()
-                .board(board)
-                .writer(writer)
-                .content(content)
-                .likes(0)
-                .replyFlag(replyFlag)
-                .depth(0)
-                .orderNo(0)
-                .deletedFlag(false)
-                .build();
+        BookQnaReply newComment = requestDTO.toEntity(user, board);
+        BookQnaReply savedComment = commentRepository.save(newComment);
 
-        BookQnaReply savedReply = commentRepository.save(reply);
-        return CommentDTO.from(savedReply);
+        return CommentResponseDTO.from(savedComment);
     }
 
+    @Transactional
+    public CommentResponseDTO updateComment(Long commentId, CommentRequestDTO requestDTO, String username) {
 
-    public CommentDTO updateComment(Long commentId, Long writerId, String content) {
-        BookQnaReply reply = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다: " + commentId));
+        User user = userRepository.findById(Long.parseLong(username))
+                .orElseThrow(UserNotFoundException::new);
 
-        if (!reply.getWriter().getId().equals(writerId)) {
-            throw new UnauthorizedException("댓글 수정 권한이 없습니다.");
+
+        BookQnaReply comment = commentRepository.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
+
+        if (!comment.getWriter().getId().equals(user.getId())) {
+            throw new UserUsernameException();
         }
 
-        reply.setContent(content);
-        reply.setModifiedAt(java.time.LocalDateTime.now());
+        comment.setContent(requestDTO.content());
+        comment.setReplyFlag(requestDTO.replyFlag());
 
-        BookQnaReply updatedReply = commentRepository.save(reply);
-        return CommentDTO.from(updatedReply);
+        return CommentResponseDTO.from(comment);
     }
 
 
-    public void deleteComment(Long commentId, Long writerId) {
-        BookQnaReply reply = commentRepository.findById(commentId)
-                .orElseThrow(() -> new ResourceNotFoundException("댓글을 찾을 수 없습니다: " + commentId));
+    @Transactional
+    public void deleteComment(Long commentId, String username) {
 
-        if (!reply.getWriter().getId().equals(writerId)) {
-            throw new UnauthorizedException("댓글 삭제 권한이 없습니다.");
+        User user = userRepository.findById(Long.parseLong(username))
+                .orElseThrow(UserNotFoundException::new);
+
+
+        BookQnaReply comment = commentRepository.findById(commentId)
+                .orElseThrow(CommentNotFoundException::new);
+
+        if (!comment.getWriter().getId().equals(user.getId())) {
+            throw new UserUsernameException();
         }
 
-
-        commentRepository.delete(reply);
+        commentRepository.delete(comment);
     }
 
+    public List<CommentResponseDTO> getCommentsByBoardId(Long boardId) {
 
-    public List<CommentDTO> getCommentsByBoardId(Long boardId) {
         BookQnaBoard board = questionRepository.findById(boardId)
-                .orElseThrow(() -> new ResourceNotFoundException("게시글을 찾을 수 없습니다: " + boardId));
+                .orElseThrow(QuestionNotFoundException::new);
 
-        List<BookQnaReply> replies = commentRepository.findByBoard(board);
-
-
-        return replies.stream().map(CommentDTO::from).collect(Collectors.toList());
+        return commentRepository.findByBoard(board).stream()
+                .map(CommentResponseDTO::from)
+                .collect(Collectors.toList());
     }
 }
-
