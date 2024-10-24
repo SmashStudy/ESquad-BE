@@ -1,197 +1,275 @@
 package com.esquad.esquadbe.qnaboard.service;
 
-import com.esquad.esquadbe.exception.ResourceNotFoundException;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.dto.QnaRequestDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
-import com.esquad.esquadbe.qnaboard.entity.BookQnaLike;
-import com.esquad.esquadbe.qnaboard.repository.BookQnaLikeRepository;
+import com.esquad.esquadbe.qnaboard.exception.QuestionNotFoundException;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
-import com.esquad.esquadbe.storage.entity.TargetType;
-import com.esquad.esquadbe.storage.service.S3FileService;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserErrorCode;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
-public class QuestionServiceTest {
+@Transactional
+class QuestionServiceTest {
 
-    @Mock
-    private QuestionRepository questionRepository;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @Mock
-    private BookQnaLikeRepository likeRepository;
-
-    @Mock
-    private BookRepository bookRepository;
-
-    @Mock
-    private TeamSpaceRepository teamSpaceRepository;
-
-    @Mock
-    private S3FileService s3FileService;
-
-    @Mock
-    private MultipartFile file;
-
-    @InjectMocks
+    @Autowired
     private QuestionService questionService;
 
+    @Autowired
+    private QuestionRepository questionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private TeamSpaceRepository teamSpaceRepository;
+
+    private BookQnaBoard existingBoard;
     private User user;
     private Book book;
-    private BookQnaBoard bookQnaBoard;
     private TeamSpace teamSpace;
 
     @BeforeEach
-    public void setUp() {
-        user = User.builder()
-                .id(1L)
-                .username("testUser")
+    void setUp() {
+
+        user = userRepository.save(User.builder()
+                .username("testUser1")
+                .nickname("Test Nickname")
+                .password("password")
                 .email("test@example.com")
-                .build();
+                .phoneNumber("01012345678")
+                .birthDay(LocalDate.of(1990, 1, 1))
+                .address("Test Address")
+                .build());
 
-        book = Book.builder()
-                .id(1L)
+
+        book = bookRepository.save(Book.builder()
                 .title("Test Book")
+                .imgPath("test/path/to/image.jpg")
                 .author("Test Author")
-                .build();
+                .publisher("Test Publisher")
+                .pubDate("20200101")
+                .isbn("1234567890123")
+                .description("Test Description")
+                .build());
 
-        teamSpace = TeamSpace.builder()
-                .id(1L)
-                .teamName("Test Team")
-                .build();
 
-        bookQnaBoard = BookQnaBoard.builder()
-                .id(1L)
-                .title("Test Title")
-                .content("Test Content")
+        teamSpace = teamSpaceRepository.save(TeamSpace.builder()
+                .teamName("Test TeamSpace")
+                .description("This is a test team space.")
+                .build());
+
+
+        existingBoard = questionRepository.save(BookQnaBoard.builder()
+                .title("Old Title")
+                .content("Old Content")
                 .writer(user)
                 .book(book)
                 .teamSpace(teamSpace)
                 .likes(0)
+                .build());
+    }
+
+    @Test
+    @DisplayName("게시글 생성")
+    void createQuestionTest() {
+        // Given
+        QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
+                .title("Test Question")
+                .content("This is a test question content.")
+                .username(user.getUsername())
+                .bookId(book.getId())
+                .teamSpaceId(teamSpace.getId())
                 .build();
 
-        bookQnaBoard.setCreatedAt(LocalDateTime.now());
-        bookQnaBoard.setModifiedAt(LocalDateTime.now());
+        // When
+        QnaBoardResponseDTO createdQuestion = questionService.createQuestion(qnaRequestDTO, null);
+
+        // Then
+        assertNotNull(createdQuestion);
+        assertEquals("Test Question", createdQuestion.getTitle());
+        assertEquals("This is a test question content.", createdQuestion.getContent());
+        assertEquals(user.getNickname(), createdQuestion.getWriterName());
     }
 
     @Test
-    public void testGetQuestionById() {
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(bookQnaBoard));
+    @DisplayName("게시글번호로 게시글 조회")
+    void getQuestionByIdTest() {
+        // Given
+        BookQnaBoard board = questionRepository.save(
+                BookQnaBoard.builder()
+                        .title("Test Title")
+                        .content("Test Content")
+                        .writer(user)
+                        .book(book)
+                        .teamSpace(teamSpace)
+                        .likes(0)
+                        .build());
 
-        QnaBoardResponseDTO result = questionService.getQuestionById(1L);
+        // When
+        QnaBoardResponseDTO result = questionService.getQuestionById(board.getId());
 
+        // Then
         assertNotNull(result);
-        assertEquals("Test Title", result.getTitle());
-        assertNotNull(result.getCreatedAt());
-        verify(questionRepository, times(1)).findById(1L);
+        assertEquals(board.getTitle(), result.getTitle());
+        assertEquals(board.getContent(), result.getContent());
+        assertEquals(board.getWriter().getNickname(), result.getWriterName());
     }
 
     @Test
-    public void testCreateQuestion() {
-        QnaRequestDTO qnaRequestDTO = new QnaRequestDTO(1L, "Test Title", "Test Content", 1L, 1L, 1L);
+    @DisplayName("게시글 제목으로 조회")
+    void getQuestionsByTitleTest() {
+        // Given
+        questionRepository.save(
+                BookQnaBoard.builder()
+                        .title("Searchable Title")
+                        .content("Test Content")
+                        .writer(user)
+                        .book(book)
+                        .teamSpace(teamSpace)
+                        .likes(0)
+                        .build());
 
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        when(teamSpaceRepository.findById(1L)).thenReturn(Optional.of(teamSpace));
-        when(questionRepository.save(Mockito.any(BookQnaBoard.class))).thenReturn(bookQnaBoard);
+        // When
+        var resultPage = questionService.getQuestionsByTitle("Searchable", 0, 10);
 
-        doReturn(null).when(s3FileService).uploadFile(Mockito.any(MultipartFile.class), Mockito.anyLong(), Mockito.any(TargetType.class), Mockito.anyLong());
-
-        QnaBoardResponseDTO result = questionService.createQuestion(qnaRequestDTO, file);
-
-        assertNotNull(result);
-        assertEquals("Test Title", result.getTitle());
-        verify(questionRepository, times(1)).save(Mockito.any(BookQnaBoard.class));
+        // Then
+        assertFalse(resultPage.isEmpty());
+        assertEquals(1, resultPage.getTotalElements());
+        assertEquals("Searchable Title", resultPage.getContent().get(0).getTitle());
     }
 
     @Test
-    public void testUpdateQuestion() {
-        // 기존 BookQnaBoard의 Mock 설정
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(bookQnaBoard));  // bookQnaBoard가 null이 아니도록 설정
+    @DisplayName("게시글의 작성자가 게시글을 업데이트")
+    void updateQuestion_Success() {
+        // Given
+        QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
+                .title("Updated Title")
+                .content("Updated Content")
+                .username(user.getUsername())
+                .bookId(book.getId())
+                .teamSpaceId(teamSpace.getId())
+                .build();
 
-        // User와 Book Repository에서도 Mock 설정
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
+        // When
+        QnaBoardResponseDTO updatedBoard = questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO);
 
-        // 수정할 요청 DTO
-        QnaRequestDTO qnaRequestDTO = new QnaRequestDTO(1L, "Updated Title", "Updated Content", 1L, 1L, 1L);
-
-        // 기존 bookQnaBoard가 null이 아니도록 ensure
-        assertNotNull(bookQnaBoard);
-
-        // 업데이트 메서드 실행 (id를 추가로 전달)
-        QnaBoardResponseDTO result = questionService.updateQuestion(1L, qnaRequestDTO);
-
-        // 업데이트가 성공적으로 되었는지 확인
-        assertNotNull(result);
-        assertEquals("Updated Title", result.getTitle());
-        assertEquals("Updated Content", result.getContent());
-
-        // bookQnaBoard가 저장되었는지 확인
-        verify(questionRepository, times(1)).save(Mockito.any(BookQnaBoard.class));
+        // Then
+        assertNotNull(updatedBoard);
+        assertEquals("Updated Title", updatedBoard.getTitle());
+        assertEquals("Updated Content", updatedBoard.getContent());
     }
 
     @Test
-    public void testBoardLike_AddLike() {
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(bookQnaBoard));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(likeRepository.findByUserAndBoard(user, bookQnaBoard)).thenReturn(null);
+    @DisplayName("작성자가 아닌 사용자가 게시글을 업데이트하려고 할 때 예외 발생")
+    void updateQuestion_Unauthorized() {
+        // Given: 다른 유저가 게시글을 수정하려고 시도
+        User otherUser = userRepository.save(User.builder()
+                .username("otherUser")
+                .nickname("Other Nickname")
+                .password("password")
+                .email("other@example.com")
+                .phoneNumber("01098765432")
+                .birthDay(LocalDate.of(1995, 5, 5))
+                .address("Other Address")
+                .build());
 
-        String result = questionService.boardLike(1L, 1L);
+        QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
+                .title("Updated Title")
+                .content("Updated Content")
+                .username(otherUser.getUsername()) // 다른 사용자 ID
+                .bookId(book.getId())
+                .teamSpaceId(teamSpace.getId())
+                .build();
 
-        assertEquals("좋아요 추가", result);
-        verify(likeRepository, times(1)).save(Mockito.any(BookQnaLike.class));
-        verify(questionRepository, times(1)).save(Mockito.any(BookQnaBoard.class));
+        // When & Then: UserUsernameException이 발생해야 함
+        UserUsernameException exception = assertThrows(UserUsernameException.class, () -> {
+            questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO);
+        });
+
+        assertEquals(UserErrorCode.USER_NOT_FOUND_ERROR.getMessage(), exception.getMessage());
     }
 
     @Test
-    public void testBoardLike_RemoveLike() {
-        BookQnaLike like = new BookQnaLike(1L, user, bookQnaBoard);
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(bookQnaBoard));
-        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(likeRepository.findByUserAndBoard(user, bookQnaBoard)).thenReturn(like);
+    @DisplayName("존재하지 않는 게시글을 업데이트하려고 할 때 예외 발생")
+    void updateQuestion_NotFound() {
+        // Given: 존재하지 않는 게시글 ID
+        Long nonExistingId = 999L;
 
-        String result = questionService.boardLike(1L, 1L);
+        QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
+                .title("Updated Title")
+                .content("Updated Content")
+                .username(user.getUsername())
+                .bookId(book.getId())
+                .teamSpaceId(teamSpace.getId())
+                .build();
 
-        assertEquals("좋아요 취소", result);
-        verify(likeRepository, times(1)).delete(like);
-        verify(questionRepository, times(1)).save(Mockito.any(BookQnaBoard.class));
+        // When & Then: QuestionNotFoundException이 발생해야 함
+        QuestionNotFoundException exception = assertThrows(QuestionNotFoundException.class, () -> {
+            questionService.updateQuestion(nonExistingId, qnaRequestDTO);
+        });
+
+        assertEquals("Question doesn't exist", exception.getMessage());
     }
 
     @Test
-    public void testDeleteQuestion() {
-        when(questionRepository.findById(1L)).thenReturn(Optional.of(bookQnaBoard));
+    void deleteQuestionTest() {
+        // Given
+        BookQnaBoard board = questionRepository.save(
+                BookQnaBoard.builder()
+                        .title("Title to Delete")
+                        .content("Content to Delete")
+                        .writer(user)
+                        .book(book)
+                        .teamSpace(teamSpace)
+                        .likes(0)
+                        .build());
 
-        questionService.deleteQuestion(1L);
+        // When
+        questionService.deleteQuestion(board.getId(), String.valueOf(user.getId()));
 
-        verify(questionRepository, times(1)).delete(bookQnaBoard);
+        // Then
+        assertFalse(questionRepository.findById(board.getId()).isPresent());
     }
 
     @Test
-    public void testGetQuestionById_NotFound() {
-        when(questionRepository.findById(1L)).thenReturn(Optional.empty());
+    @DisplayName("작성자가 아닌 사용자가 게시글을 삭제하려고 할 때 예외 발생")
+    void deleteQuestion_Unauthorized() {
+        // Given: 다른 유저가 게시글을 삭제하려고 시도
+        User otherUser = userRepository.save(User.builder()
+                .username("otherUser")
+                .nickname("Other Nickname")
+                .password("password")
+                .email("other@example.com")
+                .phoneNumber("01098765432")
+                .birthDay(LocalDate.of(1995, 5, 5))
+                .address("Other Address")
+                .build());
 
-        assertThrows(ResourceNotFoundException.class, () -> questionService.getQuestionById(1L));
-        verify(questionRepository, times(1)).findById(1L);
+        // When & Then: UserUsernameException이 발생해야 함
+        UserUsernameException exception = assertThrows(UserUsernameException.class, () -> {
+            questionService.deleteQuestion(existingBoard.getId(), String.valueOf(otherUser.getId()));
+        });
+
+        assertEquals(UserErrorCode.USER_NOT_FOUND_ERROR.getMessage(), exception.getMessage());
     }
 }
