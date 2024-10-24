@@ -3,14 +3,14 @@ package com.esquad.esquadbe.studypage.service;
 import com.esquad.esquadbe.studypage.dto.StudyInfoDto;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
-import com.esquad.esquadbe.studypage.exception.StudyPageException;
+import com.esquad.esquadbe.studypage.exception.BookJsonProcessingException;
+import com.esquad.esquadbe.studypage.exception.StudyPageNameNotEqualException;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.studypage.repository.StudyPageRepository;
 import com.esquad.esquadbe.studypage.repository.StudyPageUserRepository; // 추가
 import com.esquad.esquadbe.studypage.repository.StudyRemindRepository; // 추가
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.repository.TeamSpaceRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.esquad.esquadbe.team.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ public class StudyPageDeleteServiceTest {
     private StudyPageService studyPageService;
 
     @Mock
-    private TeamSpaceRepository teamSpaceRepository;
+    private TeamRepository teamRepository;
 
     @Mock
     private BookRepository bookRepository;
@@ -111,7 +111,7 @@ public class StudyPageDeleteServiceTest {
         when(studyPageRepository.findById(studyPageId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> {
+        assertThrows(BookJsonProcessingException.class, () -> {
             studyPageService.deleteStudyPage(studyPageId, studyPageName);
         });
     }
@@ -127,7 +127,7 @@ public class StudyPageDeleteServiceTest {
         when(studyPageRepository.findById(studyPageId)).thenReturn(Optional.of(studyPage));
 
         // When & Then
-        assertThrows(StudyPageException.class, () -> {
+        assertThrows(StudyPageNameNotEqualException.class, () -> {
             studyPageService.deleteStudyPage(studyPageId, incorrectName);
         });
     }

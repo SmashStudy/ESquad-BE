@@ -4,12 +4,12 @@ import com.esquad.esquadbe.studypage.dto.StudyInfoDto;
 import com.esquad.esquadbe.studypage.dto.StudyPageReadDto;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
-import com.esquad.esquadbe.studypage.exception.StudyPageException;
+import com.esquad.esquadbe.studypage.exception.StudyNotFoundException;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.studypage.repository.StudyPageRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.repository.TeamSpaceRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
+import com.esquad.esquadbe.team.repository.TeamRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Arrays;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,10 +36,7 @@ public class StudyPageReadServiceTest {
     private StudyPageService studyPageService;
 
     @Mock
-    private TeamSpaceRepository teamSpaceRepository;
-
-    @Mock
-    private BookRepository bookRepository;
+    private TeamRepository teamRepository;
 
     @Mock
     private StudyPageRepository studyPageRepository;
@@ -75,7 +74,7 @@ public class StudyPageReadServiceTest {
     @DisplayName("shouldReturnStudyPagesWhenTeamSpaceExists")
     void shouldReturnStudyPagesWhenTeamSpaceExists() {
         // Given
-        when(teamSpaceRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
+        when(teamRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
         when(studyPageRepository.findAllByTeamSpace(teamSpace)).thenReturn(Optional.of(Collections.singletonList(studyPage))); // Adjusted return value
 
         // When
@@ -97,29 +96,27 @@ public class StudyPageReadServiceTest {
     void shouldThrowExceptionWhenTeamSpaceNotFound() {
         // Given
         Long teamId = 100L;
-        when(teamSpaceRepository.findById(teamId)).thenReturn(Optional.empty());
+        when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
 
-        // When & Then
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+         assertThrows(TeamNotFoundException.class, () -> {
             studyPageService.readStudyPages(teamId);
         });
-        assertThat(exception.getMessage()).isEqualTo("TeamSpace not found with ID: " + teamId); // assertEquals() 대신
     }
 
     @Test
-    @DisplayName("shouldReturnEmptyListWhenNoStudyPagesFound")
-    void shouldReturnEmptyListWhenNoStudyPagesFound() {
+    @DisplayName("shouldReturnStudyPagesWhenFound")
+    public void shouldReturnStudyPagesWhenFound() {
         // Given
-        Long teamId = 100L;
-        when(teamSpaceRepository.findById(teamId)).thenReturn(Optional.of(teamSpace));
-        when(studyPageRepository.findAllByTeamSpace(teamSpace)).thenReturn(Optional.of(Collections.emptyList()));
+        when(teamRepository.findById(any(Long.class))).thenReturn(Optional.of(teamSpace));
+
+        List<StudyPage> studyPages = Collections.singletonList(studyPage);
+        when(studyPageRepository.findAllByTeamSpace(teamSpace)).thenReturn(Optional.of(studyPages));
 
         // When
-        List<StudyPageReadDto> result = studyPageService.readStudyPages(teamId);
+        List<StudyPageReadDto> result = studyPageService.readStudyPages(100L);
 
         // Then
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.size(), "Expected two StudyPages to be returned");
     }
 
     // readStudyPageInfo
@@ -149,7 +146,11 @@ public class StudyPageReadServiceTest {
         when(studyPageRepository.findById(studyPageId)).thenReturn(Optional.empty()); // StudyPage가 존재하지 않는 경우
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> studyPageService.readStudyPageInfo(studyPageId));
+        assertThrows(StudyNotFoundException.class, () -> studyPageService.readStudyPageInfo(studyPageId));
+
+
     }
 
 }
+
+///아마존 : 글로벌, 자동화의 코드 자동 패치

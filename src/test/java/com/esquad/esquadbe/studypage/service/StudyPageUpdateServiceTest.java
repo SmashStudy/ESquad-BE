@@ -2,6 +2,7 @@ package com.esquad.esquadbe.studypage.service;
 
 import com.esquad.esquadbe.studypage.dto.UpdateStudyPageRequestDto;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
+import com.esquad.esquadbe.studypage.exception.StudyNotFoundException;
 import com.esquad.esquadbe.studypage.repository.StudyPageRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -66,7 +67,7 @@ public class StudyPageUpdateServiceTest {
         when(studyPageRepository.findById(studyPageId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> {
+        assertThrows(StudyNotFoundException.class, () -> {
             studyPageService.updateStudyPage(studyPageId, dto);
         });
     }

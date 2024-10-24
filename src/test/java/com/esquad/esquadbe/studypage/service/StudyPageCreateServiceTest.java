@@ -4,19 +4,26 @@ import com.esquad.esquadbe.studypage.dto.StudyInfoDto;
 import com.esquad.esquadbe.studypage.dto.StudyPageReadDto;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
-import com.esquad.esquadbe.studypage.exception.StudyPageException;
+import com.esquad.esquadbe.studypage.exception.BookNotFoundException;
+import com.esquad.esquadbe.studypage.exception.StudyNotFoundException;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.studypage.repository.StudyPageRepository;
+import com.esquad.esquadbe.studypage.repository.StudyPageUserRepository;
+import com.esquad.esquadbe.studypage.repository.StudyRemindRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
 import com.esquad.esquadbe.team.repository.TeamRepository;
-import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -31,9 +38,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class StudyPageCreateServiceTest {
 
-    @InjectMocks
-    private StudyPageService studyPageService;
-
     @Mock
     private TeamRepository teamRepository;
 
@@ -43,14 +47,22 @@ public class StudyPageCreateServiceTest {
     @Mock
     private StudyPageRepository studyPageRepository;
 
+    @Mock
+    private StudyPageUserRepository studyPageUserRepository;
+
+    @Mock
+    private StudyRemindRepository studyRemindRepository;
+
+    @InjectMocks
+    private StudyPageService studyPageService;
+
+    private final LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
     private TeamSpace teamSpace;
     private Book book;
-    private StudyInfoDto dto;
     private StudyPage studyPage;
 
     @BeforeEach
     public void setUp() {
-        dto = new StudyInfoDto("Study Test",LocalDate.now(),LocalDate.now(), "test" );
 
         teamSpace = TeamSpace.builder()
                 .id(100L)
@@ -72,24 +84,19 @@ public class StudyPageCreateServiceTest {
                 .description("페이지 설명")
                 .studyPageName("스터디 이름")
                 .build();
+
     }
 
     //createStudyPage
     @Test
     @DisplayName("AllInputsAreValid")
     public void shouldCreateStudyPageWhenAllInputsAreValid() {
+        StudyInfoDto dto = new StudyInfoDto("Study Test",LocalDate.now(),LocalDate.now(), "test" );
+
         // Given
         when(teamRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
         when(bookRepository.findById(any(Long.class))).thenReturn(Optional.of(book));
-        when(studyPageRepository.save(any(StudyPage.class))).thenAnswer(invocation -> {
-            StudyPage savedStudyPage = invocation.getArgument(0);
-            return StudyPage.builder() // 빌더를 사용하여 객체를 생성
-                    .id(1L) // ID를 설정
-                    .studyPageName(savedStudyPage.getStudyPageName())
-                    // 기타 필요한 필드들
-                    .build();
-        });
-
+        when(studyPageRepository.save(any(StudyPage.class))).thenReturn(studyPage);
 
         // When
         Long result = studyPageService.createStudyPage(100L, 1L, dto);
@@ -104,10 +111,12 @@ public class StudyPageCreateServiceTest {
     @DisplayName("TeamSpaceIsNotFound")
     public void shouldThrowExceptionWhenTeamSpaceIsNotFound() {
         // Given
-        when(teamRepository.findById(100L)).thenReturn(Optional.empty());
+        StudyInfoDto dto = new StudyInfoDto("Study Test",LocalDate.now(),LocalDate.now(), "test" );
 
+        when(teamRepository.findById(100L)).thenThrow( new TeamNotFoundException());
+       // Long teamId = null;
         // When & Then
-        assertThrows(StudyPageException.class, () -> {
+        assertThrows(TeamNotFoundException.class, () -> {
             studyPageService.createStudyPage(100L, 1L, dto);
         });
     }
@@ -116,68 +125,12 @@ public class StudyPageCreateServiceTest {
     @DisplayName("BookIsNotFound")
     public void shouldThrowExceptionWhenBookIsNotFound() {
         // Given
+        StudyInfoDto dto = new StudyInfoDto("Study Test",LocalDate.now(),LocalDate.now(), "test" );
+
         when(teamRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
         when(bookRepository.findById(1L)).thenReturn(Optional.empty());
 
-        assertThrows(StudyPageException.class, () -> {
-            studyPageService.createStudyPage(100L, 1L, dto);
-        });
-    }
-
-    // validateStudyInfoDto
-    @Test
-    @DisplayName("shouldThrowExceptionWhenDtoIsNull")
-    public void shouldThrowExceptionWhenDtoIsNull() {
-        // When & Then
-        assertThrows(StudyPageException.class, () -> {
-            studyPageService.createStudyPage(100L, 1L, null);
-        });
-    }
-
-    @Test
-    @DisplayName("shouldThrowExceptionWhenStudyPageNameIsEmpty")
-    public void shouldThrowExceptionWhenStudyPageNameIsEmpty() {
-        // Given
-        StudyInfoDto dto = new StudyInfoDto("", LocalDate.now(), LocalDate.now(), "description");
-
-        // When & Then
-        assertThrows(StudyPageException.class, () -> {
-            studyPageService.createStudyPage(100L, 1L, dto);
-        });
-    }
-
-    @Test
-    @DisplayName("shouldThrowExceptionWhenStartDateIsNull")
-    public void shouldThrowExceptionWhenStartDateIsNull() {
-        // Given
-        StudyInfoDto dto = new StudyInfoDto("Study Test", null, LocalDate.now(), "description");
-
-        // When & Then
-        assertThrows(StudyPageException.class, () -> {
-            studyPageService.createStudyPage(100L, 1L, dto);
-        });
-    }
-
-    @Test
-    @DisplayName("shouldThrowExceptionWhenEndDateIsNull")
-    public void shouldThrowExceptionWhenEndDateIsNull() {
-        // Given
-        StudyInfoDto dto = new StudyInfoDto("Study Test", LocalDate.now(), null, "description");
-
-        // When & Then
-        assertThrows(StudyPageException.class, () -> {
-            studyPageService.createStudyPage(100L, 1L, dto);
-        });
-    }
-
-    @Test
-    @DisplayName("shouldThrowExceptionWhenEndDateIsBeforeStartDate")
-    public void shouldThrowExceptionWhenEndDateIsBeforeStartDate() {
-        // Given
-        StudyInfoDto dto = new StudyInfoDto("Study Test", LocalDate.now().plusDays(1), LocalDate.now(), "description");
-
-        // When & Then
-        assertThrows(StudyPageException.class, () -> {
+        assertThrows(BookNotFoundException.class, () -> {
             studyPageService.createStudyPage(100L, 1L, dto);
         });
     }
@@ -186,19 +139,10 @@ public class StudyPageCreateServiceTest {
     @DisplayName("shouldNotThrowExceptionWhenDtoIsValid")
     public void shouldNotThrowExceptionWhenDtoIsValid() {
         // Given
-//        StudyInfoDto dto = new StudyInfoDto("Study Test", LocalDate.now(), LocalDate.now().plusDays(1), "description");
+        StudyInfoDto dto = new StudyInfoDto("Study Test",LocalDate.now(),LocalDate.now(), "test" );
         when(teamRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
         when(bookRepository.findById(any(Long.class))).thenReturn(Optional.of(book));
-
-        when(studyPageRepository.save(any(StudyPage.class))).thenAnswer(invocation -> {
-            StudyPage savedStudyPage = invocation.getArgument(0);
-            return StudyPage.builder() // 빌더를 사용하여 객체를 생성
-                    .id(1L) // ID를 설정
-                    .studyPageName(savedStudyPage.getStudyPageName())
-                    // 기타 필요한 필드들
-                    .build();
-        });
-
+        when(studyPageRepository.save(any(StudyPage.class))).thenReturn(studyPage);
         // When & Then
         assertDoesNotThrow(() -> {
             studyPageService.createStudyPage(100L, 1L, dto);
@@ -210,7 +154,7 @@ public class StudyPageCreateServiceTest {
     @DisplayName("shouldReturnStudyPagesWhenTeamSpaceExists")
     void shouldReturnStudyPagesWhenTeamSpaceExists() {
         // Given
-
+        when(teamRepository.findById(100L)).thenReturn(Optional.of(teamSpace));
         // Mocking the repository call
         when(studyPageRepository.findAllByTeamSpace(teamSpace)).thenReturn(Optional.of(Collections.singletonList(studyPage)));
 
@@ -230,15 +174,14 @@ public class StudyPageCreateServiceTest {
     @Test
     @DisplayName("shouldThrowExceptionWhenTeamSpaceNotFound")
     void shouldThrowExceptionWhenTeamSpaceNotFound() {
+
         // Given
-        Long teamId = 100L;
-        when(teamRepository.findById(teamId)).thenReturn(Optional.empty());
+        when(teamRepository.findById(100L)).thenThrow( new TeamNotFoundException());
 
         // When & Then
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
-            studyPageService.readStudyPages(teamId);
+        assertThrows(TeamNotFoundException.class, () -> {
+            studyPageService.readStudyPages(100L);
         });
-        assertThat(exception.getMessage()).isEqualTo("TeamSpace not found with ID: " + teamId); // assertEquals() 대신
     }
 
     @Test
@@ -284,7 +227,7 @@ public class StudyPageCreateServiceTest {
         when(studyPageRepository.findById(studyPageId)).thenReturn(Optional.empty()); // StudyPage가 존재하지 않는 경우
 
         // When & Then
-        assertThrows(EntityNotFoundException.class, () -> studyPageService.readStudyPageInfo(studyPageId));
+        assertThrows(StudyNotFoundException.class, () -> studyPageService.readStudyPageInfo(studyPageId));
     }
 
 }

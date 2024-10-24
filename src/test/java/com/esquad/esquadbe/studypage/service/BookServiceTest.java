@@ -55,9 +55,8 @@ class BookServiceTest {
                 "네이버는 어떻게 일하는가 (네이버 그린팩토리는 24시간 멈추지 않는다)",
                 "https://search.shopping.naver.com/book/catalog/32455473672",
                 "https://shopping-phinf.pstatic.net/main_3245547/32455473672.20220527083840.jpg",
-                "신무경", "미래의창", "9788959895205",
-                "누구도 멈출 수 없는 포털의 지배자가 되기까지...",
-                "20180608", "0"
+                "신무경", "0", "미래의창", "9788959895205",
+                "누구도 멈출 수 없는 포털의 지배자가 되기까지...","20180608"
         );
         when(bookMappingService.mapToBookList(jsonResponse)).thenReturn(Collections.singletonList(expectedBook));
 
