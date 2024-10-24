@@ -3,7 +3,6 @@ package com.esquad.esquadbe.qnaboard.service;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.dto.QnaRequestDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
-import com.esquad.esquadbe.qnaboard.exception.BookNotFoundException;
 import com.esquad.esquadbe.qnaboard.exception.QuestionNotFoundException;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.studypage.entity.Book;
@@ -12,7 +11,6 @@ import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserErrorCode;
-import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,7 +50,7 @@ class QuestionServiceTest {
 
     @BeforeEach
     void setUp() {
-        // 유저 생성
+
         user = userRepository.save(User.builder()
                 .username("testUser1")
                 .nickname("Test Nickname")
@@ -63,7 +61,7 @@ class QuestionServiceTest {
                 .address("Test Address")
                 .build());
 
-        // 책(Book) 생성
+
         book = bookRepository.save(Book.builder()
                 .title("Test Book")
                 .imgPath("test/path/to/image.jpg")
@@ -74,13 +72,13 @@ class QuestionServiceTest {
                 .description("Test Description")
                 .build());
 
-        // 팀 스페이스(TeamSpace) 생성
+
         teamSpace = teamSpaceRepository.save(TeamSpace.builder()
                 .teamName("Test TeamSpace")
                 .description("This is a test team space.")
                 .build());
 
-        // 기존 게시글 생성
+
         existingBoard = questionRepository.save(BookQnaBoard.builder()
                 .title("Old Title")
                 .content("Old Content")
@@ -92,6 +90,7 @@ class QuestionServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 생성")
     void createQuestionTest() {
         // Given
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
@@ -113,6 +112,7 @@ class QuestionServiceTest {
     }
 
     @Test
+    @DisplayName("게시글번호로 게시글 조회")
     void getQuestionByIdTest() {
         // Given
         BookQnaBoard board = questionRepository.save(
@@ -136,6 +136,7 @@ class QuestionServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 제목으로 조회")
     void getQuestionsByTitleTest() {
         // Given
         questionRepository.save(
