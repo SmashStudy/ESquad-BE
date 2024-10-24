@@ -1,42 +1,37 @@
 package com.esquad.esquadbe.qnaboard.dto;
 
-
 import com.esquad.esquadbe.qnaboard.entity.BookQnaReply;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
 
-
-@Getter
-@Setter
 @Builder
-public class CommentDTO {
+@Getter
+public class CommentResponseDTO {
     private Long id;
     private Long boardId;
     private Long writerId;
     private String writerName;
     private String content;
     private Integer likes;
-    private String createdAt;
-    private String modifiedAt;
-    private boolean replyFlag;  // 대댓글 여부
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
+    private boolean replyFlag;
+    private boolean deletedFlag;
 
-    // 엔티티에서 DTO로 변환하는 메서드
-    public static CommentDTO from(BookQnaReply reply) {
-        return CommentDTO.builder()
+    public static CommentResponseDTO from(BookQnaReply reply) {
+        return CommentResponseDTO.builder()
                 .id(reply.getId())
                 .boardId(reply.getBoard().getId())
                 .writerId(reply.getWriter().getId())
                 .writerName(reply.getWriter().getNickname())
                 .content(reply.getContent())
                 .likes(reply.getLikes())
-                .createdAt(reply.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                .modifiedAt(reply.getModifiedAt() != null
-                        ? reply.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                        : null)
+                .createdAt(reply.getCreatedAt())
+                .modifiedAt(reply.getModifiedAt())
                 .replyFlag(reply.isReplyFlag())
+                .deletedFlag(reply.isDeletedFlag())
                 .build();
     }
 }

@@ -49,7 +49,4 @@ public class BookQnaReply extends BasicEntity {
 
     @Column(name = "DELETED_FLAG", columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean deletedFlag;
-
-//    @OneToMany(mappedBy = "parentReply", orphanRemoval = true)
-//    private List<BookQnaReply> childReplies;
 }

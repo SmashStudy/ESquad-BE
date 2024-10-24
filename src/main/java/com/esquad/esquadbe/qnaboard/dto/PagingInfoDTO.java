@@ -2,10 +2,8 @@ package com.esquad.esquadbe.qnaboard.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Builder
 public class PagingInfoDTO {
     private int totalPosts;      // 모든 글 개수
