@@ -3,8 +3,8 @@ package com.esquad.esquadbe.qnaboard.service;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.dto.QnaRequestDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
-import com.esquad.esquadbe.qnaboard.exception.ResourceNotFoundException;
-import com.esquad.esquadbe.qnaboard.exception.UnauthorizedException;
+import com.esquad.esquadbe.qnaboard.exception.BookNotFoundException;
+import com.esquad.esquadbe.qnaboard.exception.QuestionNotFoundException;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.storage.entity.TargetType;
 import com.esquad.esquadbe.storage.service.S3FileService;
@@ -12,8 +12,10 @@ import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserNotFoundException;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,17 +41,17 @@ public class QuestionService {
 
     private User getUser(String username) {
         return userRepository.findByUsername(username)
-                .orElseThrow(UserNotFoundException::new);  // 메시지 포함
+                .orElseThrow(UserNotFoundException::new);
     }
 
     private Book getBook(Long bookId) {
         return bookRepository.findById(bookId)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + bookId));
+                .orElseThrow(BookNotFoundException::new);
     }
 
     private TeamSpace getTeamspace(Long teamSpaceId) {
         return teamSpaceRepository.findById(teamSpaceId)
-                .orElseThrow(() -> new ResourceNotFoundException("TeamSpace not found with id: " + teamSpaceId));
+                .orElseThrow(TeamNotFoundException::new);
     }
 
     public Page<QnaBoardResponseDTO> getAllQuestions(int page, int size) {
@@ -60,7 +63,7 @@ public class QuestionService {
     public QnaBoardResponseDTO getQuestionById(Long id) {
         return questionRepository.findById(id)
                 .map(QnaBoardResponseDTO::from)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
+                .orElseThrow(QuestionNotFoundException::new);
     }
 
     @Transactional
@@ -73,7 +76,7 @@ public class QuestionService {
         BookQnaBoard savedQuestion = questionRepository.save(newBoard);
 
         if (file != null && !file.isEmpty()) {
-            s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, String.valueOf(qnaForm.username()));  // userId를 String으로 변환
+            s3FileService.uploadFile(file, savedQuestion.getId(), TargetType.QNA, String.valueOf(qnaForm.username()));
         }
 
         return QnaBoardResponseDTO.from(savedQuestion);
@@ -95,10 +98,10 @@ public class QuestionService {
     @Transactional
     public QnaBoardResponseDTO updateQuestion(Long id, QnaRequestDTO qnaForm) {
         BookQnaBoard existBoard = questionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + id));
+                .orElseThrow(QuestionNotFoundException::new);
 
         if (!existBoard.getWriter().getUsername().equals(qnaForm.username())) {
-            throw new UnauthorizedException("게시글 수정 권한이 없습니다.");
+            throw new UserUsernameException();
         }
 
         Book updatedBook = qnaForm.bookId() != null ? getBook(qnaForm.bookId()) : existBoard.getBook();
@@ -118,16 +121,14 @@ public class QuestionService {
 
     @Transactional
     public void deleteQuestion(Long questionId, String userId) {
-
-
         User user = userRepository.findById(Long.parseLong(userId))
-                .orElseThrow(() -> new ResourceNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+                .orElseThrow(UserNotFoundException::new);
 
         BookQnaBoard question = questionRepository.findById(questionId)
-                .orElseThrow(() -> new ResourceNotFoundException("해당 게시물을 찾을 수 없습니다: " + questionId));
+                .orElseThrow(QuestionNotFoundException::new);
 
         if (!question.getWriter().getUsername().equals(user.getUsername())) {
-            throw new UnauthorizedException("게시글 삭제 권한이 없습니다.");
+            throw new UserUsernameException();
         }
 
         questionRepository.delete(question);
