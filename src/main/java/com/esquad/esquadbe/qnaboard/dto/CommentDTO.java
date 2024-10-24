@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.format.DateTimeFormatter;
-
 
 @Getter
 @Setter
@@ -21,9 +19,8 @@ public class CommentDTO {
     private Integer likes;
     private String createdAt;
     private String modifiedAt;
-    private boolean replyFlag;  // 대댓글 여부
+    private boolean replyFlag;
 
-    // 엔티티에서 DTO로 변환하는 메서드
     public static CommentDTO from(BookQnaReply reply) {
         return CommentDTO.builder()
                 .id(reply.getId())
@@ -32,10 +29,6 @@ public class CommentDTO {
                 .writerName(reply.getWriter().getNickname())
                 .content(reply.getContent())
                 .likes(reply.getLikes())
-                .createdAt(reply.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                .modifiedAt(reply.getModifiedAt() != null
-                        ? reply.getModifiedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                        : null)
                 .replyFlag(reply.isReplyFlag())
                 .build();
     }
