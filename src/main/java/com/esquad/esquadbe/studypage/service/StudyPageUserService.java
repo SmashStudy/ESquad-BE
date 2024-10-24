@@ -11,15 +11,12 @@ import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.team.repository.TeamSpaceUserRepository;
 import com.esquad.esquadbe.team.exception.TeamNotFoundException;
 import com.esquad.esquadbe.user.entity.User;
-import com.esquad.esquadbe.user.repository.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
 @Service
 public class StudyPageUserService {
     private final StudyPageRepository studyPageRepository;
@@ -35,7 +32,7 @@ public class StudyPageUserService {
     }
 
     public void createStudyPageUser(Long teamId, Long studyPageId, List<Long> ids) {
-        TeamSpace teamSpace = teamRepository.findById(teamId).orElseThrow(TeamNotFoundException::new);;
+        TeamSpace teamSpace = teamRepository.findById(teamId).orElseThrow(TeamNotFoundException::new);
         StudyPage studyPage = studyPageRepository.findById(studyPageId).orElseThrow(StudyNotFoundException::new);
 
         List<TeamSpaceUser> allTeamUser = teamSpaceUserRepository.findAllByTeamSpace(teamSpace);

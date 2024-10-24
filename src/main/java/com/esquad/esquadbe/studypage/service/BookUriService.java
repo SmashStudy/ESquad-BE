@@ -2,7 +2,6 @@ package com.esquad.esquadbe.studypage.service;
 
 import com.esquad.esquadbe.studypage.config.BookApi;
 import com.esquad.esquadbe.studypage.exception.BookUriException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
@@ -13,7 +12,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 
 @Component
-@Slf4j
 public class BookUriService {
 
     private final BookApi bookApi;
@@ -38,11 +36,16 @@ public class BookUriService {
                 .toUri();
     }
 
-    public String fetchData(URI uri) throws BookUriException{
-        RequestEntity<Void> req = RequestEntity.get(uri)
-                .header("X-Naver-Client-Id", bookApi.getId())
-                .header("X-Naver-Client-Secret", bookApi.getSecret())
-                .build();
+    public String fetchData(URI uri) {
+        try {
+            RequestEntity<Void> req = RequestEntity.get(uri)
+                    .header("X-Naver-Client-Id", bookApi.getId())
+                    .header("X-Naver-Client-Secret", bookApi.getSecret())
+                    .build();
+
             return restTemplate.exchange(req, String.class).getBody();
+        }catch (HttpClientErrorException e) {
+            throw new BookUriException();
+        }
     }
 }
