@@ -3,14 +3,17 @@ package com.esquad.esquadbe.qnaboard.service;
 import com.esquad.esquadbe.qnaboard.dto.QnaBoardResponseDTO;
 import com.esquad.esquadbe.qnaboard.dto.QnaRequestDTO;
 import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
-import com.esquad.esquadbe.qnaboard.exception.ResourceNotFoundException;
-import com.esquad.esquadbe.qnaboard.exception.UnauthorizedException;
+import com.esquad.esquadbe.qnaboard.exception.BookNotFoundException;
+import com.esquad.esquadbe.qnaboard.exception.QuestionNotFoundException;
 import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
 import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
 import com.esquad.esquadbe.user.entity.User;
+import com.esquad.esquadbe.user.exception.UserErrorCode;
+import com.esquad.esquadbe.user.exception.UserNotFoundException;
+import com.esquad.esquadbe.user.exception.UserUsernameException;
 import com.esquad.esquadbe.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -197,12 +200,12 @@ class QuestionServiceTest {
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
-        // When & Then: UnauthorizedException이 발생해야 함
-        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
+        // When & Then: UserUsernameException이 발생해야 함
+        UserUsernameException exception = assertThrows(UserUsernameException.class, () -> {
             questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO);
         });
 
-        assertEquals("게시글 수정 권한이 없습니다.", exception.getMessage());
+        assertEquals(UserErrorCode.USER_NOT_FOUND_ERROR.getMessage(), exception.getMessage());
     }
 
     @Test
@@ -219,12 +222,12 @@ class QuestionServiceTest {
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
-        // When & Then: ResourceNotFoundException이 발생해야 함
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
+        // When & Then: QuestionNotFoundException이 발생해야 함
+        QuestionNotFoundException exception = assertThrows(QuestionNotFoundException.class, () -> {
             questionService.updateQuestion(nonExistingId, qnaRequestDTO);
         });
 
-        assertEquals("해당 게시물을 찾을 수 없습니다: " + nonExistingId, exception.getMessage());
+        assertEquals("Question doesn't exist", exception.getMessage());
     }
 
     @Test
@@ -241,7 +244,7 @@ class QuestionServiceTest {
                         .build());
 
         // When
-        questionService.deleteQuestion(board.getId(), user.getUsername());
+        questionService.deleteQuestion(board.getId(), String.valueOf(user.getId()));
 
         // Then
         assertFalse(questionRepository.findById(board.getId()).isPresent());
@@ -261,11 +264,11 @@ class QuestionServiceTest {
                 .address("Other Address")
                 .build());
 
-        // When & Then: UnauthorizedException이 발생해야 함
-        UnauthorizedException exception = assertThrows(UnauthorizedException.class, () -> {
-            questionService.deleteQuestion(existingBoard.getId(), otherUser.getUsername());
+        // When & Then: UserUsernameException이 발생해야 함
+        UserUsernameException exception = assertThrows(UserUsernameException.class, () -> {
+            questionService.deleteQuestion(existingBoard.getId(), String.valueOf(otherUser.getId()));
         });
 
-        assertEquals("게시글 삭제 권한이 없습니다.", exception.getMessage());
+        assertEquals(UserErrorCode.USER_NOT_FOUND_ERROR.getMessage(), exception.getMessage());
     }
 }
