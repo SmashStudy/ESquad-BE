@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum QnaErrorCode implements ErrorCode {
 
     QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Question doesn't exist", "QNA-001"),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "Comment doesn't exist", "COMMENT-001"),
     BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "Book doesn't exist", "BOOK-001");
 
 
