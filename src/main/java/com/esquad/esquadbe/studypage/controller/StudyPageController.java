@@ -35,7 +35,6 @@ public class StudyPageController {
         this.studyPageUserService = studyPageUserService;
     }
 
-    // Create
     @PostMapping("/")
     public ResponseEntity<String> createStudyPage(
             @PathVariable("teamId") Long teamId,
@@ -51,7 +50,6 @@ public class StudyPageController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Study page created successfully.");
     }
 
-    // Read List
     @GetMapping("/")
     public ResponseEntity<List<StudyPageReadDto>> getStudyPages(@PathVariable("teamId") Long teamId) {
         log.info("Fetching study pages for teamId: {}", teamId);
@@ -68,7 +66,6 @@ public class StudyPageController {
         return ResponseEntity.ok(studyInfoDto);
     }
 
-    // Update
     @PostMapping("/{studyId}")
     public ResponseEntity<String> updateStudyPage(
             @PathVariable("teamId") Long teamId,
@@ -84,7 +81,6 @@ public class StudyPageController {
         }
     }
 
-    // Delete
     @DeleteMapping("/{studyId}")
     public ResponseEntity<String> deleteStudyPage(
             @PathVariable("studyId") Long studyId,

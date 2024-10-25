@@ -43,4 +43,4 @@ public class BookSearchResultItemDto {
                 .pubDate(pubdate)
                 .build();
     }
-};
+}

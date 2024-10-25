@@ -8,7 +8,7 @@ import com.esquad.esquadbe.qnaboard.repository.QuestionRepository;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
+import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserErrorCode;
 import com.esquad.esquadbe.user.exception.UserUsernameException;
@@ -41,7 +41,7 @@ class QuestionServiceTest {
     private BookRepository bookRepository;
 
     @Autowired
-    private TeamSpaceRepository teamSpaceRepository;
+    private TeamRepository teamRepository;
 
     private BookQnaBoard existingBoard;
     private User user;
@@ -73,7 +73,7 @@ class QuestionServiceTest {
                 .build());
 
 
-        teamSpace = teamSpaceRepository.save(TeamSpace.builder()
+        teamSpace = teamRepository.save(TeamSpace.builder()
                 .teamName("Test TeamSpace")
                 .description("This is a test team space.")
                 .build());
@@ -92,7 +92,7 @@ class QuestionServiceTest {
     @Test
     @DisplayName("게시글 생성")
     void createQuestionTest() {
-        // Given
+
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
                 .title("Test Question")
                 .content("This is a test question content.")
@@ -101,10 +101,8 @@ class QuestionServiceTest {
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
-        // When
         QnaBoardResponseDTO createdQuestion = questionService.createQuestion(qnaRequestDTO, null);
 
-        // Then
         assertNotNull(createdQuestion);
         assertEquals("Test Question", createdQuestion.getTitle());
         assertEquals("This is a test question content.", createdQuestion.getContent());
@@ -114,7 +112,7 @@ class QuestionServiceTest {
     @Test
     @DisplayName("게시글번호로 게시글 조회")
     void getQuestionByIdTest() {
-        // Given
+
         BookQnaBoard board = questionRepository.save(
                 BookQnaBoard.builder()
                         .title("Test Title")
@@ -125,10 +123,9 @@ class QuestionServiceTest {
                         .likes(0)
                         .build());
 
-        // When
         QnaBoardResponseDTO result = questionService.getQuestionById(board.getId());
 
-        // Then
+
         assertNotNull(result);
         assertEquals(board.getTitle(), result.getTitle());
         assertEquals(board.getContent(), result.getContent());
@@ -138,7 +135,7 @@ class QuestionServiceTest {
     @Test
     @DisplayName("게시글 제목으로 조회")
     void getQuestionsByTitleTest() {
-        // Given
+
         questionRepository.save(
                 BookQnaBoard.builder()
                         .title("Searchable Title")
@@ -149,10 +146,8 @@ class QuestionServiceTest {
                         .likes(0)
                         .build());
 
-        // When
         var resultPage = questionService.getQuestionsByTitle("Searchable", 0, 10);
 
-        // Then
         assertFalse(resultPage.isEmpty());
         assertEquals(1, resultPage.getTotalElements());
         assertEquals("Searchable Title", resultPage.getContent().get(0).getTitle());
@@ -161,7 +156,7 @@ class QuestionServiceTest {
     @Test
     @DisplayName("게시글의 작성자가 게시글을 업데이트")
     void updateQuestion_Success() {
-        // Given
+
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
                 .title("Updated Title")
                 .content("Updated Content")
@@ -170,10 +165,8 @@ class QuestionServiceTest {
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
-        // When
         QnaBoardResponseDTO updatedBoard = questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO);
 
-        // Then
         assertNotNull(updatedBoard);
         assertEquals("Updated Title", updatedBoard.getTitle());
         assertEquals("Updated Content", updatedBoard.getContent());
@@ -182,7 +175,7 @@ class QuestionServiceTest {
     @Test
     @DisplayName("작성자가 아닌 사용자가 게시글을 업데이트하려고 할 때 예외 발생")
     void updateQuestion_Unauthorized() {
-        // Given: 다른 유저가 게시글을 수정하려고 시도
+
         User otherUser = userRepository.save(User.builder()
                 .username("otherUser")
                 .nickname("Other Nickname")
@@ -196,15 +189,12 @@ class QuestionServiceTest {
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
                 .title("Updated Title")
                 .content("Updated Content")
-                .username(otherUser.getUsername()) // 다른 사용자 ID
+                .username(otherUser.getUsername())
                 .bookId(book.getId())
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
-        // When & Then: UserUsernameException이 발생해야 함
-        UserUsernameException exception = assertThrows(UserUsernameException.class, () -> {
-            questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO);
-        });
+        UserUsernameException exception = assertThrows(UserUsernameException.class, () -> questionService.updateQuestion(existingBoard.getId(), qnaRequestDTO));
 
         assertEquals(UserErrorCode.USER_NOT_FOUND_ERROR.getMessage(), exception.getMessage());
     }
@@ -212,7 +202,7 @@ class QuestionServiceTest {
     @Test
     @DisplayName("존재하지 않는 게시글을 업데이트하려고 할 때 예외 발생")
     void updateQuestion_NotFound() {
-        // Given: 존재하지 않는 게시글 ID
+
         Long nonExistingId = 999L;
 
         QnaRequestDTO qnaRequestDTO = QnaRequestDTO.builder()
@@ -223,17 +213,14 @@ class QuestionServiceTest {
                 .teamSpaceId(teamSpace.getId())
                 .build();
 
-        // When & Then: QuestionNotFoundException이 발생해야 함
-        QuestionNotFoundException exception = assertThrows(QuestionNotFoundException.class, () -> {
-            questionService.updateQuestion(nonExistingId, qnaRequestDTO);
-        });
+        QuestionNotFoundException exception = assertThrows(QuestionNotFoundException.class, () -> questionService.updateQuestion(nonExistingId, qnaRequestDTO));
 
         assertEquals("Question doesn't exist", exception.getMessage());
     }
 
     @Test
     void deleteQuestionTest() {
-        // Given
+
         BookQnaBoard board = questionRepository.save(
                 BookQnaBoard.builder()
                         .title("Title to Delete")
@@ -244,17 +231,15 @@ class QuestionServiceTest {
                         .likes(0)
                         .build());
 
-        // When
         questionService.deleteQuestion(board.getId(), String.valueOf(user.getId()));
 
-        // Then
         assertFalse(questionRepository.findById(board.getId()).isPresent());
     }
 
     @Test
     @DisplayName("작성자가 아닌 사용자가 게시글을 삭제하려고 할 때 예외 발생")
     void deleteQuestion_Unauthorized() {
-        // Given: 다른 유저가 게시글을 삭제하려고 시도
+
         User otherUser = userRepository.save(User.builder()
                 .username("otherUser")
                 .nickname("Other Nickname")
@@ -265,10 +250,7 @@ class QuestionServiceTest {
                 .address("Other Address")
                 .build());
 
-        // When & Then: UserUsernameException이 발생해야 함
-        UserUsernameException exception = assertThrows(UserUsernameException.class, () -> {
-            questionService.deleteQuestion(existingBoard.getId(), String.valueOf(otherUser.getId()));
-        });
+        UserUsernameException exception = assertThrows(UserUsernameException.class, () -> questionService.deleteQuestion(existingBoard.getId(), String.valueOf(otherUser.getId())));
 
         assertEquals(UserErrorCode.USER_NOT_FOUND_ERROR.getMessage(), exception.getMessage());
     }
