@@ -24,7 +24,7 @@ public class StudyRemindService {
         this.studyPageRepository = studyPageRepository;
     }
 
-    public void createRemind(Long studyPageId, @Valid List<StudyRemindDto> remindDtos) {
+    public void createRemind(Long studyPageId, List<StudyRemindDto> remindDtos) {
         StudyPage studyPage = studyPageRepository.findById(studyPageId).orElseThrow(BookJsonProcessingException::new);
 
         for (StudyRemindDto remindDto : remindDtos) {

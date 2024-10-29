@@ -83,7 +83,7 @@ public class StudyPageService {
         return to(studyPage);
     }
 
-    public boolean updateStudyPage(Long studyPageId, @Valid UpdateStudyPageRequestDto dto) {
+    public Long updateStudyPage(Long studyPageId, @Valid UpdateStudyPageRequestDto dto) {
 
         StudyPage studyPage = studyPageRepository.findById(studyPageId)
                 .orElseThrow(StudyNotFoundException::new);
@@ -91,7 +91,7 @@ public class StudyPageService {
 
         studyPageRepository.save(studyPage);
 
-        return true;
+        return studyPageId;
     }
 
     @Transactional

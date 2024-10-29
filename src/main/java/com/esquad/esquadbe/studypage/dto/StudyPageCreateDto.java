@@ -14,13 +14,13 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class StudyPageCreateDto {
-    @NotBlank
+
     private BookSearchResultItemDto bookDto;
-    @NotBlank
+
     private StudyInfoDto studyInfoDto;
     @NotNull
     private List<StudyRemindDto> reminds;
-    @NotBlank
+
     private List<Long> userIds;
 }
 

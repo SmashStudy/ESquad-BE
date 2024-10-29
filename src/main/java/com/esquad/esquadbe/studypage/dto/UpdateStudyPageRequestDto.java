@@ -16,9 +16,9 @@ import java.time.LocalDate;
 public class UpdateStudyPageRequestDto {
     @NotBlank
     private String title;
-    @NotBlank
+
     private LocalDate startDate;
-    @NotBlank
+
     private LocalDate endDate;
 
     private String description;

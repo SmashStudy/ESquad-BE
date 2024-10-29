@@ -11,6 +11,7 @@ import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.team.repository.TeamSpaceUserRepository;
 import com.esquad.esquadbe.team.exception.TeamNotFoundException;
 import com.esquad.esquadbe.user.entity.User;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,7 @@ public class StudyPageUserService {
         this.teamRepository = teamRepository;
     }
 
-    public void createStudyPageUser(Long teamId, Long studyPageId, List<Long> ids) {
+    public void createStudyPageUser(Long teamId, @NotNull Long studyPageId, List<Long> ids) {
         TeamSpace teamSpace = teamRepository.findById(teamId).orElseThrow(TeamNotFoundException::new);
         StudyPage studyPage = studyPageRepository.findById(studyPageId).orElseThrow(StudyNotFoundException::new);
 
