@@ -39,9 +39,7 @@ public class StudyPageController {
     public ResponseEntity<Long> createStudyPage(
             @PathVariable("teamId") Long teamId,
             @RequestBody @Valid StudyPageCreateDto dto) {
-        log.info("try");
         try {
-            log.info("Creating a new study page for teamId: {}", teamId);
             Long bookId = bookService.createBookInfo(dto.getBookDto());
             Long studyPageId = studyPageService.createStudyPage(teamId, bookId, dto.getStudyInfoDto());
 
@@ -78,6 +76,7 @@ public class StudyPageController {
 
         return ResponseEntity.ok(studyPageService.updateStudyPage(studyId, request));
     }
+
     @DeleteMapping("/{teamId}/study-pages/{studyId}")
     public ResponseEntity<String> deleteStudyPage(
             @PathVariable("studyId") Long studyId,
