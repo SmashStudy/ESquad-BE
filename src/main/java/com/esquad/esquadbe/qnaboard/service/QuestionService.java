@@ -11,8 +11,8 @@ import com.esquad.esquadbe.storage.service.S3FileService;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.repository.BookRepository;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
 import com.esquad.esquadbe.team.exception.TeamNotFoundException;
+import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.user.entity.User;
 import com.esquad.esquadbe.user.exception.UserNotFoundException;
 import com.esquad.esquadbe.user.exception.UserUsernameException;
@@ -36,7 +36,7 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final QuestionRepository questionRepository;
     private final BookRepository bookRepository;
-    private final TeamSpaceRepository teamSpaceRepository;
+    private final TeamRepository teamRepository;
     private final S3FileService s3FileService;
 
     private User getUser(String username) {
@@ -50,7 +50,7 @@ public class QuestionService {
     }
 
     private TeamSpace getTeamspace(Long teamSpaceId) {
-        return teamSpaceRepository.findById(teamSpaceId)
+        return teamRepository.findById(teamSpaceId)
                 .orElseThrow(TeamNotFoundException::new);
     }
 

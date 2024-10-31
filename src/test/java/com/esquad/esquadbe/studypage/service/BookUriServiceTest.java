@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class BookUriServiceTest {
+
     @Autowired
     private BookApi bookApi;
     private URI uri;

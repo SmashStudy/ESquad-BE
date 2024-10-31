@@ -5,117 +5,105 @@ import com.esquad.esquadbe.studypage.dto.StudyPageReadDto;
 import com.esquad.esquadbe.studypage.dto.UpdateStudyPageRequestDto;
 import com.esquad.esquadbe.studypage.entity.Book;
 import com.esquad.esquadbe.studypage.entity.StudyPage;
+import com.esquad.esquadbe.studypage.exception.BookNotFoundException;
+import com.esquad.esquadbe.studypage.exception.BookJsonProcessingException;
+import com.esquad.esquadbe.studypage.exception.StudyNotFoundException;
+import com.esquad.esquadbe.studypage.exception.StudyPageNameNotEqualException;
 import com.esquad.esquadbe.studypage.repository.*;
 import com.esquad.esquadbe.team.entity.TeamSpace;
-import com.esquad.esquadbe.team.entity.repository.TeamSpaceRepository;
-import jakarta.persistence.EntityNotFoundException;
+import com.esquad.esquadbe.team.exception.TeamNotFoundException;
+import com.esquad.esquadbe.team.repository.TeamRepository;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-@Slf4j
+import static com.esquad.esquadbe.studypage.dto.StudyInfoDto.to;
+
 @Service
 public class StudyPageService {
 
-    private final TeamSpaceRepository teamSpaceRepository;
+    private final TeamRepository teamRepository;
     private final StudyPageUserRepository studyPageUserRepository;
     private final BookRepository bookRepository;
     private final StudyPageRepository studyPageRepository;
     private final StudyRemindRepository studyRemindRepository;
 
     @Autowired
-    public StudyPageService(TeamSpaceRepository teamSpaceRepository, StudyPageUserRepository studyPageUserRepository,
-                            BookRepository bookRepository, StudyPageRepository studyPageRepository,
+    public StudyPageService(TeamRepository teamRepository,
+                            StudyPageUserRepository studyPageUserRepository,
+                            BookRepository bookRepository,
+                            StudyPageRepository studyPageRepository,
                             StudyRemindRepository studyRemindRepository) {
-        this.teamSpaceRepository = teamSpaceRepository;
+        this.teamRepository = teamRepository;
         this.studyPageUserRepository = studyPageUserRepository;
         this.bookRepository = bookRepository;
         this.studyPageRepository = studyPageRepository;
         this.studyRemindRepository = studyRemindRepository;
     }
 
-    // Create
-    public Long createStudyPage(Long teamId, Long bookId, StudyInfoDto dto) {
-        log.info("Creating StudyPage with teamId: {}, bookId: {}, dto: {}", teamId, bookId, dto);
+    public Long createStudyPage(Long teamId, Long bookId, @Valid StudyInfoDto dto) {
 
-        TeamSpace teamSpace = teamSpaceRepository.findById(teamId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid TeamSpace ID"));
-
+        TeamSpace teamSpace = teamRepository.findById(teamId)
+                .orElseThrow(TeamNotFoundException::new);
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Book ID"));
+                .orElseThrow(BookNotFoundException::new);
+        StudyPage studyPage = dto.from(teamSpace, book);
 
-        StudyPage studyPage = StudyPage.builder()
-                .teamSpace(teamSpace)
-                .book(book)
-                .studyPageName(dto.getStudyPageName())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
-                .description(dto.getDescription())
-                .build();
-
-        studyPageRepository.save(studyPage);
-        return studyPage.getId();
+        return studyPageRepository.save(studyPage).getId();
     }
 
-    // Read
     public List<StudyPageReadDto> readStudyPages(Long teamId) {
-        TeamSpace teamSpace = teamSpaceRepository.findById(teamId)
-                .orElseThrow(() -> new EntityNotFoundException("TeamSpace not found with ID: " + teamId));
 
+        TeamSpace teamSpace = teamRepository.findById(teamId)
+                .orElseThrow(TeamNotFoundException::new);
         List<StudyPage> studyPages = studyPageRepository.findAllByTeamSpace(teamSpace)
-                .orElseThrow(() -> new EntityNotFoundException("No StudyPages found for TeamSpace ID: " + teamId));
+                .orElseGet(ArrayList::new);
+        StudyPageReadDto studyPageReadDto = new StudyPageReadDto();
+
+        if (studyPages.isEmpty()) {
+            return Collections.emptyList();
+        }
 
         return studyPages.stream()
-                .map(this::convertStudyPageToStudyPageReadDto)
+                .map(studyPageReadDto::from)
                 .collect(Collectors.toList());
     }
 
     public StudyInfoDto readStudyPageInfo(Long id) {
-        StudyPage studyPage1 = studyPageRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("No StudyPage found for Study ID: " + id));
-        return new StudyInfoDto(studyPage1.getStudyPageName(), studyPage1.getStartDate(),studyPage1.getEndDate(), studyPage1.getDescription());
+
+        StudyPage studyPage = studyPageRepository.findById(id)
+                .orElseThrow(StudyNotFoundException::new);
+
+        return to(studyPage);
     }
 
-    private StudyPageReadDto convertStudyPageToStudyPageReadDto(StudyPage studyPage) {
-        return new StudyPageReadDto(
-                studyPage.getId(),
-                studyPage.getBook().getImgPath(),
-                studyPage.getStudyPageName()
-        );
-    }
+    public Long updateStudyPage(Long studyPageId, @Valid UpdateStudyPageRequestDto dto) {
 
-    // Update
-    public boolean updateStudyPage(Long studyPageId, UpdateStudyPageRequestDto dto) {
         StudyPage studyPage = studyPageRepository.findById(studyPageId)
-                .orElseThrow(() -> new EntityNotFoundException("No StudyPage found for Study ID: " + studyPageId));
-
-        studyPage = StudyPage.builder()
-                .id(studyPage.getId())
-                .teamSpace(studyPage.getTeamSpace())
-                .book(studyPage.getBook())
-                .studyPageName(dto.getTitle())
-                .startDate(dto.getStartDate())
-                .endDate(dto.getEndDate())
-                .description(dto.getDescription())
-                .build();
+                .orElseThrow(StudyNotFoundException::new);
+        studyPage = dto.from(studyPage);
 
         studyPageRepository.save(studyPage);
-        return true;
+
+        return studyPageId;
     }
 
-    // Delete
     @Transactional
     public void deleteStudyPage(Long id, String name) {
+
         StudyPage studyPage = studyPageRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("StudyPage not found with ID: " + id));
+                .orElseThrow(BookJsonProcessingException::new);
 
         if (!studyPage.getStudyPageName().equals(name)) {
-            throw new IllegalArgumentException("StudyPage name does not match");
+            throw new StudyPageNameNotEqualException();
         }
+
         studyPageUserRepository.deleteAllByStudyPage(studyPage);
         studyRemindRepository.deleteByStudyPage(studyPage);
         studyPageRepository.delete(studyPage);
