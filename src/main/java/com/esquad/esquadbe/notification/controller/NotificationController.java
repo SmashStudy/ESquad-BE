@@ -28,7 +28,6 @@ public class NotificationController {
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public ResponseEntity<SseEmitter> subscribe(@Parameter(hidden = true) Principal principal,
                                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        log.info("user, lastEventId: {}, {}", principal.getName(), lastEventId);
         return ResponseEntity.ok(notificationService.subscribe(principal.getName(), lastEventId));
     }
 }

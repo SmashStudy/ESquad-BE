@@ -96,8 +96,6 @@ public class TeamRestController {
             description = "팀에 함께하고 있는 크루 프로필을 보기 위한 요청")
     @GetMapping("/settings/crew/profile/{id}")
     public ResponseEntity<List<TeamSpaceUserResponseDTO>> getCrewProfile(@PathVariable("id") Long teamId, Principal principal) {
-        log.info(principal.toString());
-        log.info(principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body(teamService.getCrewProfile(teamId, principal.getName()));
     }
 

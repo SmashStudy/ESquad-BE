@@ -8,7 +8,6 @@ import com.esquad.esquadbe.team.repository.TeamRepository;
 import com.esquad.esquadbe.team.repository.TeamSpaceUserRepository;
 import com.esquad.esquadbe.user.dto.UserResponseDTO;
 import com.esquad.esquadbe.user.exception.UserNotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import com.esquad.esquadbe.user.entity.User;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.Optional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TeamSpaceUserServiceImpl implements TeamSpaceUserService {

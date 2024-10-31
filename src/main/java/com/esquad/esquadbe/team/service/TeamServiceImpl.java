@@ -46,10 +46,8 @@ public class TeamServiceImpl implements TeamService {
         log.info("teamSpace: {}", teamSpace);
 
         try {
-            // 스페이스가 저장될 때 스페이스 유저 또한 함께 저장되어야 함 : CASCADE:PERSIST
             TeamSpace saved = teamRepository.save(teamSpace);
 
-            // 알림 전송 (추후 EventListener 로 역할 분리)
             saved.getMembers()
                     .stream()
                     .forEach(

@@ -10,10 +10,7 @@ import lombok.*;
 public record TeamSpaceUserRequestDTO (
         @NotNull
         Long id,
-        // @NotBlank TeamSpaceRequestDTO teamSpace,
         @NotBlank UserRequestDTO member,
-        // @NotBlank LocalDateTime createdAt,
-        // @NotBlank LocalDateTime modifiedAt,
         @NotBlank String role
 ) {
     public TeamSpaceUser to() {

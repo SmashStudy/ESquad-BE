@@ -11,8 +11,6 @@ import java.time.LocalDateTime;
 @Builder
 public record TeamSpaceUserResponseDTO(
                                           @NotNull Long id,
-                                          // @ToString.Exclude
-                                          // @NotNull TeamSpaceResponseDTO teamSpace,
                                           @ToString.Exclude
                                           @NotNull UserProfileResponseDTO member,
                                           @NotBlank LocalDateTime createdAt,
@@ -22,7 +20,6 @@ public record TeamSpaceUserResponseDTO(
     public static TeamSpaceUserResponseDTO from(TeamSpaceUser teamSpaceUser) {
         return TeamSpaceUserResponseDTO.builder()
                 .id(teamSpaceUser.getId())
-                // .teamSpace(TeamSpaceResponseDTO.from(teamSpaceUser.getTeamSpace()))
                 .member(UserProfileResponseDTO.from(teamSpaceUser.getMember()))
                 .createdAt(teamSpaceUser.getCreatedAt())
                 .modifiedAt(teamSpaceUser.getModifiedAt())
