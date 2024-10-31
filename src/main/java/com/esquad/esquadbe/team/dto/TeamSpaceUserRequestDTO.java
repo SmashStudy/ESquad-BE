@@ -1,14 +1,10 @@
 package com.esquad.esquadbe.team.dto;
 
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
-import com.esquad.esquadbe.user.dto.UserDTO;
 import com.esquad.esquadbe.user.dto.UserRequestDTO;
-import com.esquad.esquadbe.user.dto.UserResponseDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Builder
 public record TeamSpaceUserRequestDTO (
