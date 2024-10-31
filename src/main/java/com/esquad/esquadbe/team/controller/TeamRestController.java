@@ -7,7 +7,7 @@ import com.esquad.esquadbe.team.dto.TeamSpaceUserResponseDTO;
 import com.esquad.esquadbe.team.exception.InvalidTeamNameException;
 import com.esquad.esquadbe.user.dto.UserResponseDTO;
 import com.esquad.esquadbe.user.service.UserService;
-import com.esquad.esquadbe.team.service.TeamSpaceUserService;
+import com.esquad.esquadbe.team.service.TeamSpaceUserServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ import java.util.Optional;
 public class TeamRestController {
 
     private final TeamService teamService;
-    private final TeamSpaceUserService teamSpaceUserService;
+    private final TeamSpaceUserServiceImpl teamSpaceUserServiceImpl;
     private final UserService userService;
 
     @Operation(summary = "소속된 모든 팀스페이스 조회 요청",
@@ -57,8 +57,8 @@ public class TeamRestController {
     @Operation(summary = "팀스페이스 생성 시, 멤버 조회 요청",
             description = "유저가 새로운 팀스페이스를 생성할 때, 멤버초대를 위한 조회 요청")
     @GetMapping("/new/search/{username}")
-    public UserResponseDTO searchUser(Principal principal) {
-        return teamSpaceUserService.searchUser(principal.getName());
+    public UserResponseDTO searchUser(@PathVariable("username") String username) {
+        return teamSpaceUserServiceImpl.searchUser(username);
     }
 
     @Operation(summary = "팀스페이스 생성 요청",
@@ -73,11 +73,11 @@ public class TeamRestController {
             description = "유저가 설정 페이지를 클릭했을 때, 권한별 접근을 위해 role 을 조회하는 요청")
     @GetMapping("/settings/{id}")
     public ResponseEntity<Optional<String>> verityUserRole(@PathVariable("id") Long teamId, Principal principal){
-        teamSpaceUserService.checkRole(teamId, principal.getName());
+        teamSpaceUserServiceImpl.checkRole(teamId, Long.parseLong(principal.getName()));
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @Operation(summary = "팀스페이스 설정 - <일반> 프로필 요청",
+    @Operation(summary = "팀스페이스 설정 - <일반> 프로필 조회 요청",
             description = "유저가 해당 팀스페이스의 프로필을 조회하기 위한 요청")
     @GetMapping("/settings/profile/{id}")
     public TeamSpaceResponseDTO getTeamProfile(@PathVariable("id") Long teamId) {
@@ -86,7 +86,7 @@ public class TeamRestController {
 
     @Operation(summary = "팀스페이스 설정 - <일반> 프로필 수정 요청",
             description = "유저가 해당 팀스페이스의 프로필을 수정하기 위한 요청")
-    @PatchMapping("/settings/profile")
+    @PutMapping("/settings/profile")
     public ResponseEntity<TeamSpaceResponseDTO> updateTeamProfile(@RequestBody @Valid TeamSpaceRequestDTO teamSpaceRequestDTO) {
         TeamSpaceResponseDTO responseDTO = teamService.updateProfile(teamSpaceRequestDTO);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
@@ -96,16 +96,16 @@ public class TeamRestController {
             description = "팀에 함께하고 있는 크루 프로필을 보기 위한 요청")
     @GetMapping("/settings/crew/profile/{id}")
     public ResponseEntity<List<TeamSpaceUserResponseDTO>> getCrewProfile(@PathVariable("id") Long teamId, Principal principal) {
-        teamSpaceUserService.checkRole(teamId, principal.getName());
-        return ResponseEntity.status(HttpStatus.OK).body(teamService.getCrewProfile(teamId));
+        log.info(principal.toString());
+        log.info(principal.getName());
+        return ResponseEntity.status(HttpStatus.OK).body(teamService.getCrewProfile(teamId, principal.getName()));
     }
 
     @Operation(summary = "팀스페이스 삭제 처리",
             description = "팀스페이스를 삭제하기 위한 요청")
     @DeleteMapping("/settings/{id}")
     public ResponseEntity<String> deleteTeam(@PathVariable("id") Long teamId, Principal principal) {
-        teamSpaceUserService.checkRole(teamId, principal.getName());
-        teamService.deleteTeamSpace(teamId);
+        teamService.deleteTeamSpace(teamId, principal.getName());
         return ResponseEntity.status(HttpStatus.OK).body("deleted");
     }
 }
