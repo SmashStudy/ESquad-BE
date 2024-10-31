@@ -1,25 +1,31 @@
 package com.esquad.esquadbe.team.dto;
 
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
-import com.esquad.esquadbe.user.dto.UserResponseDTO;
+import com.esquad.esquadbe.user.dto.UserProfileResponseDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Builder
-public record TeamSpaceUserResponseDTO(   // 팀스페이스 멤버정보
+public record TeamSpaceUserResponseDTO(
                                           @NotNull Long id,
+                                          // @ToString.Exclude
+                                          // @NotNull TeamSpaceResponseDTO teamSpace,
                                           @ToString.Exclude
-                                          @NotNull TeamSpaceResponseDTO teamSpace,
-                                          @ToString.Exclude
-                                          @NotNull UserResponseDTO user,
+                                          @NotNull UserProfileResponseDTO member,
+                                          @NotBlank LocalDateTime createdAt,
+                                          @NotBlank LocalDateTime modifiedAt,
                                           @NotBlank String role
 ) {
     public static TeamSpaceUserResponseDTO from(TeamSpaceUser teamSpaceUser) {
         return TeamSpaceUserResponseDTO.builder()
                 .id(teamSpaceUser.getId())
-                .teamSpace(TeamSpaceResponseDTO.from(teamSpaceUser.getTeamSpace()))
-                .user(UserResponseDTO.from(teamSpaceUser.getMember()))
+                // .teamSpace(TeamSpaceResponseDTO.from(teamSpaceUser.getTeamSpace()))
+                .member(UserProfileResponseDTO.from(teamSpaceUser.getMember()))
+                .createdAt(teamSpaceUser.getCreatedAt())
+                .modifiedAt(teamSpaceUser.getModifiedAt())
                 .role(teamSpaceUser.getRole())
                 .build();
     }
