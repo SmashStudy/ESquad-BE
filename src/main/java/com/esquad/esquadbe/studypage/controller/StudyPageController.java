@@ -39,17 +39,13 @@ public class StudyPageController {
     public ResponseEntity<Long> createStudyPage(
             @PathVariable("teamId") Long teamId,
             @RequestBody @Valid StudyPageCreateDto dto) {
-        try {
-            Long bookId = bookService.createBookInfo(dto.getBookDto());
-            Long studyPageId = studyPageService.createStudyPage(teamId, bookId, dto.getStudyInfoDto());
+        Long bookId = bookService.createBookInfo(dto.getBookDto());
+        Long studyPageId = studyPageService.createStudyPage(teamId, bookId, dto.getStudyInfoDto());
 
-            studyRemindService.createRemind(studyPageId, dto.getReminds());
-            studyPageUserService.createStudyPageUser(teamId, studyPageId, dto.getUserIds());
+        studyRemindService.createRemind(studyPageId, dto.getReminds());
+        studyPageUserService.createStudyPageUser(teamId, studyPageId, dto.getUserIds());
 
-            return ResponseEntity.status(HttpStatus.CREATED).body(studyPageId);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(studyPageId);
     }
 
     @GetMapping("/{teamId}/study-pages")
