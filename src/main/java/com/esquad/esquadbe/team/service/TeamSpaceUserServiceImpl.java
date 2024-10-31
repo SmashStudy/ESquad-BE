@@ -25,8 +25,8 @@ public class TeamSpaceUserServiceImpl implements TeamSpaceUserService {
    private final UserRepository userRepository;
    private final TeamSpaceUserRepository teamSpaceUserRepository;
 
-   public UserResponseDTO searchUser(final String userId) {
-      return userRepository.findById(Long.parseLong(userId))
+   public UserResponseDTO searchUser(final String username) {
+      return userRepository.findByUsername(username)
               .map(UserResponseDTO::from)
               .orElseThrow(UserNotFoundException::new);
    }
