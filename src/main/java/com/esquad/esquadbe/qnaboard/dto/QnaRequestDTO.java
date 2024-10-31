@@ -12,7 +12,7 @@ public record QnaRequestDTO(
         Long id,
         String title,
         String content,
-        Long userId,
+        String username,
         Long bookId,
         Long teamSpaceId
 ) {

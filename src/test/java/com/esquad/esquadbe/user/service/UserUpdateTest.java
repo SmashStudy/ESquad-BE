@@ -43,7 +43,6 @@ public class UserUpdateTest {
     @BeforeEach
     void setUp() {
         updateDTO = UserUpdateDTO.builder()
-                .username("newUsername")
                 .email("newEmail@example.com")
                 .address("newAddress")
                 .phoneNumber("010-1234-5678")

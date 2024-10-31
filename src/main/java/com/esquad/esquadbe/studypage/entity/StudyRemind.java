@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Description;
 import java.time.LocalTime;
 
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = false)
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
