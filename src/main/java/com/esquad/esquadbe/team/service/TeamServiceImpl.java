@@ -28,6 +28,7 @@ import java.util.List;
 public class TeamServiceImpl implements TeamService {
 
     private final TeamRepository teamRepository;
+    private final TeamSpaceUserService teamSpaceUserService;
     private final NotificationService notificationService;
 
     @Override
@@ -45,14 +46,14 @@ public class TeamServiceImpl implements TeamService {
         log.info("teamSpace: {}", teamSpace);
 
         try {
-            // 스페이스가 저장될 때 스페이스 유저 또한 함께 저장되어야 함 : CASCADE:PERSIST
             TeamSpace saved = teamRepository.save(teamSpace);
 
-            // 알림 전송 (추후 EventListener 로 역할 분리)
             saved.getMembers()
                     .stream()
-                    .forEach(member -> notificationService.send(member.getMember()
-                            , "[ " + saved.getTeamName() + "] 의 크루로 초대되었습니다"
+                    .forEach(
+                            member -> notificationService.send(member.getMember()
+                            , saved.getMembers().stream().findFirst().map(manager -> manager.getMember().getUsername()) +
+                                    "님이 [ " + saved.getTeamName() + " ] 의 크루로 초대했습니다!"
                             , NotificationType.JOIN));
             return saved;
         } catch (RestApiException e) {
@@ -69,18 +70,20 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @Transactional
-    public void deleteTeamSpace(Long teamId) {
+    public void deleteTeamSpace(Long teamId, String userId) {
+        teamSpaceUserService.checkRole(teamId, Long.parseLong(userId));
         teamRepository.deleteById(teamId);
     }
 
     @Override
     @Transactional
-    public TeamSpaceResponseDTO updateProfile(@Valid TeamSpaceRequestDTO teamSpaceRequestDTO) {
+    public TeamSpaceResponseDTO updateProfile(TeamSpaceRequestDTO teamSpaceRequestDTO) {
         return TeamSpaceResponseDTO.from(teamRepository.save(teamSpaceRequestDTO.to()));
     }
 
     @Override
-    public List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId) {
+    public List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId, String userId) {
+        teamSpaceUserService.checkRole(teamId, Long.parseLong(userId));
         return teamRepository.findById(teamId)
                 .map(TeamSpace::getMembers)
                 .orElseThrow(TeamNotFoundException::new)
@@ -88,6 +91,4 @@ public class TeamServiceImpl implements TeamService {
                 .map(TeamSpaceUserResponseDTO::from)
                 .toList();
     }
-
-
 }

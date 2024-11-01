@@ -14,7 +14,7 @@ public interface TeamService {
     void verifyTeamName(String teamName);
     TeamSpace createTeam(TeamSpaceCreateRequestDTO teamDTO);
     TeamSpaceResponseDTO updateProfile(@Valid TeamSpaceRequestDTO teamSpaceRequestDTO);
-    List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId);
+    List<TeamSpaceUserResponseDTO> getCrewProfile(Long teamId, String username);
     TeamSpaceResponseDTO getTeamProfile(Long teamSpaceRequestDTO);
-    void deleteTeamSpace(Long teamId);
+    void deleteTeamSpace(Long teamId, String username);
 }

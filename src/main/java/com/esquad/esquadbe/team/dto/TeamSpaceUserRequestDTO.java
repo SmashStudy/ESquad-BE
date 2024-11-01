@@ -1,16 +1,16 @@
 package com.esquad.esquadbe.team.dto;
 
 import com.esquad.esquadbe.team.entity.TeamSpaceUser;
-import com.esquad.esquadbe.user.dto.UserResponseDTO;
+import com.esquad.esquadbe.user.dto.UserRequestDTO;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Builder
 public record TeamSpaceUserRequestDTO (
-        @NotBlank
+        @NotNull
         Long id,
-        @NotBlank TeamSpaceCreateRequestDTO teamSpace,
-        @NotBlank UserResponseDTO member,
+        @NotBlank UserRequestDTO member,
         @NotBlank String role
 ) {
     public TeamSpaceUser to() {
