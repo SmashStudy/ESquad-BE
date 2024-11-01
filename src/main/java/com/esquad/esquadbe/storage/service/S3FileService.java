@@ -57,7 +57,7 @@ public class S3FileService {
         } catch (IOException e) {
             throw new FileUploadFailureException();
         }
-        User user = userRepository.findById(Long.valueOf(userId))
+        User user = userRepository.findByUsername(userId)
             .orElseThrow(UserNotFoundException::new);
 
         StoredFile storedFile = StoredFile.builder()
