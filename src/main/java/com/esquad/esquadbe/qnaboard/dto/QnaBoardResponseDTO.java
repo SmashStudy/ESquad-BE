@@ -4,6 +4,8 @@ import com.esquad.esquadbe.qnaboard.entity.BookQnaBoard;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 public class QnaBoardResponseDTO {
@@ -17,6 +19,8 @@ public class QnaBoardResponseDTO {
     private String teamSpaceName;
     private String content;
     private Integer likes;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;
 
     // 정적 팩토리 메서드
     public static QnaBoardResponseDTO from(BookQnaBoard bookQnaBoard) {
@@ -31,6 +35,8 @@ public class QnaBoardResponseDTO {
                 .teamSpaceName(bookQnaBoard.getTeamSpace().getTeamName())
                 .content(bookQnaBoard.getContent())
                 .likes(bookQnaBoard.getLikes())
+                .createdAt(bookQnaBoard.getCreatedAt())
+                .modifiedAt(bookQnaBoard.getModifiedAt())
                 .build();
     }
 
