@@ -30,8 +30,8 @@ public class UserService {
                 .build();
     }
 
-    public Optional<List<TeamSpaceResponseDTO>> getAllTeamSpaces(String username) {
-        Optional<User> user = userRepository.findByUsername(username);
+    public Optional<List<TeamSpaceResponseDTO>> getAllTeamSpaces(String userId) {
+        Optional<User> user = userRepository.findById(Long.parseLong(userId));
         if(user.isPresent()) {
             List<TeamSpaceResponseDTO> teamSpaceDTOs =
                     user.get().getTeamSpaceUsers().stream()
