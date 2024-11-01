@@ -26,9 +26,8 @@ public class NotificationController {
     @Operation(summary = "알림 구독(subscribe)",
             description = "로그인한 유저들은 알림 서비스에 구독하게 됩니다. '유저명_시간' 으로 식별자가 생성됩니다.")
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> subscribe(@Parameter(hidden = true)Principal principal,
+    public ResponseEntity<SseEmitter> subscribe(@Parameter(hidden = true) Principal principal,
                                                 @RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
-        log.info("user, lastEventId: {}, {}", principal.getName(), lastEventId);
         return ResponseEntity.ok(notificationService.subscribe(principal.getName(), lastEventId));
     }
 }
