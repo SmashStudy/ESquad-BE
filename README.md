@@ -153,6 +153,10 @@ redis cli 접속 `redis-cli -h 127.0.0.1 -p 6379`
 <img width="550" alt="keys-cli 스크린샷" src="https://github.com/user-attachments/assets/cf3c116d-7bb7-4468-8a88-a7cbb5941a35">
 
 
+### 스트리밍 Openvidu 컨테이너
+![image](https://github.com/user-attachments/assets/934b2b52-aa48-4011-aa1e-11b657c6ca7e)
+이미지 파일들은 Packages에 있습니다.
+
 
 ## Tech Stack
 
